@@ -57,8 +57,8 @@ Python Files
 ============
 
 The Docutils Python files must be installed into the
-``site-packages/`` directory of Python.  Running ``python setup.py
-install`` should do the trick, but if you want to place the files
+``site-packages/`` directory of Python.  Running ``python -m pip
+install .`` should do the trick, but if you want to place the files
 yourself, you can just install the ``docutils/`` directory of the
 Docutils tarball to ``/usr/lib/python/site-packages/docutils/``.  In
 this case you should also compile the Python files to ``.pyc`` and/or

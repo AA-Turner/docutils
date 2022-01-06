@@ -143,14 +143,17 @@ Installation
 
 * To install a `development version`_ from source with `setuptools`_:
 
-  * Go to the directory containing the file ``setup.py``.
+  * Go to the directory containing the ``pyproject.toml`` file
 
     A snapshot_ must be unpacked in a temporary directory
     (**not** directly in Python's ``site-packages``) first.
 
-  * Run ``setup.py install``.
-    On Windows systems it may be sufficient to double-click ``install.py``.
-    See also OS-specific installation instructions below.
+    ``cd <archive_directory_path>``
+
+  * Install Docutils:
+
+    * ``python -m pip install --upgrade pip``
+    * ``python -m pip install .``
 
 * For installing "by hand" or in "development mode", see the
   `editable installs`_ section in the `Docutils version repository`_
@@ -258,10 +261,7 @@ Project Files & Directories
 
 * THANKS.txt: List of contributors.
 
-* setup.py: Installation script.  See "Installation" below.
-
-* install.py: Quick & dirty installation script.  Just run it.  For
-  any kind of customization or help though, setup.py must be used.
+* pyproject.toml, setup.cfg, setup.py: Project metadata.  See "Installation" below.
 
 * docutils: The project source directory, installed as a Python
   package.

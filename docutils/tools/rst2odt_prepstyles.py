@@ -18,48 +18,46 @@ from tempfile import mkstemp
 import shutil
 import os
 
+try:
+    from lxml import etree
+except ImportError:
+    raise ImportError(
+        "The lxml is needed for rst2odt_prepstyles, but was not found. "
+        "Install it with 'python -m pip install lxml'."
+    )
+
 NAMESPACES = {
     "style": "urn:oasis:names:tc:opendocument:xmlns:style:1.0",
     "fo": "urn:oasis:names:tc:opendocument:xmlns:xsl-fo-compatible:1.0"
 }
 
+ODT_PREP_STYLES_HELP = """Fix word-processor-generated STYLES.odt files.
+Removes page size data from styles.xml in STYLES.odt, enabling odtwriter use.
 
-def prepstyle(filename):
-
-    zin = zipfile.ZipFile(filename)
-    styles = zin.read("styles.xml")
-
-    root = etree.fromstring(styles)
-    for el in root.xpath("//style:page-layout-properties",
-                         namespaces=NAMESPACES):
-        for attr in el.attrib:
-            if attr.startswith("{%s}" % NAMESPACES["fo"]):
-                del el.attrib[attr]
-
-    tempname = mkstemp()
-    zout = zipfile.ZipFile(os.fdopen(tempname[0], "w"), "w",
-                           zipfile.ZIP_DEFLATED)
-
-    for item in zin.infolist():
-        if item.filename == "styles.xml":
-            zout.writestr(item, etree.tostring(root))
-        else:
-            zout.writestr(item, zin.read(item.filename))
-
-    zout.close()
-    zin.close()
-    shutil.move(tempname[1], filename)
+Usage: %s STYLES.odt
+""" % sys.argv[0]
 
 
-def main():
-    args = sys.argv[1:]
-    if len(args) != 1 or args[0] in ('-h', '--help'):
-        print(__doc__, file=sys.stderr)
-        print("Usage: %s STYLE_FILE.odt\n" % sys.argv[0], file=sys.stderr)
-        sys.exit(1)
-    filename = args[0]
-    prepstyle(filename)
+def _odt_prep_style(filename):
+    with zipfile.ZipFile(filename) as zin:
+        root = etree.fromstring(zin.read("styles.xml"))
+        for el in root.xpath("//style:page-layout-properties",
+                             namespaces=NAMESPACES):
+            for attr in el.attrib:
+                if attr.startswith("{%s}" % NAMESPACES["fo"]):
+                    del el.attrib[attr]
+        styles_updated = etree.tostring(root)
+
+        temp_file = tempfile.NamedTemporaryFile("w")
+        with zipfile.ZipFile(temp_file, "w", zipfile.ZIP_DEFLATED) as zout:
+            for item in zin.infolist():
+                if item.filename == "styles.xml":
+                    zout.writestr(item, styles_updated)
+                else:
+                    zout.writestr(item, zin.read(item.filename))
+    shutil.move(temp_file.name, filename)
 
 
-if __name__ == '__main__':
-    main()
+if len(sys.argv[1:]) != 1 or args[0] in ('-h', '--help'):
+    raise SystemExit(ODT_PREP_STYLES_HELP)
+_odt_prep_style(sys.argv[1])

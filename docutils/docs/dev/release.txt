@@ -38,8 +38,8 @@ Releasing (post 2020)
 
 * Generate universal wheel and source-distribution::
 
-    python3 setup.py sdist
-    python3 setup.py bdist_wheel --universal
+    python3 -m pip install build
+    python3 -m build .
 
 * Upload universal wheel and source to test.pypi::
 
@@ -69,8 +69,8 @@ Releasing (post 2020)
 * Update your source directory. 
 * Rebuild universal wheel and source-distribution ::
 
-    python3 setup.py sdist
-    python3 setup.py bdist_wheel --universal
+    python3 -m pip install build
+    python3 -m build .
 
 * Now upload to pypi::
 

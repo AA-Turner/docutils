@@ -144,14 +144,9 @@ We'll assume that the Docutils "trunk" is checked out under the
 
    __ https://pip.pypa.io/en/stable/cli/pip_install/#editable-installs
 
-2. Install in `development mode`__ with setuptools_.
-
-   __ https://setuptools.pypa.io/en/latest/userguide/development_mode.html
-      #development-mode
-      
    .. _install manually:
 
-3. Install "manually".
+2. Install "manually".
 
    Ensure that the "docutils" package is in ``sys.path`` by
    one of the following actions:
@@ -189,35 +184,6 @@ We'll assume that the Docutils "trunk" is checked out under the
 
          ln -s ~/projects/docutils/docutils/tools/docutils-cli.py \
                /usr/local/bin/docutils
-
-5. Reinstall Docutils after any change::
-
-       python3 setup.py install
-
-   .. CAUTION::
-
-      This method is **not** recommended for day-to-day development;
-      it's too easy to forget.  Confusion inevitably ensues.
-
-      If you install Docutils this way, Python will always pick up the
-      last-installed copy of the code.  If you ever forget to
-      reinstall the "docutils" package, Python won't see your latest
-      changes.
-
-A useful addition to the ``docutils`` top-level directory in branches
-and alternate copies of the code is a ``set-PATHS`` file
-containing the following lines::
-
-    # source this file
-    export PYTHONPATH=$PWD:$PWD
-    export PATH=$PWD/tools:$PATH
-
-Open a shell for this branch, ``cd`` to the ``docutils`` top-level
-directory, and "source" this file.  For example, using the bash
-shell::
-
-    $ cd some-branch/docutils
-    $ . set-PATHS
 
 .. _pip: https://pypi.org/project/pip/
 .. _setuptools: https://pypi.org/project/setuptools/

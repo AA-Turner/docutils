@@ -18,6 +18,9 @@ Changes Since 0.18.1
 
   - Dropped support for Python 2.7, 3.5, and 3.6. and removed compatibility
     hacks from code and tests.
+  - Updated build stystem to use Flit_. Patch by Adam Turner.
+
+  .. _Flit: https://github.com/pypa/flit/
 
 * docutils/parsers/__init__.py
 
