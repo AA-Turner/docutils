@@ -211,15 +211,12 @@ Directory Structure
 
     - ``some_test.py``, for example.
 
-    - ``_default.py``, the `default configuration file`_.
-
 
 The Testing Process
 -------------------
 
 When running ``test_functional.py``, all config files in
-``functional/tests/`` are processed.  (Config files whose names begin
-with an underscore are ignored.)  The current working directory is
+``functional/tests/`` are processed.  The current working directory is
 always Docutils' main test directory (``test/``).
 
 For example, ``functional/tests/some_test.py`` could read like this::
@@ -290,14 +287,3 @@ commit the change.
    .. note: the ``--dtdvalid`` and ``--nonet`` options did not help override
      a reference to the PUBLIC "docutils.dtd" if there is a local version
      on the system (e.g. /usr/share/xml/docutils/docutils.dtd in Debian).
-
-
-.. _default configuration file:
-
-The Default Configuration File
-------------------------------
-
-The file ``functional/tests/_default.py`` contains default settings.
-It is executed just before the actual configuration files, which has
-the same effect as if the contents of ``_default.py`` were prepended
-to every configuration file.

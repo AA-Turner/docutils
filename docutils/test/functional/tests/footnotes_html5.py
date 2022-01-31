@@ -1,6 +1,23 @@
-with open('functional/tests/_standalone_rst_defaults.py',
-          encoding='utf-8') as _f:
-    exec(_f.read())
+settings_overrides = {
+    # disable configuration files
+    '_disable_config': True,
+    # Default settings for all tests.
+    'report_level': 2,
+    'halt_level': 5,
+    'warning_stream': False,
+    'input_encoding': 'utf-8',
+    'embed_stylesheet': False,
+    'auto_id_prefix': '%',
+    # avoid "Pygments not found"
+    'syntax_highlight': 'none'
+}
+# Keyword parameters passed to publish_file.
+reader_name = "standalone"
+parser_name = "rst"
+
+# Settings.
+settings_overrides['sectsubtitle_xform'] = True
+settings_overrides['syntax_highlight'] = 'none'
 
 # Source and destination file names.
 test_source = "footnotes.txt"
