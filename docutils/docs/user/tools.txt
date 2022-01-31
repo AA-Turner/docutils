@@ -524,33 +524,6 @@ External attributes for all elements are output, and internal
 attributes for any leftover "pending" elements are also given.
 
 
-quicktest.py
-------------
-
-:Reader: N/A
-:Parser: reStructuredText
-:Writer: N/A
-
-The ``quicktest.py`` tool is used for testing the reStructuredText
-parser.  It does not use a Docutils Reader or Writer or the standard
-Docutils command-line options.  Rather, it does its own I/O and calls
-the parser directly.  No transforms are applied to the parsed
-document.  Possible output forms output include:
-
---pretty  Pretty-printed pseudo-XML (default)
-
---test    Test data (Python list of input and pseudo-XML output strings;
-          useful for creating new test cases)
---xml     Pretty-printed native XML
---rawxml  Raw native XML (with or without a stylesheet reference)
---help    Usage hint and complete list of supported options.
-
-.. Caution:: ``quicktest.py`` uses Python's default encoding.
-   Input and output encoding depend on UTF-8 mode,
-   Python version, locale setting, and operating system
-   (cf. :PEP:`540`, :PEP:`538`, :PEP:`597`, and :PEP:`686`).
-
-
 ---------------
  Customization
 ---------------

@@ -146,6 +146,11 @@ Release 0.19 (2022-07-05)
 
   - Options ``-h`` and ``--help`` print short usage message.
 
+* tools/quicktest.py
+
+  - Removed in favour of ``docutils-cli``. ``quicktest.py`` had not been
+    substantively changed since 2006.
+
 
 Release 0.18.1 (2021-11-23)
 ===========================

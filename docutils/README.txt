@@ -154,9 +154,9 @@ Installation
     See also OS-specific installation instructions below.
 
   Optional steps:
-  
+
   * `Running the test suite`_
-  
+
   * `Converting the documentation`_
 
 * For installing "by hand" or in "development mode", see the
@@ -357,7 +357,7 @@ If any of the tests fail, please `open a bug report`_ or `send an email`_
 (see `Bugs <BUGS.html>`_).
 Please include all relevant output, information about your operating
 system, Python version, and Docutils version.  To see the Docutils
-version, look at the test output or use one of the `front-end scripts`_ 
+version, look at the test output or use one of the `front-end scripts`_
 with the ``--version`` option, e.g.::
 
     docutils --version
