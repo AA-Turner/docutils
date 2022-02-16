@@ -84,7 +84,7 @@ if TYPE_CHECKING:
 
 __docformat__ = 'reStructuredText'
 
-__version__ = '0.22b.dev'
+__version__ = '0.22b.dev0'
 """Docutils version identifier (complies with PEP 440)::
 
     major.minor[.micro][releaselevel[serial]][.dev]
@@ -93,12 +93,6 @@ For version comparison operations, use `__version_info__` (see, below)
 rather than parsing the text of `__version__`.
 
 https://docutils.sourceforge.io/docs/dev/policies.html#version-identification
-"""
-
-__version_details__ = ''
-"""Optional extra version details (e.g. 'snapshot 2005-05-29, r3410').
-
-For development and release status, use `__version__ and `__version_info__`.
 """
 
 
