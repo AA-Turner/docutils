@@ -518,36 +518,8 @@ Docutils has a large user base and a wide range of use cases. Clearly defining
 how we will balance evolution with stability is important to both users and
 project developers.
 
-Users of the Docutils project include:
-
-.. Specification
-
-#. Authors writing reStructuredText documents, who implicitly rely on the
-   `reStructuredText specification`_.
-
-#. Re-implementers of the `reStructuredText specification`_, such as PanDoc_.
-
-.. Front-end
-
-#. Users of the `front-end tools`_
-
-.. Library (programmatic API)
-
-#. Users of downstream tools that use Docutils as a library, for example
-   Sphinx_.
-
-#. Users of tools that provide additional components for Docutils, for example
-   MyST_, PyCMark_, recommonmark_, etc.
-
-#. Developers of tools using Docutils, and developers of Docutils itself.
-
 .. _reStructuredText specification: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
-.. _PanDoc: https://pandoc.org/
 .. _front-end tools: https://docutils.sourceforge.io/docs/user/tools.html
-.. _Sphinx: https://www.sphinx-doc.org/
-.. _MyST: https://myst-parser.readthedocs.io/
-.. _PyCMark: https://github.com/pycmark/pycmark
-.. _recommonmark: https://recommonmark.readthedocs.io/
 
 Extent of the public API
 ------------------------
@@ -560,15 +532,15 @@ Docutils public APIs are:
 
 * the XML Document Type Definition (DTD)
 
-* the Docutils writer templates
+* the Docutils output templates [#templates]_ and style sheets [#stylesheets]_
 
 * behaviour and names of all items included in the ``__public__`` attribute of
   their parent objects. Such items can be modules, classes, module level
   functions, module level variables, etc.
 
-Python objects and variables can explicitly "opt-out" of the public API with a
-docstring noting that the object is provisional, and subject to change in any
-future release of Docutils.
+Any of the above can explicitly "opt-out" of the public API with a
+docstring or introductory comment noting that the item is provisional,
+and subject to change in any future release of Docutils.
 
 Where a name is not listed in the ``__public__`` variable, the following rule
 applies:
@@ -577,6 +549,10 @@ applies:
     explicitly declares them to be provisional or internal interfaces exempt
     from the usual backwards compatibility guarantees. All undocumented
     interfaces should be assumed to be internal.
+
+.. [#templates] template.txt, default.tex, titlepage.tex, xelatex.tex
+.. [#stylesheets] html4css1.css, minimal.css, docutils.sty (LaTeX), styles.odt
+
 
 Deprecation periods
 -------------------
