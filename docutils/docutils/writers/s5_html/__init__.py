@@ -34,51 +34,67 @@ def find_theme(name):
 
 class Writer(html4css1.Writer):
 
-    settings_spec = html4css1.Writer.settings_spec + (
-        'S5 Slideshow Specific Options',
-        'For the S5/HTML writer, the --no-toc-backlinks option '
-        '(defined in General Docutils Options above) is the default, '
-        'and should not be changed.',
-        (('Specify an installed S5 theme by name.  Overrides --theme-url.  '
-          'The default theme name is "default".  The theme files will be '
-          'copied into a "ui/<theme>" directory, in the same directory as the '
-          'destination file (output HTML).  Note that existing theme files '
-          'will not be overwritten (unless --overwrite-theme-files is used).',
-          ['--theme'],
-          {'default': 'default', 'metavar': '<name>',
-           'overrides': 'theme_url'}),
-         ('Specify an S5 theme URL.  The destination file (output HTML) will '
-          'link to this theme; nothing will be copied.  Overrides --theme.',
-          ['--theme-url'],
-          {'metavar': '<URL>', 'overrides': 'theme'}),
-         ('Allow existing theme files in the ``ui/<theme>`` directory to be '
-          'overwritten.  The default is not to overwrite theme files.',
-          ['--overwrite-theme-files'],
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         ('Keep existing theme files in the ``ui/<theme>`` directory; do not '
-          'overwrite any.  This is the default.',
-          ['--keep-theme-files'],
-          {'dest': 'overwrite_theme_files', 'action': 'store_false'}),
-         ('Set the initial view mode to "slideshow" [default] or "outline".',
-          ['--view-mode'],
-          {'choices': ['slideshow', 'outline'], 'default': 'slideshow',
-           'metavar': '<mode>'}),
-         ('Normally hide the presentation controls in slideshow mode. '
-          'This is the default.',
-          ['--hidden-controls'],
-          {'action': 'store_true', 'default': True,
-           'validator': frontend.validate_boolean}),
-         ('Always show the presentation controls in slideshow mode.  '
-          'The default is to hide the controls.',
-          ['--visible-controls'],
-          {'dest': 'hidden_controls', 'action': 'store_false'}),
-         ('Enable the current slide indicator ("1 / 15").  '
-          'The default is to disable it.',
-          ['--current-slide'],
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         ('Disable the current slide indicator.  This is the default.',
-          ['--no-current-slide'],
-          {'dest': 'current_slide', 'action': 'store_false'}),))
+    arguments_spec = html4css1.Writer.arguments_spec + (
+        {"title": "S5 Slideshow Specific Options",
+         "description": "For the S5/HTML writer, the --no-toc-backlinks option "
+                        "(defined in General Docutils Options above) is the "
+                        "default, and should not be changed.",
+         "arguments": (
+             {"flags": ("--theme",),
+              "help": 'Specify an installed S5 theme by name.  Overrides --theme-url.  '
+                      'The default theme name is "default".  The theme files will be '
+                      'copied into a "ui/<theme>" directory, in the same directory as the '
+                      'destination file (output HTML).  Note that existing theme files '
+                      'will not be overwritten (unless --overwrite-theme-files is used).',
+              "dest": "theme",
+              "default": "default",
+              "metavar": "<name>",
+              "overrides": "theme_url"},
+             {"flags": ("--theme-url",),
+              "help": 'Specify an S5 theme URL.  The destination file (output HTML) will '
+                      'link to this theme; nothing will be copied.  Overrides --theme.',
+              "dest": "theme_url",
+              "default": None,
+              "metavar": "<name>",
+              "overrides": "theme"},
+             {"flags": ("--overwrite-theme-files",),
+              "help": 'Allow existing theme files in the ``ui/<theme>`` directory to be '
+                      'overwritten.  The default is not to overwrite theme files.',
+              "dest": "overwrite_theme_files",
+              "default": None,
+              "action": "store_true"},
+             {"flags": ("--keep-theme-files",),
+              "help": 'Keep existing theme files in the ``ui/<theme>`` directory; do not '
+                      'overwrite any.  This is the default.',
+              "dest": "overwrite_theme_files",
+              "default": None,
+              "action": "store_false"},
+             {"flags": ("--view-mode",),
+              "help": 'Set the initial view mode to "slideshow" [default] or "outline".',
+              "dest": "view_mode",
+              "default": "slideshow",
+              "choices": ('slideshow', 'outline'),
+              "metavar": "<mode>"},
+             {"flags": ("--hidden-controls",),
+              "help": 'Normally hide the presentation controls in slideshow mode. '
+                      'This is the default.',
+              "dest": "hidden_controls",
+              "default": True,
+              "action": "store_true"},
+             {"flags": ("--visible-controls",),
+              "help": 'Always show the presentation controls in slideshow mode.  '
+                      'The default is to hide the controls.',
+              "dest": "hidden_controls",
+              "default": True,
+              "action": "store_false"},
+             {"flags": ("--current-slide",),
+              "help": 'Enable the current slide indicator ("1 / 15").  '
+                      'The default is to disable it.',
+              "dest": "current_slide",
+              "default": None,
+              "action": frontend._BooleanOptionalAction},
+         )},
+    )
 
     settings_default_overrides = {'toc_backlinks': 0}
 

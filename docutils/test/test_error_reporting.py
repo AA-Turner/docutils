@@ -233,8 +233,7 @@ class ErrorReportingTests(unittest.TestCase):
     parser = parsers.rst.Parser()
     """Parser shared by all ParserTestCases."""
 
-    option_parser = frontend.OptionParser(components=(parsers.rst.Parser,))
-    settings = option_parser.get_default_values()
+    settings = frontend.get_default_settings(parsers.rst.Parser)
     settings.report_level = 1
     settings.halt_level = 1
     settings.warning_stream = ''

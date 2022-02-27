@@ -21,29 +21,31 @@ class Reader(readers.Reader):
     document = None
     """A single document tree."""
 
-    settings_spec = (
-        'Standalone Reader Options',
-        None,
-        (('Disable the promotion of a lone top-level section title to '
-          'document title (and subsequent section title to document '
-          'subtitle promotion; enabled by default).',
-          ['--no-doc-title'],
-          {'dest': 'doctitle_xform', 'action': 'store_false', 'default': 1,
-           'validator': frontend.validate_boolean}),
-         ('Disable the bibliographic field list transform (enabled by '
-          'default).',
-          ['--no-doc-info'],
-          {'dest': 'docinfo_xform', 'action': 'store_false', 'default': 1,
-           'validator': frontend.validate_boolean}),
-         ('Activate the promotion of lone subsection titles to '
-          'section subtitles (disabled by default).',
-          ['--section-subtitles'],
-          {'dest': 'sectsubtitle_xform', 'action': 'store_true', 'default': 0,
-           'validator': frontend.validate_boolean}),
-         ('Deactivate the promotion of lone subsection titles.',
-          ['--no-section-subtitles'],
-          {'dest': 'sectsubtitle_xform', 'action': 'store_false'}),
-         ))
+    arguments_spec = (
+        {"title": "Standalone Reader Options",
+         "description": None,
+         "arguments": (
+             {"flags": ("--no-doc-title",),
+              "help": "Disable the promotion of a lone top-level section title "
+                      "to document title (and subsequent section title to "
+                      "document subtitle promotion; enabled by default).",
+              "dest": "doctitle_xform",
+              "default": True,
+              "action": "store_true"},
+             {"flags": ("--no-doc-info",),
+              "help": "Disable the bibliographic field list transform (enabled "
+                      "by default).",
+              "dest": "docinfo_xform",
+              "default": True,
+              "action": "store_false"},
+             {"flags": ("--section-subtitles",),
+              "help": "Activate the promotion of lone subsection titles to "
+                      "section subtitles (disabled by default).",
+              "dest": "sectsubtitle_xform",
+              "default": False,
+              "action": frontend._BooleanOptionalAction},
+         )},
+    )
 
     config_section = 'standalone reader'
     config_section_dependencies = ('readers',)

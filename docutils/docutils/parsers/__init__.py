@@ -14,33 +14,28 @@ from docutils import Component, frontend
 
 
 class Parser(Component):
-    settings_spec = (
-        'Generic Parser Options',
-        None,
-        (('Disable directives that insert the contents of an external file; '
-          'replaced with a "warning" system message.',
-          ['--no-file-insertion'],
-          {'action': 'store_false', 'default': 1,
-           'dest': 'file_insertion_enabled',
-           'validator': frontend.validate_boolean}),
-         ('Enable directives that insert the contents '
-          'of an external file. (default)',
-          ['--file-insertion-enabled'],
-          {'action': 'store_true'}),
-         ('Disable the "raw" directive; '
-          'replaced with a "warning" system message.',
-          ['--no-raw'],
-          {'action': 'store_false', 'default': 1, 'dest': 'raw_enabled',
-           'validator': frontend.validate_boolean}),
-         ('Enable the "raw" directive. (default)',
-          ['--raw-enabled'],
-          {'action': 'store_true'}),
-         ('Maximal number of characters in an input line. Default 10 000.',
-          ['--line-length-limit'],
-          {'metavar': '<length>', 'type': 'int', 'default': 10000,
-           'validator': frontend.validate_nonnegative_int}),
-         )
-        )
+    arguments_spec = (
+        {"title": "Generic Parser Options",
+         "description": None,
+         "arguments": (
+             {'flags': ('--file-insertion-enabled',),
+              "dest": "file_insertion_enabled",
+              "default": True,
+              'help': 'Enable directives that insert the contents of an external file. (default)',
+              'action': frontend._BooleanOptionalAction},
+             {'flags': ('--raw-enabled',),
+              "dest": "raw_enabled",
+              "default": True,
+              'help': 'Enable the "raw" directive. (default)',
+              'action': frontend._BooleanOptionalAction},
+             {'flags': ('--line-length-limit',),
+              "dest": "line_length_limit",
+              "default": 10_000,
+              'metavar': '<length>',
+              'type': frontend.validate_nonnegative_int,
+              'help': 'Maximal number of characters in an input line. Default 10 000.'}
+         )},
+    )
     component_type = 'parser'
     config_section = 'parsers'
 

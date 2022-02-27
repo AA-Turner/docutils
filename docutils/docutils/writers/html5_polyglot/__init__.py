@@ -44,66 +44,78 @@ class Writer(writers._html_base.Writer):
     default_template = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'template.txt')
 
-    # use a copy of the parent spec with some modifications
-    settings_spec = frontend.filter_settings_spec(
-        writers._html_base.Writer.settings_spec,
-        template =
-        ('Template file. (UTF-8 encoded, default: "%s")' % default_template,
-         ['--template'],
-         {'default': default_template, 'metavar': '<file>'}),
-        stylesheet_path =
-        ('Comma separated list of stylesheet paths. '
-         'Relative paths are expanded if a matching file is found in '
-         'the --stylesheet-dirs. With --link-stylesheet, '
-         'the path is rewritten relative to the output HTML file. '
-         '(default: "%s")' % ','.join(default_stylesheets),
-         ['--stylesheet-path'],
-         {'metavar': '<file[,file,...]>', 'overrides': 'stylesheet',
-          'validator': frontend.validate_comma_separated_list,
-          'default': default_stylesheets}),
-        stylesheet_dirs =
-        ('Comma-separated list of directories where stylesheets are found. '
-         'Used by --stylesheet-path when expanding relative path arguments. '
-         '(default: "%s")' % ','.join(default_stylesheet_dirs),
-         ['--stylesheet-dirs'],
-         {'metavar': '<dir[,dir,...]>',
-          'validator': frontend.validate_comma_separated_list,
-          'default': default_stylesheet_dirs}),
-        initial_header_level =
-        ('Specify the initial header level. Does not affect document '
-         'title & subtitle (see --no-doc-title). (default: 2 for "<h2>")',
-         ['--initial-header-level'],
-         {'choices': '1 2 3 4 5 6'.split(), 'default': '2',
-          'metavar': '<level>'}),
-        no_xml_declaration =
-        ('Omit the XML declaration.',
-         ['--no-xml-declaration'],
-         {'dest': 'xml_declaration', 'action': 'store_false'}),
+    arguments_spec = frontend.filter_arguments_spec(
+        writers._html_base.Writer.arguments_spec,
+        # update specs with changed defaults or help string
+        replace={
+            'template': {
+                "flags": ("--template",),
+                "help": 'Template file. (UTF-8 encoded, default: "%s")' % default_template,
+                "dest": "template",
+                "default": default_template,
+                'metavar': '<file>'},
+            'stylesheet_path': {
+                "flags": ("--stylesheet-path",),
+                "help": 'Comma separated list of stylesheet paths. '
+                        'Relative paths are expanded if a matching file is found in '
+                        'the --stylesheet-dirs. With --link-stylesheet, '
+                        'the path is rewritten relative to the output HTML file. '
+                        '(default: "%s")' % ','.join(default_stylesheets),
+                "dest": "stylesheet_path",
+                "default": default_stylesheets,
+                'metavar': '<file[,file,...]>',
+                'overrides': 'stylesheet',
+                'type': frontend.validate_comma_separated_list},
+            'stylesheet_dirs': {
+                "flags": ("--stylesheet-dirs",),
+                "help": 'Comma-separated list of directories where stylesheets are found. '
+                        'Used by --stylesheet-path when expanding relative path arguments. '
+                        '(default: "%s")' % ','.join(default_stylesheet_dirs),
+                "dest": "stylesheet_dirs",
+                "default": default_stylesheet_dirs,
+                'metavar': '<dir[,dir,...]>',
+                'type': frontend.validate_comma_separated_list},
+            'initial_header_level': {
+                "flags": ("--initial-header-level",),
+                "help": 'Specify the initial header level. Does not affect document '
+                        'title & subtitle (see --no-doc-title). (default: 2 for "<h2>")',
+                "dest": "initial_header_level",
+                "default": "2",
+                'choices': ('1', '2', '3', '4', '5', '6'),
+                'metavar': '<level>'},
+            'no_xml_declaration': {
+                "flags": ("--no-xml-declaration",),
+                "help": "Omit the XML declaration.",
+                "dest": "xml_declaration",
+                "default": True,
+                'action': 'store_false'},
+    }
     )
-    settings_spec = settings_spec + (
-        'HTML5 Writer Options',
-        '',
-        ((frontend.SUPPRESS_HELP, # Obsoleted by "--image-loading"
-          ['--embed-images'],
-          {'action': 'store_true',
-           'validator': frontend.validate_boolean}),
-         (frontend.SUPPRESS_HELP, # Obsoleted by "--image-loading"
-          ['--link-images'],
-          {'dest': 'embed_images', 'action': 'store_false'}),
-         ('Suggest at which point images should be loaded: '
-          '"embed", "link" (default), or "lazy".',
-          ['--image-loading'],
-          {'choices': ('embed', 'link', 'lazy'),
-           # 'default': 'link' # default set in _html_base.py
-           }),
-         ('Append a self-link to section headings.',
-          ['--section-self-link'],
-          {'default': 0, 'action': 'store_true'}),
-         ('Do not append a self-link to section headings. (default)',
-          ['--no-section-self-link'],
-          {'dest': 'section_self_link', 'action': 'store_false'}),
-         )
-        )
+    arguments_spec = arguments_spec + (
+        {'title': 'HTML5 Writer Options',
+         'description': '',
+         'arguments': (
+             {'flags': ('--embed-images',),
+              'help': None,  # Obsoleted by "--image-loading"
+              "dest": "embed_images",
+              "default": None,
+              'action': 'store_true'},
+             {'flags': ('--link-images',),
+              'help': None,  # Obsoleted by "--image-loading"
+              "dest": "embed_images",
+              'action': 'store_false'},
+             {'flags': ('--image-loading',),
+              'help': 'Suggest at which point images should be loaded: "embed", "link" (default), or "lazy".',
+              "dest": "image_loading",
+              "default": None,
+              'choices': ('embed', 'link', 'lazy')},
+             {'flags': ('--section-self-link',),
+              'help': 'Append a self-link to section headings.',
+              "dest": "section_self_link",
+              "default": False,
+              'action': frontend._BooleanOptionalAction},
+         )},
+    )
 
     config_section = 'html5 writer'
 

@@ -58,11 +58,13 @@ class Decorations(Transform):
         # See https://sourceforge.net/p/docutils/patches/132/
         # and https://reproducible-builds.org/specs/source-date-epoch/
         settings = self.document.settings
-        if (settings.generator or settings.datestamp
-            or settings.source_link or settings.source_url):
+        if (settings.generator
+            or settings.datestamp
+            or settings.source_link
+            or (settings.source_url and settings.source_link is not False)):
             text = []
             if (settings.source_link and settings._source
-                or settings.source_url):
+                or (settings.source_url and settings.source_link is not False)):
                 if settings.source_url:
                     source = settings.source_url
                 else:

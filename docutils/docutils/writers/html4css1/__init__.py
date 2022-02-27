@@ -37,62 +37,71 @@ class Writer(writers._html_base.Writer):
     default_template = os.path.join(
         os.path.dirname(os.path.abspath(__file__)), 'template.txt')
 
-    # use a copy of the parent spec with some modifications
-    settings_spec = frontend.filter_settings_spec(
-        writers._html_base.Writer.settings_spec,
-        template =
-        ('Template file. (UTF-8 encoded, default: "%s")' % default_template,
-         ['--template'],
-         {'default': default_template, 'metavar': '<file>'}),
-        stylesheet_path =
-        ('Comma separated list of stylesheet paths. '
-         'Relative paths are expanded if a matching file is found in '
-         'the --stylesheet-dirs. With --link-stylesheet, '
-         'the path is rewritten relative to the output HTML file. '
-         '(default: "%s")' % ','.join(default_stylesheets),
-         ['--stylesheet-path'],
-         {'metavar': '<file[,file,...]>', 'overrides': 'stylesheet',
-          'validator': frontend.validate_comma_separated_list,
-          'default': default_stylesheets}),
-        stylesheet_dirs =
-        ('Comma-separated list of directories where stylesheets are found. '
-         'Used by --stylesheet-path when expanding relative path arguments. '
-         '(default: "%s")' % ','.join(default_stylesheet_dirs),
-         ['--stylesheet-dirs'],
-         {'metavar': '<dir[,dir,...]>',
-          'validator': frontend.validate_comma_separated_list,
-          'default': default_stylesheet_dirs}),
-        initial_header_level =
-        ('Specify the initial header level. Does not affect document '
-         'title & subtitle (see --no-doc-title). (default: 1 for "<h1>")',
-         ['--initial-header-level'],
-         {'choices': '1 2 3 4 5 6'.split(), 'default': '1',
-          'metavar': '<level>'}),
-        xml_declaration =
-        ('Prepend an XML declaration (default). ',
-         ['--xml-declaration'],
-         {'default': True, 'action': 'store_true',
-          'validator': frontend.validate_boolean}),
+    arguments_spec = frontend.filter_arguments_spec(
+        writers._html_base.Writer.arguments_spec,
+        # update specs with changed defaults or help string
+        replace={
+            "template": {
+                "flags": ('--template',),
+                "help": f'Template file. (UTF-8 encoded, default: "{default_template}")',
+                "dest": "template",
+                "default": default_template,
+                'metavar': '<file>'},
+            "stylesheet_path": {
+                "flags": ('--stylesheet-path',),
+                "help": 'Comma separated list of stylesheet paths. '
+                        'Relative paths are expanded if a matching file is found in '
+                        'the --stylesheet-dirs. With --link-stylesheet, '
+                        'the path is rewritten relative to the output HTML file. '
+                        '(default: "%s")' % ','.join(default_stylesheets),
+                "dest": "stylesheet_path",
+                "default": default_stylesheets,
+                'metavar': '<file[,file,...]>',
+                'overrides': 'stylesheet',
+                'type': frontend.validate_comma_separated_list},
+            "stylesheet_dirs": {
+                "flags": ('--stylesheet-dirs',),
+                "help": 'Comma-separated list of directories where stylesheets are found. '
+                        'Used by --stylesheet-path when expanding relative path arguments. '
+                        '(default: "%s")' % ','.join(default_stylesheet_dirs),
+                "dest": "stylesheet_dirs",
+                "default": default_stylesheet_dirs,
+                'metavar': '<dir[,dir,...]>',
+                'type': frontend.validate_comma_separated_list},
+            "initial_header_level": {
+                "flags": ('--initial-header-level',),
+                "help": 'Specify the initial header level. Does not affect document '
+                        'title & subtitle (see --no-doc-title). (default: 1 for "<h1>")',
+                "dest": "initial_header_level",
+                "default": "1",
+                "choices": ('1', '2', '3', '4', '5', '6'),
+                'metavar': '<level>'},
+            "xml_declaration": {
+                "flags": ('--xml-declaration',),
+                "help": 'Prepend an XML declaration (default). ',
+                "dest": "xml_declaration",
+                "default": True,
+                'action': 'store_true'},
+        }
     )
-    settings_spec = settings_spec + (
-        'HTML4 Writer Options',
-        '',
-        (('Specify the maximum width (in characters) for one-column field '
-          'names.  Longer field names will span an entire row of the table '
-          'used to render the field list.  Default is 14 characters.  '
-          'Use 0 for "no limit".',
-          ['--field-name-limit'],
-          {'default': 14, 'metavar': '<level>',
-           'validator': frontend.validate_nonnegative_int}),
-         ('Specify the maximum width (in characters) for options in option '
-          'lists.  Longer options will span an entire row of the table used '
-          'to render the option list.  Default is 14 characters.  '
-          'Use 0 for "no limit".',
-          ['--option-limit'],
-          {'default': 14, 'metavar': '<level>',
-           'validator': frontend.validate_nonnegative_int}),
-         )
-        )
+    arguments_spec = arguments_spec + (
+        {'title': 'HTML4 Writer Options',
+         'description': '',
+         'arguments': (
+             {'flags': ('--field-name-limit',),
+              'help': 'Specify the maximum width (in characters) for one-column field names.  Longer field names will span an entire row of the table used to render the field list.  Default is 14 characters.  Use 0 for "no limit".',
+              "dest": "field_name_limit",
+              "default": 14,
+              'metavar': '<level>',
+              'type': frontend.validate_nonnegative_int},
+             {'flags': ('--option-limit',),
+              'help': 'Specify the maximum width (in characters) for options in option lists.  Longer options will span an entire row of the table used to render the option list.  Default is 14 characters.  Use 0 for "no limit".',
+              "dest": "option_limit",
+              "default": 14,
+              'metavar': '<level>',
+              'type': frontend.validate_nonnegative_int}
+         )},
+    )
 
     config_section = 'html4css1 writer'
 

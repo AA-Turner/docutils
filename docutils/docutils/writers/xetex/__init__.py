@@ -46,20 +46,25 @@ class Writer(latex2e.Writer):
     config_section_dependencies = ('writers', 'latex writers',
                                    'latex2e writer')
 
-    # use a copy of the parent spec with some modifications:
-    settings_spec = frontend.filter_settings_spec(
-        latex2e.Writer.settings_spec,
-        # removed settings
-        'font_encoding',
+    arguments_spec = frontend.filter_arguments_spec(
+        latex2e.Writer.arguments_spec,
+        exclude=['font_encoding'],  # removed settings
         # changed settings:
-        template=('Template file. Default: "%s".' % default_template,
-                  ['--template'],
-                  {'default': default_template, 'metavar': '<file>'}),
-        latex_preamble=('Customization by LaTeX code in the preamble. '
+        replace={
+            'template': {
+                "flags": ("--template",),
+                "help": f'Template file. Default: "{default_template}".',
+                "dest": "template",
+                "default": default_template,
+                'metavar': '<file>'},
+            'latex_preamble': {
+                "flags": ("--latex-preamble",),
+                "help": 'Customization by LaTeX code in the preamble. '
                         'Default: select "Linux Libertine" fonts.',
-                        ['--latex-preamble'],
-                        {'default': default_preamble}),
-        )
+                "dest": "latex_preamble",
+                "default": default_preamble}
+        }
+    )
 
     def __init__(self):
         latex2e.Writer.__init__(self)

@@ -30,22 +30,32 @@ class Writer(html4css1.Writer):
         os.path.join(os.getcwd(), 'dummy'),
         os.path.join(os.path.dirname(__file__), default_template))
 
-    settings_spec = html4css1.Writer.settings_spec + (
-        'PEP/HTML Writer Options',
-        'For the PEP/HTML writer, the default value for the --stylesheet-path '
-        'option is "%s", and the default value for --template is "%s". '
-        'See HTML Writer Options above.'
-        % (default_stylesheet_path, default_template_path),
-        (('Python\'s home URL.  Default is "https://www.python.org".',
-          ['--python-home'],
-          {'default': 'https://www.python.org', 'metavar': '<URL>'}),
-         ('Home URL prefix for PEPs.  Default is "." (current directory).',
-          ['--pep-home'],
-          {'default': '.', 'metavar': '<URL>'}),
-         # For testing.
-         (frontend.SUPPRESS_HELP,
-          ['--no-random'],
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),))
+    arguments_spec = html4css1.Writer.arguments_spec + (
+        {"title": 'PEP/HTML Writer Options',
+         "description": (
+             "For the PEP/HTML writer, the default value for the "
+             f'--stylesheet-path option is "{default_stylesheet_path}", and '
+             f'the default value for --template is "{default_template_path}". '
+             "See HTML Writer Options above."),
+         "arguments": (
+             {"flags": ("--python-home",),
+              "help": "Python's home URL.  Default is 'https://www.python.org'",
+              "dest": "python_home",
+              "default": "http://www.python.org",
+              "metavar": "<URL>"},
+             {"flags": ("--pep-home",),
+              "help": "Home URL prefix for PEPs.  Default is '.' (current directory).",
+              "dest": "pep_home",
+              "default": ".",
+              "metavar": "<URL>"},
+             # For testing.
+             {"flags": ("--no-random",),
+              "help": None,
+              "dest": "no_random",
+              "default": None,
+              "action": "store_true"},
+         )},
+    )
 
     settings_default_overrides = {'stylesheet_path': default_stylesheet_path,
                                   'template': default_template_path,}

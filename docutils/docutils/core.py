@@ -16,6 +16,8 @@ __docformat__ = 'reStructuredText'
 
 import sys
 import pprint
+import warnings
+
 from docutils import __version__, __version_details__, SettingsSpec
 from docutils import frontend, io, utils, readers, writers
 from docutils.frontend import OptionParser
@@ -97,35 +99,57 @@ class Publisher:
         if self.writer is None:
             self.set_writer(writer_name)
 
+    def get_components(self, settings_spec=None, config_section=''):
+        """Return a tuple of components for this Publisher.
+
+        The default components are the reader, parser, and writer
+
+        ``settings_spec`` is appended if not None.
+
+        If ``config_section`` is given, a SettingsSpec instance specifying
+        the config_section is created and returned. Where ``config section`` is
+        "<some> application", ``config_section_dependencies`` is set to
+        ["applications"].
+        """
+        config_spec = None
+        if config_section:
+            config_spec = SettingsSpec()
+            config_spec.config_section = config_section
+            if config_section.split()[-1:] == 'application':
+                config_spec.config_section_dependencies = ['applications']
+        return tuple(filter(None, (self.parser, self.reader, self.writer,
+                                   settings_spec, config_spec)))
+
     def setup_option_parser(self, usage=None, description=None,
                             settings_spec=None, config_section=None,
                             **defaults):
-        if config_section:
-            if not settings_spec:
-                settings_spec = SettingsSpec()
-            settings_spec.config_section = config_section
-            parts = config_section.split()
-            if len(parts) > 1 and parts[-1] == 'application':
-                settings_spec.config_section_dependencies = ['applications']
+        warnings.warn('Publisher.setup_option_parser is deprecated, '
+                      'and will be removed in Docutils 0.21.',
+                      DeprecationWarning, stacklevel=2)
         #@@@ Add self.source & self.destination to components in future?
-        option_parser = OptionParser(
-            components=(self.parser, self.reader, self.writer, settings_spec),
-            defaults=defaults, read_config_files=True,
-            usage=usage, description=description)
-        return option_parser
+        return OptionParser(
+            components=self.get_components(settings_spec, config_section),
+            defaults=defaults, usage=usage, read_config_files=True,
+            description=description)
 
     def get_settings(self, usage=None, description=None,
                      settings_spec=None, config_section=None, **defaults):
         """
-        Set and return default settings (overrides in `defaults` dict).
+        Set and return default settings (from components and config files).
 
         Set components first (`self.set_reader` & `self.set_writer`).
-        Explicitly setting `self.settings` disables command line option
-        processing from `self.publish()`.
+        Use keyword arguments to override component defaults
+        (before updating from configuration files).
+
+        Calling this function will set `self.settings` and hence
+        disable command line option processing from `self.publish()`.
         """
-        option_parser = self.setup_option_parser(
-            usage, description, settings_spec, config_section, **defaults)
-        self.settings = option_parser.get_default_values()
+        self.settings = OptionParser(
+            self.get_components(settings_spec, config_section),
+            defaults=defaults,
+            read_config_files=True,
+            description=description,
+        ).get_default_values()
         return self.settings
 
     def process_programmatic_settings(self, settings_spec,
@@ -143,18 +167,21 @@ class Publisher:
                              settings_spec=None, config_section=None,
                              **defaults):
         """
-        Set parse command line arguments and set ``self.settings``.
+        Parse command line arguments and set ``self.settings``.
 
         Pass an empty sequence to `argv` to avoid reading `sys.argv`
         (the default behaviour).
 
         Set components first (`self.set_reader` & `self.set_writer`).
         """
-        option_parser = self.setup_option_parser(
-            usage, description, settings_spec, config_section, **defaults)
         if argv is None:
             argv = sys.argv[1:]
-        self.settings = option_parser.parse_args(argv)
+        self.settings = OptionParser(
+            self.get_components(settings_spec, config_section),
+            defaults=defaults,
+            read_config_files=True,
+            description=description,
+        ).parse_args(argv)
 
     def set_io(self, source_path=None, destination_path=None):
         if self.source is None:

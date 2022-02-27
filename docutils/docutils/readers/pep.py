@@ -19,11 +19,12 @@ class Reader(standalone.Reader):
     supported = ('pep',)
     """Contexts this reader supports."""
 
-    settings_spec = (
-        'PEP Reader Option Defaults',
-        'The --pep-references and --rfc-references options (for the '
-        'reStructuredText parser) are on by default.',
-        ())
+    arguments_spec = (
+        {"title": 'PEP Reader Option Defaults',
+         "description": "The --pep-references and --rfc-references options "
+                        "(for the reStructuredText parser) are on by default.",
+         "arguments": ()},
+    )
 
     config_section = 'pep reader'
     config_section_dependencies = ('readers', 'standalone reader')
@@ -37,7 +38,7 @@ class Reader(standalone.Reader):
         transforms.extend([peps.Headers, peps.Contents, peps.TargetNotes])
         return transforms
 
-    settings_default_overrides = {'pep_references': 1, 'rfc_references': 1}
+    settings_default_overrides = {'pep_references': True, 'rfc_references': True}
 
     inliner_class = rst.states.Inliner
 

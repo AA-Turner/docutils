@@ -131,6 +131,17 @@ class ApplicationError(Exception): pass
 class DataError(ApplicationError): pass
 
 
+class _classmethod(classmethod):
+    """Backport of chainable classmethod to Python 3.7 and 3.8."""
+
+    def __get__(self, obj, cls=None):
+        if cls is None:
+            cls = type(obj)
+        if hasattr(type(self.__func__), "__get__"):
+            return self.__func__.__get__(cls, cls)
+        return super().__get__(obj, cls)
+
+
 class SettingsSpec:
 
     """
@@ -144,28 +155,28 @@ class SettingsSpec:
     #   Drop-in components:
     #   Sphinx supplies settings_spec in the current format in some places
     #   Myst parser provides a settings_spec tuple
-    #
-    #   Sphinx reads a settings_spec in order to set a default value
-    #   in writers/html.py:59
-    #   https://github.com/sphinx-doc/sphinx/blob/4.x/sphinx/writers/html.py
-    #   This should be changed (before retiring the old format)
-    #   to use `settings_default_overrides` instead.
-    settings_spec = ()
+    @_classmethod  # replace with normal classmethod once Python 3.8 is dropped
+    @property
+    def settings_spec(cls):
+        from docutils import frontend
+        return frontend._arguments_spec_to_settings_spec(cls.arguments_spec)
+
+    arguments_spec = ()
     """Runtime settings specification.  Override in subclasses.
 
     Defines runtime settings and associated command-line options, as used by
-    `docutils.frontend.OptionParser`.  This is a tuple of:
+    `docutils.frontend.OptionParser`.  This is a sequence of dicts:
 
-    - Option group title (string or `None` which implies no group, just a list
+    - title: Option group title (string or `None` which implies no group, just a list
       of single options).
 
-    - Description (string or `None`).
+    - description: Description (string or `None`).
 
-    - A sequence of option tuples.  Each consists of:
+    - arguments: A sequence of option dicts.  Each consists of:
 
-      - Help text (string)
+      - flags: List of option strings (e.g. ``['-Q', '--quux']``).
 
-      - List of option strings (e.g. ``['-Q', '--quux']``).
+      - help: Help text (string)
 
       - Dictionary of keyword arguments sent to the OptionParser/OptionGroup
         ``add_option`` method.
@@ -174,19 +185,15 @@ class SettingsSpec:
         ('--a-setting' becomes ``settings.a_setting``) or explicitly from the
         'dest' keyword argument.
 
-        Most settings will also have a 'validator' keyword & function.  The
-        validator function validates setting values (from configuration files
-        and command-line option arguments) and converts them to appropriate
-        types.  For example, the ``docutils.frontend.validate_boolean``
-        function, **required by all boolean settings**, converts true values
-        ('1', 'on', 'yes', and 'true') to 1 and false values ('0', 'off',
-        'no', 'false', and '') to 0.  Validators need only be set once per
-        setting.  See the `docutils.frontend.validate_*` functions.
+        Most settings will also have a 'type' keyword & function.  This function
+        validates setting values (from configuration files and command-line
+        option arguments) and converts them to appropriate types.  See the
+        `docutils.frontend.validate_*` functions.
 
-        See the optparse docs for more details.
+        See the argparse docs for more details.
 
-    - More triples of group title, description, options, as many times as
-      needed.  Thus, `settings_spec` tuples can be simply concatenated.
+    - More dicts of group title, description, options, as many times as
+      needed.  Thus, `arguments_spec` tuples can be simply concatenated.
     """
 
     settings_defaults = None

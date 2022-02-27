@@ -439,7 +439,7 @@ def new_document(source_path, settings=None):
     """
     from docutils import frontend
     if settings is None:
-        settings = frontend.OptionParser().get_default_values()
+        settings = frontend.get_default_settings()
     source_path = decode_path(source_path)
     reporter = new_reporter(source_path, settings)
     document = nodes.document(settings, reporter, source=source_path)

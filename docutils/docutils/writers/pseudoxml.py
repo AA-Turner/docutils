@@ -17,14 +17,17 @@ class Writer(writers.Writer):
     supported = ('pprint', 'pformat', 'pseudoxml')
     """Formats this writer supports."""
 
-    settings_spec = (
-        '"Docutils pseudo-XML" Writer Options',
-        None,
-        (('Pretty-print <#text> nodes.',
-          ['--detailed'],
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         )
-        )
+    arguments_spec = (
+        {"title": '"Docutils pseudo-XML" Writer Options',
+         "description": None,
+         "arguments": (
+             {"flags": ("--detailed",),
+              "help": "Pretty-print <#text> nodes.",
+              "dest": "detailed",
+              "default": None,
+              "action": "store_true"},
+         )},
+    )
 
     config_section = 'pseudoxml writer'
     config_section_dependencies = ('writers',)

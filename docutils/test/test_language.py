@@ -21,7 +21,7 @@ import docutils.parsers.rst.languages
 from docutils.parsers.rst import states, directives, roles
 import docutils.utils, docutils.frontend
 
-_settings = docutils.frontend.OptionParser().get_default_values()
+_settings = docutils.frontend.get_default_settings()
 _reporter = docutils.utils.new_reporter('', _settings)
 
 reference_language = 'en'

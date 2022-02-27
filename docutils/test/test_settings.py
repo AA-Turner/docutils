@@ -18,8 +18,7 @@ from docutils import frontend, utils
 from docutils.writers import html4css1, pep_html, html5_polyglot
 from docutils.parsers import rst
 
-def fixpath(path):
-    return os.path.abspath(os.path.join(*(path.split('/'))))
+fixpath = os.path.abspath
 
 class ConfigFileTests(unittest.TestCase):
 
@@ -114,12 +113,19 @@ class ConfigFileTests(unittest.TestCase):
             components=(pep_html.Writer, rst.Parser), read_config_files=None)
 
     def files_settings(self, *names):
-        settings = frontend.Values()
+        settings = {}
         for name in names:
-            cfs = self.option_parser.get_config_file_settings(
-                                                    self.config_files[name])
-            settings.update(cfs, self.option_parser)
-        return settings.__dict__
+            new = frontend.get_config_file_settings(
+                self.option_parser,
+                self.config_files[name],
+                [],
+                self.option_parser.components,
+                self.option_parser._list_args,
+                self.option_parser.relative_path_settings
+            )
+            settings = frontend._merge_with_list_args(
+                settings, new, self.option_parser._list_args)
+        return frontend.Values(**settings).__dict__
 
     def expected_settings(self, *names):
         expected = {}
@@ -210,20 +216,31 @@ class ConfigEnvVarFileTests(ConfigFileTests):
     """
 
     def setUp(self):
-        ConfigFileTests.setUp(self)
+        super().setUp()
         self.orig_environ = os.environ
         os.environ = os.environ.copy()
 
     def files_settings(self, *names):
         files = [self.config_files[name] for name in names]
         os.environ['DOCUTILSCONFIG'] = os.pathsep.join(files)
-        settings = self.option_parser.get_standard_config_settings()
-        return settings.__dict__
+        settings = {}
+        for file in frontend.OptionParser.get_standard_config_files():
+            new = frontend.get_config_file_settings(
+                self.option_parser,
+                file,
+                [],
+                self.option_parser.components,
+                self.option_parser._list_args,
+                self.option_parser.relative_path_settings
+            )
+            settings = frontend._merge_with_list_args(
+                settings, new, self.option_parser._list_args)
+        return frontend.Values(**settings).__dict__
 
     def tearDown(self):
         os.environ = self.orig_environ
 
-    def test_old(self): pass # don't repreat this test
+    def test_old(self): pass  # don't repeat this test
 
     @unittest.skipUnless(
         os.name == 'posix',
@@ -285,8 +302,7 @@ class HelperFunctionsTests(unittest.TestCase):
     def test_validate_boolean(self):
         for t in self.boolean_settings:
             self.assertEqual(
-                frontend.validate_boolean(None, t[0], self.option_parser),
-                t[1])
+                frontend.validate_boolean(t[0]), t[1])
 
     def test_validate_ternary(self):
         tests = (
@@ -295,8 +311,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 )
         for t in self.boolean_settings + tests:
             self.assertEqual(
-                frontend.validate_ternary(None, t[0], self.option_parser),
-                t[1])
+                frontend.validate_ternary(t[0]), t[1])
 
     def test_validate_colon_separated_string_list(self):
         tests = (
@@ -307,8 +322,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 )
         for t in tests:
             self.assertEqual(
-                    frontend.validate_colon_separated_string_list(None, t[0], None),
-                    t[1])
+                    frontend.validate_colon_separated_string_list(t[0]), t[1])
 
     def test_validate_comma_separated_list(self):
         tests = (
@@ -319,8 +333,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 )
         for t in tests:
             self.assertEqual(
-                    frontend.validate_comma_separated_list(None, t[0], None),
-                    t[1])
+                    frontend.validate_comma_separated_list(t[0]), t[1])
 
     def test_validate_url_trailing_slash(self):
         tests = (
@@ -331,8 +344,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 )
         for t in tests:
             self.assertEqual(
-                    frontend.validate_url_trailing_slash(None, t[0], None),
-                    t[1])
+                    frontend.validate_url_trailing_slash(t[0]), t[1])
 
     def test_validate_smartquotes_locales(self):
         tests = (
@@ -343,8 +355,7 @@ class HelperFunctionsTests(unittest.TestCase):
                 )
         for t in tests:
             self.assertEqual(
-                    frontend.validate_smartquotes_locales(None, t[0], None),
-                    t[1])
+                    frontend.validate_smartquotes_locales(t[0]), t[1])
 
     def test_set_conditions_deprecation_warning(self):
         reporter = utils.Reporter('test', 1, 4)

@@ -26,23 +26,32 @@ class Writer(writers.Writer):
     supported = ('xml',)
     """Formats this writer supports."""
 
-    settings_spec = (
-        '"Docutils XML" Writer Options',
-        None,
-        (('Generate XML with newlines before and after tags.',
-          ['--newlines'],
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         ('Generate XML with indents and newlines.',
-          ['--indents'], #@ TODO use integer value for number of spaces?
-          {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         ('Omit the XML declaration.  Use with caution.',
-          ['--no-xml-declaration'],
-          {'dest': 'xml_declaration', 'default': 1, 'action': 'store_false',
-           'validator': frontend.validate_boolean}),
-         ('Omit the DOCTYPE declaration.',
-          ['--no-doctype'],
-          {'dest': 'doctype_declaration', 'default': 1,
-           'action': 'store_false', 'validator': frontend.validate_boolean}),))
+    arguments_spec = (
+        {"title": '"Docutils XML" Writer Options',
+         "description": None,
+         "arguments": (
+             {"flags": ("--newlines",),
+              "help": "Generate XML with newlines before and after tags.",
+              "dest": "newlines",
+              "default": None,
+              "action": "store_true"},
+             {"flags": ("--indents",),  #@ TODO use integer value for number of spaces?
+              "help": "Generate XML with indents and newlines.",
+              "dest": "indents",
+              "default": None,
+              "action": "store_true"},
+             {"flags": ("--no-xml-declaration",),
+              "help": "Omit the XML declaration.  Use with caution.",
+              "dest": "xml_declaration",
+              "default": True,
+              "action": "store_false"},
+             {"flags": ("--no-doctype",),
+              "help": "Omit the DOCTYPE declaration.",
+              "dest": "doctype_declaration",
+              "default": True,
+              "action": "store_false"},
+         )},
+    )
 
     settings_defaults = {'output_encoding_error_handler': 'xmlcharrefreplace'}
 
