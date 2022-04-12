@@ -48,13 +48,13 @@ class VersionInfoTests(unittest.TestCase):
 
     def test_VersionInfo_value_check(self):
         # releaselevel must be one of ('alpha', 'beta', 'candidate', 'final')
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             VersionInfo(0, 1, 0, 'gamma')
         # releaselevel 'final' must not be used with development versions
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             VersionInfo(0, 1, releaselevel='final', release=False)
         # "serial" must be 0 for final releases'
-        with self.assertRaises(ValueError):
+        with self.assertRaises(TypeError):
             VersionInfo(0, 1, releaselevel='final', serial=1)
 
     def test__version_info__(self):
@@ -122,19 +122,14 @@ class VersionInfoTests(unittest.TestCase):
         # compare to ordinary tuples:
         self.assertTrue(v01b < (0, 2))
         self.assertTrue((0, 2) > v01b)
-        self.assertTrue(v01b < (0, 1))
-        self.assertTrue((0, 1) > v01b)
-        self.assertTrue(v01 <= (0, 1))
+        self.assertTrue(v01b >= (0, 1))
+        self.assertTrue((0, 1) < v01b)
         self.assertTrue(v01 >= (0, 1))
-        self.assertTrue((0, 1) <= v01)
-        self.assertTrue((0, 1) >= v01)
         self.assertTrue(v02b_dev > (0, 1))
         self.assertTrue((0, 1) < v02b_dev)
-        # Test for equality requires complete tuple, because __eg__() is
-        # not called when comparing a namedtuple subclass to a tuple:
+        # Test for equality requires complete tuple:
         self.assertTrue((0, 1, 0, 'final', 0, True) == v01)
-        # self.assertTrue((0, 1) == v01) # fails
-        # self.assertTrue(v01 == (0, 1)) # fails
+        self.assertTrue(v01[:2] == (0, 1))
 
 
 if __name__ == '__main__':

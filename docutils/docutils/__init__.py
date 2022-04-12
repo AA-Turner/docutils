@@ -52,7 +52,7 @@ Subpackages:
 
 from __future__ import annotations
 
-from collections import namedtuple
+from operator import itemgetter
 from typing import TYPE_CHECKING
 
 if TYPE_CHECKING:
@@ -102,57 +102,45 @@ For development and release status, use `__version__ and `__version_info__`.
 """
 
 
-class VersionInfo(namedtuple('VersionInfo',
-                             'major minor micro releaselevel serial release')):
+class VersionInfo(tuple):
+    """VersionInfo(major, minor, micro, releaselevel, serial, release)"""
+
     __slots__ = ()
 
-    major: int
-    minor: int
-    micro: int
-    releaselevel: Literal['alpha', 'beta', 'candidate', 'final']
-    serial: int
-    release: bool
+    major: int = property(itemgetter(0))
+    minor: int = property(itemgetter(1))
+    micro: int = property(itemgetter(2))
+    releaselevel: Literal['alpha', 'beta', 'candidate', 'final'] = property(itemgetter(3))
+    serial: int = property(itemgetter(4))
+    release: bool = property(itemgetter(5))
+
+    def __repr__(self):
+        """Return a nicely formatted representation string"""
+        major, minor, micro, releaselevel, serial, release = self
+        return ('VersionInfo('
+                f'major={major!r}, minor={minor!r}, micro={micro!r}, '
+                f'releaselevel={releaselevel!r}, serial={serial!r}, '
+                f'release={release!r})')
 
     def __new__(
         cls, major: int = 0, minor: int = 0, micro: int = 0,
         releaselevel: Literal['alpha', 'beta', 'candidate', 'final'] = 'final',
         serial: int = 0, release: bool = True,
     ) -> VersionInfo:
-        releaselevels = ('alpha', 'beta', 'candidate', 'final')
-        if releaselevel not in releaselevels:
-            raise ValueError('releaselevel must be one of %r.'
-                             % (releaselevels, ))
+        """Create new instance of VersionInfo(major, minor, micro, releaselevel, serial, release)"""
+        release_levels = {'alpha', 'beta', 'candidate', 'final'}
+        if releaselevel not in release_levels:
+            raise TypeError(f'releaselevel must be one of {release_levels!r}.')
         if releaselevel == 'final':
             if not release:
-                raise ValueError('releaselevel "final" must not be used '
+                raise TypeError('releaselevel "final" must not be used '
                                  'with development versions (leads to wrong '
                                  'version ordering of the related __version__')
                 # cf. https://peps.python.org/pep-0440/#summary-of-permitted-suffixes-and-relative-ordering  # NoQA: E501
             if serial != 0:
-                raise ValueError('"serial" must be 0 for final releases')
+                raise TypeError('"serial" must be 0 for final releases')
 
-        return super().__new__(cls, major, minor, micro,
-                               releaselevel, serial, release)
-
-    def __lt__(self, other: object) -> bool:
-        if isinstance(other, tuple):
-            other = VersionInfo(*other)
-        return tuple.__lt__(self, other)
-
-    def __gt__(self, other: object) -> bool:
-        if isinstance(other, tuple):
-            other = VersionInfo(*other)
-        return tuple.__gt__(self, other)
-
-    def __le__(self, other: object) -> bool:
-        if isinstance(other, tuple):
-            other = VersionInfo(*other)
-        return tuple.__le__(self, other)
-
-    def __ge__(self, other: object) -> bool:
-        if isinstance(other, tuple):
-            other = VersionInfo(*other)
-        return tuple.__ge__(self, other)
+        return super().__new__(cls, (major, minor, micro, releaselevel, serial, release))
 
 
 __version_info__ = VersionInfo(
