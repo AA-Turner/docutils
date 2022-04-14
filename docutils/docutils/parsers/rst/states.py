@@ -611,6 +611,8 @@ class Inliner:
             self.implicit_dispatch.append((self.patterns.rfc,
                                            self.rfc_reference))
 
+        self.pep_url = settings.pep_file_url_template
+
     def parse(self, text, lineno, memo, parent):
         # Needs to be refactored for nested inline markup.
         # Add nested_parse() method?
@@ -1011,11 +1013,12 @@ class Inliner:
             pepnum = int(unescape(match.group('pepnum2')))
         else:
             raise MarkupMismatch
-        ref = (self.document.settings.pep_base_url
-               + self.document.settings.pep_file_url_template % pepnum)
+        ref = (self.document.settings.pep_base_url + self.pep_url % pepnum)
         return [nodes.reference(unescape(text, True), text, refuri=ref)]
 
+    pep_url = ''  # updated in Inliner.init_customizations
     rfc_url = 'rfc%d.html'
+    bcp_url = 'bcp%d'
 
     def rfc_reference(self, match, lineno):
         text = match.group(0)

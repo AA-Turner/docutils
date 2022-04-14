@@ -719,9 +719,9 @@ Option: ``--rfc-references``.
 rfc_base_url
 ~~~~~~~~~~~~
 
-Base URL for RFC references.
+Base URL for RFC and BCP references.
 
-Default: "http://www.faqs.org/rfcs/".  Option: ``--rfc-base-url``.
+Default: "https://datatracker.ietf.org/doc/html/".  Option: ``--rfc-base-url``.
 
 smart_quotes
 ~~~~~~~~~~~~

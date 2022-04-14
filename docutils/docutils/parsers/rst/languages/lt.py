@@ -90,6 +90,7 @@ roles = {
     'pep': 'pep-reference',
     'rfc-nuoroda': 'rfc-reference',
     'rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'paryškinimas': 'emphasis',
     'sustiprintas': 'strong',
     'literalas': 'literal',

@@ -137,6 +137,8 @@ roles = {
     'dummy pep': 'pep-reference',
     'dummy rfc-reference': 'rfc-reference',
     'dummy rfc': 'rfc-reference',
+    'dummy bcp-reference': 'bcp-reference',
+    'dummy bcp': 'bcp-reference',
     'dummy emphasis': 'emphasis',
     'dummy strong': 'strong',
     'dummy literal': 'literal',

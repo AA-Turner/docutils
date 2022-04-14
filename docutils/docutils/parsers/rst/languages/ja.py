@@ -99,6 +99,7 @@ roles = {
     '題参照': 'title-reference',
     'pep参照': 'pep-reference',
     'rfc参照': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     '強調': 'emphasis',
     '強い': 'strong',
     'リテラル': 'literal',

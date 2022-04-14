@@ -92,6 +92,7 @@ roles = {
     'pep': 'pep-reference',
     'rfc-referentie': 'rfc-reference',
     'rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'nadruk': 'emphasis',
     'extra': 'strong',
     'extra-nadruk': 'strong',

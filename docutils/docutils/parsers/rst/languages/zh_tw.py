@@ -90,6 +90,7 @@ roles = {
     'pep (translation required)': 'pep-reference',
     'rfc-reference (translation required)': 'rfc-reference',
     'rfc (translation required)': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'emphasis (translation required)': 'emphasis',
     'strong (translation required)': 'strong',
     'literal (translation required)': 'literal',

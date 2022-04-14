@@ -179,16 +179,15 @@ on mathematical notation in reStructuredText.
 
 The ``:pep-reference:`` role is used to create an HTTP reference to a
 PEP (Python Enhancement Proposal).  The ``:PEP:`` alias is usually
-used.  The content must be a number, for example::
+used.  All behaviour is shared with the `RFC role`_, see the
+explanation below for further details.
 
-    See :PEP:`287` for more information about reStructuredText.
-
-This is equivalent to::
 
     See `PEP 287`__ for more information about reStructuredText.
 
     __ https://peps.python.org/pep-0287
 
+.. _rfc role:
 
 ``:rfc-reference:``
 ===================
@@ -209,7 +208,7 @@ This is equivalent to::
 
     See `RFC 2822`__ for information about email headers.
 
-    __ https://tools.ietf.org/html/rfc2822.html
+    __ https://datatracker.ietf.org/doc/html/rfc2822.html
 
 .. [#] You can link to a specific section by saying
    ``:rfc:`number#anchor```. (New in Docutils 0.15.)
@@ -217,10 +216,25 @@ This is equivalent to::
    .. Warning:: The anchor (anything following a ``#``) is appended to
       the reference without any checks and not shown in the link text.
 
-      It is recommended to use `hyperlink references`_ for
+      We recommended using `hyperlink references`_ for
       anything more complex than a single RFC number.
 
 .. _hyperlink references: restructuredtext.html#hyperlink-references
+
+
+``:bcp-reference:``
+===================
+
+:Aliases: ``:BCP:``
+:DTD Element: reference
+:Customization:
+    :Options: class_.
+    :Content: None.
+
+The ``:bcp-reference:`` role is used to create an HTTP reference to a
+BCP (Internet Best Current Practice).  The ``:BCP:`` alias is usually
+used.  All behaviour is shared with the `RFC role`_, see the
+explanation above for further details.
 
 
 ``:strong:``

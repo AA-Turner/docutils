@@ -89,6 +89,7 @@ roles = {
     'pep': 'pep-reference',
     'atsauce-uz-rfc': 'rfc-reference',
     'rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'izcēlums': 'emphasis',
     'blīvs': 'strong',
     'literālis': 'literal',

@@ -264,54 +264,69 @@ register_generic_role('superscript', nodes.superscript)
 register_generic_role('title-reference', nodes.title_reference)
 
 
-def pep_reference_role(role, rawtext, text, lineno, inliner,
-                       options=None, content=None):
-    options = normalized_role_options(options)
-    try:
-        pepnum = int(nodes.unescape(text))
-        if pepnum < 0 or pepnum > 9999:
-            raise ValueError
-    except ValueError:
-        msg = inliner.reporter.error(
-            'PEP number must be a number from 0 to 9999; "%s" is invalid.'
-            % text, line=lineno)
-        prb = inliner.problematic(rawtext, rawtext, msg)
-        return [prb], [msg]
-    # Base URL mainly used by inliner.pep_reference; so this is correct:
-    ref = (inliner.document.settings.pep_base_url
-           + inliner.document.settings.pep_file_url_template % pepnum)
-    return [nodes.reference(rawtext, 'PEP ' + text, refuri=ref, **options)], []
+def _rfc_like_role(role_type, base_url_attr, document, pep_numbering=False, new_str_format=True):
+    """
+    Creates RFC-like role functions.
+
+    A section can be referenced using ``#blah``. This text is appended
+    literally to the reference target.
+
+    role_type is unsurprisingly the role type
+    base_url_attr is the base URL, or the name of the attribute on the settings
+        object that holds the base URL
+    document is a string containing the relative URL from the base, or a
+        callable. If a callable, it takes the inliner object and returns the
+        relative URL from the base.
+
+    """
+    num_condition = "from 0 to 9999" if pep_numbering else "greater than or equal to 1"
+
+    def __rfc_like_role(role, rawtext, text, lineno, inliner, options=None, content=None):
+        num, _, section = nodes.unescape(text).partition("#")
+        try:
+            num = int(num)
+            if pep_numbering:
+                if num < 0 or num > 9999:
+                    raise ValueError
+            else:
+                if num < 1:
+                    raise ValueError
+        except ValueError:
+            msg = inliner.reporter.error(
+                f'{role_type} number must be a number {num_condition}; "{text}" is invalid.',
+                line=lineno
+            )
+            prb = inliner.problematic(rawtext, rawtext, msg)
+            return [prb], [msg]
+
+        base_url = getattr(inliner.document.settings, base_url_attr, base_url_attr)
+        if callable(document):
+            document_tmpl = document(inliner)
+        else:
+            document_tmpl = getattr(inliner, document)
+        if new_str_format:
+            url = base_url + document_tmpl.format(num)
+        else:
+            url = base_url + document_tmpl % num
+        if section:
+            url += f"#{section}"
+
+        ref_node = nodes.reference(
+            rawtext,
+            f"{role_type} {num}",
+            refuri=url,
+            **normalized_role_options(options)
+        )
+        return [ref_node], []
+    return __rfc_like_role
 
 
+pep_reference_role = _rfc_like_role("PEP", "pep_base_url", "pep_url", new_str_format=False, pep_numbering=True)
+rfc_reference_role = _rfc_like_role("RFC", "rfc_base_url", "rfc_url", new_str_format=False)
+bcp_reference_role = _rfc_like_role("BCP", "rfc_base_url", "bcp_url", new_str_format=False)
 register_canonical_role('pep-reference', pep_reference_role)
-
-
-def rfc_reference_role(role, rawtext, text, lineno, inliner,
-                       options=None, content=None):
-    options = normalized_role_options(options)
-    if "#" in text:
-        rfcnum, section = nodes.unescape(text).split("#", 1)
-    else:
-        rfcnum, section = nodes.unescape(text), None
-    try:
-        rfcnum = int(rfcnum)
-        if rfcnum < 1:
-            raise ValueError
-    except ValueError:
-        msg = inliner.reporter.error(
-            'RFC number must be a number greater than or equal to 1; '
-            '"%s" is invalid.' % text, line=lineno)
-        prb = inliner.problematic(rawtext, rawtext, msg)
-        return [prb], [msg]
-    # Base URL mainly used by inliner.rfc_reference, so this is correct:
-    ref = inliner.document.settings.rfc_base_url + inliner.rfc_url % rfcnum
-    if section is not None:
-        ref += "#" + section
-    node = nodes.reference(rawtext, 'RFC '+str(rfcnum), refuri=ref, **options)
-    return [node], []
-
-
 register_canonical_role('rfc-reference', rfc_reference_role)
+register_canonical_role('bcp-reference', bcp_reference_role)
 
 
 def raw_role(role, rawtext, text, lineno, inliner, options=None, content=None):

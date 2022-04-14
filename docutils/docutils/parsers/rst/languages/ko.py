@@ -92,6 +92,7 @@ roles = {
     'pep': 'pep-reference',
     'rfc-참조': 'rfc-reference',
     'rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     '강조': 'emphasis',
     '굵게': 'strong',
     '기울기': 'literal',

@@ -101,10 +101,10 @@ class Parser(docutils.parsers.Parser):
          ('Recognize and link to standalone RFC references (like "RFC 822").',
           ['--rfc-references'],
           {'action': 'store_true', 'validator': frontend.validate_boolean}),
-         ('Base URL for RFC references '
-          '(default "https://tools.ietf.org/html/").',
+         ('Base URL for RFC and BCP references '
+          '(default "https://datatracker.ietf.org/doc/html/").',
           ['--rfc-base-url'],
-          {'metavar': '<URL>', 'default': 'https://tools.ietf.org/html/',
+          {'metavar': '<URL>', 'default': 'https://datatracker.ietf.org/doc/html/',
            'validator': frontend.validate_url_trailing_slash}),
          ('Set number of spaces for tab expansion (default 8).',
           ['--tab-width'],

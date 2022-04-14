@@ -323,7 +323,7 @@ totest['references'] = [
 """\
 <document source="test data">
     <paragraph>
-        <reference refuri="https://tools.ietf.org/html/rfc2822.html">
+        <reference refuri="https://datatracker.ietf.org/doc/html/rfc2822.html">
             RFC 2822
 """],
 ["""\
@@ -344,8 +344,38 @@ totest['references'] = [
 """\
 <document source="test data">
     <paragraph>
-        <reference refuri="https://tools.ietf.org/html/rfc2822.html#section1">
+        <reference refuri="https://datatracker.ietf.org/doc/html/rfc2822.html#section1">
             RFC 2822
+"""],
+["""\
+:BCP:`14`
+""",
+"""\
+<document source="test data">
+    <paragraph>
+        <reference refuri="https://datatracker.ietf.org/doc/html/bcp14">
+            BCP 14
+"""],
+["""\
+:BCP:`0`
+""",
+"""\
+<document source="test data">
+    <paragraph>
+        <problematic ids="problematic-1" refid="system-message-1">
+            :BCP:`0`
+    <system_message backrefs="problematic-1" ids="system-message-1" level="3" line="1" source="test data" type="ERROR">
+        <paragraph>
+            BCP number must be a number greater than or equal to 1; "0" is invalid.
+"""],
+["""\
+:BCP:`14#section1`
+""",
+"""\
+<document source="test data">
+    <paragraph>
+        <reference refuri="https://datatracker.ietf.org/doc/html/bcp14#section1">
+            BCP 14
 """],
 ]
 

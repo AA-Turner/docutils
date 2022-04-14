@@ -85,6 +85,7 @@ roles = {
     'pep (translation required)': 'pep-reference',
     'rfc-reference (translation required)': 'rfc-reference',
     'rfc (translation required)': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     '强调': 'emphasis',
     '加粗': 'strong',
     '字面': 'literal',

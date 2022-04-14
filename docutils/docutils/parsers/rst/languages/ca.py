@@ -102,6 +102,7 @@ roles = {
     'refer\u00E8ncia-a-rfc': 'rfc-reference',
     'refer\u00E8ncia-rfc': 'rfc-reference',
     'rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     '\u00E8mfasi': 'emphasis',
     'destacat': 'strong',
     'literal': 'literal',

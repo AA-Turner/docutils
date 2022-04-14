@@ -81,6 +81,7 @@ roles = {
     'title (translation required)': 'title-reference',
     'pep-reference (translation required)': 'pep-reference',
     'rfc-reference (translation required)': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'korostus': 'emphasis',
     'vahvistus': 'strong',
     'tasalevyinen': 'literal',

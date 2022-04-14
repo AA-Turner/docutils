@@ -174,9 +174,11 @@ For the implementation of ``register_generic_role``, see the
 RFC Reference Role
 ------------------
 
-This role allows easy references to RFCs_ (Request For Comments
+This example illustrates implementing a role for
+easy references to RFCs_ (Request For Comments
 documents) by automatically providing the base URL,
-http://www.faqs.org/rfcs/, and appending the RFC document itself
+https://datatracker.ietf.org/doc/html/,
+and appending the RFC document itself
 (rfcXXXX.html, where XXXX is the RFC number).  For example::
 
     See :RFC:`2822` for information about email headers.
@@ -185,7 +187,7 @@ This is equivalent to::
 
     See `RFC 2822`__ for information about email headers.
 
-    __ http://www.faqs.org/rfcs/rfc2822.html
+    __ https://datatracker.ietf.org/doc/html/rfc2822.html
 
 Here is the implementation of the role::
 
@@ -234,4 +236,4 @@ Noteworthy in the code above are:
    resulting "classes" attribute is passed through to the "reference"
    element node constructor.
 
-.. _RFCs: http://foldoc.doc.ic.ac.uk/foldoc/foldoc.cgi?query=rfc&action=Search&sourceid=Mozilla-search
+.. _RFCs: https://foldoc.org/rfc

@@ -79,6 +79,7 @@ roles = {
       'titel-referens': 'title-reference',
       'pep-referens': 'pep-reference',
       'rfc-referens': 'rfc-reference',
+      'bcp-reference (translation needed)': 'bcp-reference',
       'betoning': 'emphasis',
       'stark': 'strong',
       'bokstavlig': 'literal',  # also 'ordagranna'

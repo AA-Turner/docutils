@@ -87,6 +87,7 @@ roles = {
       'titel-referenz': 'title-reference',
       'pep-referenz': 'pep-reference',
       'rfc-referenz': 'rfc-reference',
+      'bcp-reference (translation needed)': 'bcp-reference',
       'betonung': 'emphasis',  # for backwards compatibility
       'betont': 'emphasis',
       'fett': 'strong',

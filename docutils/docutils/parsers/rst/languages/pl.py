@@ -81,6 +81,7 @@ roles = {
     'referencja-tytu\u0142': 'title-reference',
     'referencja-pep': 'pep-reference',
     'referencja-rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'podkre\u015blenie': 'emphasis',
     'wyt\u0142uszczenie': 'strong',
     'dos\u0142ownie': 'literal',

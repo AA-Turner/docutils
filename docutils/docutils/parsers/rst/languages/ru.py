@@ -79,6 +79,7 @@ roles = {
     'ссылка-замена': 'substitution-reference',
     'ссылка-на-pep': 'pep-reference',
     'ссылка-на-rfc': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'ссылка-на-uri': 'uri-reference',
     'ссылка-на-заглавие': 'title-reference',
     'ссылка-на-сноску': 'footnote-reference',

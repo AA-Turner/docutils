@@ -83,6 +83,7 @@ roles = {
     'عنوان': 'title-reference',
     'نیرو': 'pep-reference',
     'rfc-reference (translation required)': 'rfc-reference',
+    'bcp-reference (translation needed)': 'bcp-reference',
     'تاکید': 'emphasis',
     'قوی': 'strong',
     'لفظی': 'literal',
