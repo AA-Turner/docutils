@@ -6,22 +6,26 @@
 This is a quick & dirty installation shortcut. It is equivalent to the
 command::
 
-    python setup.py install
+    python -m pip install .
 
 However, the shortcut lacks error checking and command-line option
-processing.  If you need any kind of customization or help, please use
-one of::
+processing.  If you need any kind of customisation or help, please use::
 
-    python setup.py install --help
-    python setup.py --help
+    python -m pip install --help
 """
 
-from distutils import core
-from setup import do_setup
+from pathlib import Path
+import subprocess
+import sys
+
+DEPRECATION = """\
+Installing Docutils through "install.py" is deprecated. \
+Use "python -m pip install ." instead. install.py will be removed in the next \
+release."""
 
 if __name__ == '__main__':
+    print(DEPRECATION, file=sys.stderr)
     print(__doc__)
-    core._setup_stop_after = 'config'
-    dist = do_setup()
-    dist.commands = ['install']
-    dist.run_commands()
+    subprocess.run([sys.executable, "-m", "pip", "install", Path(__file__, "..").resolve()])
+    # print twice as the message will be hidden by pip's output.
+    print(DEPRECATION, file=sys.stderr)

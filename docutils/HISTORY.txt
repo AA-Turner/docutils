@@ -20,6 +20,7 @@ Changes Since 0.18.1
     hacks from code and tests.
   - Code cleanup,
     check PEP 8 conformity with `flake8` (exceptions in file tox.ini).
+  - Updated build stystem to use static metadata. Patch by Adam Turner.
 
 * docutils/core.py:
 
