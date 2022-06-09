@@ -180,10 +180,31 @@ class Input(TransformSpec):
             f'{", ".join(repr(enc) for enc in encoding_candidates)}.\n'
             f'({error_string(error)})')
 
-    coding_slug: ClassVar[re.Pattern[bytes]] = re.compile(
+    _coding_slug: ClassVar[re.Pattern[bytes]] = re.compile(
         br'coding[:=]\s*([-\w.]+)'
     )
     """Encoding declaration pattern."""
+
+    @property
+    def coding_slug(self):
+        """Encoding declaration pattern."""
+        warnings.warn(
+            'Support for PEP 263 coding slugs is deprecated and will be '
+            f'removed in Docutils 1.0. The {self.__class__.__name__}'
+            f'.coding_slug variable will be removed in Docutils 1.0, pass an '
+            f'explicit encoding to {self.__class__.__name__} instead.',
+            DeprecationWarning, stacklevel=2)
+        return self._coding_slug
+
+    @coding_slug.setter
+    def coding_slug(self, new_pattern):
+        warnings.warn(
+            'Support for PEP 263 coding slugs is deprecated and will be '
+            f'removed in Docutils 1.0. The {self.__class__.__name__}'
+            f'.coding_slug variable will be removed in Docutils 1.0, pass an '
+            f'explicit encoding to {self.__class__.__name__} instead.',
+            DeprecationWarning, stacklevel=2)
+        self._coding_slug = new_pattern
 
     byte_order_marks: ClassVar[tuple[tuple[bytes, str], ...]] = (
         (codecs.BOM_UTF32_BE, 'utf-32'),
@@ -207,8 +228,15 @@ class Input(TransformSpec):
                 return encoding
         # check for an encoding declaration pattern in first 2 lines of file:
         for line in data.splitlines()[:2]:
-            match = self.coding_slug.search(line)
+            with warnings.catch_warnings():
+                warnings.filterwarnings('ignore', category=DeprecationWarning)
+                match = self.coding_slug.search(line)
             if match:
+                warnings.warn(
+                    'Support for PEP 263 coding slugs is deprecated and will '
+                    'be removed in Docutils 1.0. Pass an explicit encoding to '
+                    f'{self.__class__.__name__!r}.',
+                    DeprecationWarning, stacklevel=2)
                 return match.group(1).decode('ascii')
         return None
 

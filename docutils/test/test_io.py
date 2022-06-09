@@ -134,14 +134,16 @@ class InputTests(unittest.TestCase):
 data
 blah
 """, encoding=None)
-        data = input_.read()  # noqa: F841
+        with self.assertWarnsRegex(DeprecationWarning, 'PEP 263 coding slugs'):
+            data = input_.read()  # noqa: F841
         self.assertEqual('ascii', input_.successful_encoding)
         input_ = du_io.StringInput(source=b"""\
 #! python
 # -*- coding: ascii -*-
 print("hello world")
 """, encoding=None)
-        data = input_.read()  # noqa: F841
+        with self.assertWarnsRegex(DeprecationWarning, 'PEP 263 coding slugs'):
+            data = input_.read()  # noqa: F841
         self.assertEqual('ascii', input_.successful_encoding)
         input_ = du_io.StringInput(source=b"""\
 #! python
@@ -301,7 +303,31 @@ class FileInputTests(unittest.TestCase):
             source = du_io.FileInput(
                 source_path=os.path.join(DATA_ROOT, 'latin2.txt'),
                 encoding=None)
-        self.assertTrue(source.read().endswith('škoda\n'))
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            self.assertTrue(source.read().endswith('škoda\n'))
+
+    def test_coding_slug_deprecated(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=DeprecationWarning)
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'PEP 263 coding slugs'):
+                original = du_io.Input().coding_slug
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'PEP 263 coding slugs'):
+                du_io.Input().coding_slug = original
+
+        for cls in (du_io.FileInput, du_io.StringInput,
+                    du_io.NullInput, du_io.DocTreeInput):
+            with warnings.catch_warnings():
+                warnings.simplefilter('always', category=DeprecationWarning)
+                with self.subTest(cls=cls):
+                    with self.assertWarnsRegex(DeprecationWarning,
+                                               'PEP 263 coding slugs'):
+                        original = cls().coding_slug
+                    with self.assertWarnsRegex(DeprecationWarning,
+                                               'PEP 263 coding slugs'):
+                        cls().coding_slug = original
 
     def test_fallback_utf8(self):
         """Try 'utf-8', if encoding is not specified in the source."""

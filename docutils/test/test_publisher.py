@@ -8,6 +8,7 @@
 Test the `Publisher` facade and the ``publish_*`` convenience functions.
 """
 import pickle
+import warnings
 from pathlib import Path
 import sys
 import unittest
@@ -202,8 +203,10 @@ class ConvenienceFunctionTests(unittest.TestCase):
         # input encoding detection will be removed in Docutils 1.0
         source = '.. encoding: latin1\n\nGrüße'
         settings['input_encoding'] = None
-        output = core.publish_string(source.encode('latin1'),
-                                     settings_overrides=settings)
+        with warnings.catch_warnings():
+            warnings.filterwarnings('ignore', category=DeprecationWarning)
+            output = core.publish_string(source.encode('latin1'),
+                                         settings_overrides=settings)
         self.assertTrue(output.endswith('Grüße\n'))
 
     def test_publish_string_output_encoding(self):
