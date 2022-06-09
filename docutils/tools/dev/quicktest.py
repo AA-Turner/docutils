@@ -194,9 +194,9 @@ def posixGetArgs(argv):
     inputFile = sys.stdin
     outputFile = sys.stdout
     if args:
-        inputFile = open(args.pop(0))
+        inputFile = open(args.pop(0), encoding='utf-8')
     if args:
-        outputFile = open(args.pop(0), 'w')
+        outputFile = open(args.pop(0), 'w', encoding='utf-8')
     return inputFile, outputFile, outputFormat, optargs
 
 
