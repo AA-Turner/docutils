@@ -7,9 +7,10 @@ permissions:
 
 jobs:
   tests:
-    name: Python ${{ matrix.python-version }}
+    name: Python ${{ matrix.python-version }}; LANG=${{ matrix.lang }}
     runs-on: ubuntu-latest
     strategy:
+      fail-fast: false
       matrix:
         python-version:
           - "3.7"
@@ -17,6 +18,9 @@ jobs:
           - "3.9"
           - "3.10"
           - "3.11"
+        lang:
+          - "C.UTF-8"
+          - "en_GB.iso88591"
 
     steps:
     - uses: actions/checkout@v3
@@ -42,4 +46,6 @@ jobs:
     - name: Run test suite
       run: |
         cd docutils
-        python test/alltests.py
+        sudo locale-gen en_GB
+        sudo update-locale LANG=en_GB.iso88591
+        LANG=${{ matrix.lang }} python -X dev -X warn_default_encoding test/alltests.py
