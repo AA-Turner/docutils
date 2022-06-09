@@ -11,6 +11,7 @@ Test module for io.py.
 from io import StringIO, BytesIO
 import sys
 import unittest
+import warnings
 
 from docutils import io
 
@@ -94,22 +95,50 @@ class InputTests(unittest.TestCase):
 data
 blah
 """)
-        data = input.read()  # noqa: F841
+        with self.assertWarnsRegex(DeprecationWarning, 'PEP 263 coding slugs'):
+            input.read()  # noqa: F841
         self.assertEqual(input.successful_encoding, 'ascii')
+
         input = io.StringInput(source=b"""\
 #! python
 # -*- coding: ascii -*-
 print("hello world")
 """)
-        data = input.read()  # noqa: F841
+        with self.assertWarnsRegex(DeprecationWarning, 'PEP 263 coding slugs'):
+            input.read()  # noqa: F841
         self.assertEqual(input.successful_encoding, 'ascii')
+
         input = io.StringInput(source=b"""\
 #! python
 # extraneous comment; prevents coding slug from being read
 # -*- coding: ascii -*-
 print("hello world")
 """)
+        with warnings.catch_warnings(record=True) as w:
+            input.read()  # noqa: F841
+            self.assertEqual(len(w), 0)
         self.assertNotEqual(input.successful_encoding, 'ascii')
+
+    def test_coding_slug_deprecated(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=DeprecationWarning)
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'PEP 263 coding slugs'):
+                original = io.Input().coding_slug
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'PEP 263 coding slugs'):
+                io.Input().coding_slug = original
+
+        for cls in io.FileInput, io.StringInput, io.NullInput, io.DocTreeInput:
+            with warnings.catch_warnings():
+                warnings.simplefilter('always', category=DeprecationWarning)
+                with self.subTest(cls=cls):
+                    with self.assertWarnsRegex(DeprecationWarning,
+                                               'PEP 263 coding slugs'):
+                        original = cls().coding_slug
+                    with self.assertWarnsRegex(DeprecationWarning,
+                                               'PEP 263 coding slugs'):
+                        cls().coding_slug = original
 
     def test_bom_detection(self):
         source = '\ufeffdata\nblah\n'
