@@ -778,7 +778,7 @@ class HTMLTranslator(nodes.NodeVisitor):
         # role 'doc-bibloentry' requires wrapping in an element with
         # role 'list' and an element with role 'doc-bibliography'
         # https://www.w3.org/TR/dpub-aria-1.0/#doc-biblioentry)
-        if not isinstance(node.previous_sibling(), type(node)):
+        if not isinstance(node.previous_sibling(), nodes.citation):
             self.body.append('<div role="list" class="citation-list">\n')
         self.body.append(self.starttag(node, 'div', classes=[node.tagname],
                                        role="doc-biblioentry"))
@@ -786,7 +786,7 @@ class HTMLTranslator(nodes.NodeVisitor):
     def depart_citation(self, node) -> None:
         self.body.append('</div>\n')
         if not isinstance(node.next_node(descend=False, siblings=True),
-                          type(node)):
+                          nodes.citation):
             self.body.append('</div>\n')
 
     # Use DPub role (overwritten in HTML4)
@@ -1093,20 +1093,19 @@ class HTMLTranslator(nodes.NodeVisitor):
         del self.body[start:]
 
     def visit_footnote(self, node) -> None:
-        # No native HTML element: use <aside> with ARIA role
-        # (html4css1 uses tables).
-        # Wrap groups of footnotes for easier styling.
-        label_style = self.settings.footnote_references  # brackets/superscript
-        if not isinstance(node.previous_sibling(), type(node)):
-            self.body.append(f'<aside class="footnote-list {label_style}">\n')
-        self.body.append(self.starttag(node, 'aside',
-                                       classes=[node.tagname, label_style],
+        # No native HTML element: use <aside> with ARIA role,
+        # wrap groups of footnotes for easier styling
+        # (html4css1 uses <div>s in a table).
+        if not isinstance(node.previous_sibling(), nodes.footnote):
+            self.body.append('<aside class="footnote-list">\n')
+        classes = [node.tagname, self.settings.footnote_references]
+        self.body.append(self.starttag(node, 'aside', classes=classes,
                                        role="doc-footnote"))
 
     def depart_footnote(self, node) -> None:
         self.body.append('</aside>\n')
         if not isinstance(node.next_node(descend=False, siblings=True),
-                          type(node)):
+                          nodes.footnote):
             self.body.append('</aside>\n')
 
     def visit_footnote_reference(self, node) -> None:

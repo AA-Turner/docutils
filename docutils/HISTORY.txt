@@ -650,6 +650,7 @@ Release 0.19 (2022-07-05)
   - Remove class value "controls" from an `image` node with video content
     after converting it to a "control" attribute of the <video> tag.
   - Wrap groups of footnotes in an ``<aside>`` for easier styling.
+    Use dpub-ARIA role "doc-footnote" instead of "note".
 
 * docutils/writers/pep_html/
 
