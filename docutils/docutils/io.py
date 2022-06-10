@@ -40,9 +40,19 @@ except ValueError as error:  # OS X may set UTF-8 without language code
 except:  # noqa  any other problems determining the locale -> use None
     _locale_encoding = None
 try:
-    codecs.lookup(_locale_encoding)
-except (LookupError, TypeError):
+    codecs.lookup(_locale_encoding or '')
+except LookupError:
     _locale_encoding = None
+
+
+def __getattr__(name):
+    if name == "locale_encoding":
+        warnings.warn("'docutils.io.locale_encoding' is deprecated and will "
+                      'be removed in Docutils 1.0. Pass an explicit encoding, '
+                      "or 'locale' for the locale encoding.",
+                      DeprecationWarning, stacklevel=2)
+        return _locale_encoding
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
 
 
 class InputError(OSError): pass

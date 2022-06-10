@@ -11,6 +11,7 @@ Test module for io.py.
 from io import StringIO, BytesIO
 import sys
 import unittest
+import warnings
 
 from docutils import io
 
@@ -131,7 +132,12 @@ print("hello world")
     def test_heuristics_no_utf8(self):
         # if no encoding is given and decoding with 'utf-8' fails,
         # use either the locale encoding (if specified) or 'latin-1':
-        probed_encodings = (io._locale_encoding, 'latin-1')  # noqa
+        if io._locale_encoding not in ('utf-8', 'utf8'):  # NoQA
+            # in Python 3, the locale encoding is used without --input-encoding
+            # skipping the heuristic unless decoding fails.
+            return
+        # use private locale encoding to skip deprecation warning
+        probed_encodings = (io._locale_encoding, 'latin-1')  # NoQA
         input = io.FileInput(source_path='data/latin1.txt')
         data = input.read()
         if input.successful_encoding not in probed_encodings:
@@ -249,6 +255,15 @@ class ErrorOutputTests(unittest.TestCase):
         e.encoding = 'latin1'
         e.write(b' b\xfc')
         self.assertEqual(buf.getvalue(), 'b\ufffd u\xfc e\xfc b\xfc')
+
+
+class DeprecationTests(unittest.TestCase):
+    def test_locale_encoding(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=DeprecationWarning)
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'docutils.io.locale_encoding'):
+                io.locale_encoding
 
 
 class FileInputTests(unittest.TestCase):
