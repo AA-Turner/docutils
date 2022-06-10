@@ -628,15 +628,15 @@ class HTMLTranslator(nodes.NodeVisitor):
         # role 'doc-bibloentry' requires wrapping in an element with
         # role 'list' and an element with role 'doc-bibliography'
         # https://www.w3.org/TR/dpub-aria-1.0/#doc-biblioentry)
-        if not isinstance(node.previous_sibling(), type(node)):
+        if not isinstance(node.previous_sibling(), nodes.citation):
             self.body.append('<div role="list" class="citation-list">\n')
         self.body.append(self.starttag(node, 'div', classes=[node.tagname],
                                        role="doc-biblioentry"))
 
     def depart_citation(self, node):
         self.body.append('</div>\n')
-        next_node = node.next_node(descend=False, siblings=True)
-        if not isinstance(next_node, type(node)):
+        if not isinstance(node.next_node(descend=False, siblings=True),
+                          nodes.citation):
             self.body.append('</div>\n')
 
     # Use DPub role (overwritten in HTML4)
@@ -943,15 +943,21 @@ class HTMLTranslator(nodes.NodeVisitor):
         self.body_suffix[:0] = footer
         del self.body[start:]
 
-    # use HTML5 element <aside> with ARIA role "note" for footnote text
-    # (the html4css1 writer uses a table).
     def visit_footnote(self, node):
+        # No native HTML element: use <aside> with ARIA role,
+        # wrap groups of footnotes for easier styling
+        # (html4css1 uses <div>s in a table).
+        if not isinstance(node.previous_sibling(), nodes.footnote):
+            self.body.append('<aside class="footnote-list">\n')
         classes = [node.tagname, self.settings.footnote_references]
         self.body.append(self.starttag(node, 'aside', classes=classes,
-                                       role="note"))
+                                       role="doc-footnote"))
 
     def depart_footnote(self, node):
         self.body.append('</aside>\n')
+        if not isinstance(node.next_node(descend=False, siblings=True),
+                          nodes.footnote):
+            self.body.append('</aside>\n')
 
     def visit_footnote_reference(self, node):
         href = '#' + node['refid']

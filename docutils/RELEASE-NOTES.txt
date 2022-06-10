@@ -58,7 +58,7 @@ Future changes
 
   - Remove ``use_verbatim_when_possible`` setting
     (use literal_block_env_: verbatim) in Docutils 2.0.
-    
+
   - Do not insert ``\usepackage[utf8]{inputenc}`` into UTF-8 encoded
     LaTeX sources. UTF-8 is the default encoding for LaTeX2e since 2018.
 
@@ -108,6 +108,12 @@ Release 0.19b (unpublished)
 ===========================
 
 * Drop support for Python 2.7, 3.5, and 3.6.
+
+* Output changes:
+
+  HTML5:
+    - Wrap groups of footnotes in an ``<aside>`` for easier styling.
+    - Use dpub-ARIA role "doc-footnote" for footnotes.
 
 * After package installation, the CLI commands ``python -m docutils`` and
   ``docutils`` start the `generic command line front end tool`__.
