@@ -11,6 +11,7 @@ Test module for io.py.
 from io import StringIO, BytesIO
 import sys
 import unittest
+import unittest.mock
 import warnings
 
 from docutils import io
@@ -264,6 +265,53 @@ class DeprecationTests(unittest.TestCase):
             with self.assertWarnsRegex(DeprecationWarning,
                                        'docutils.io.locale_encoding'):
                 io.locale_encoding
+
+    @unittest.mock.patch("docutils.io._locale_encoding", None)
+    def test_get_default_encoding_locale_encoding_falsy(self):
+        with self.assertWarnsRegex(FutureWarning, 'Could not determine'):
+            with warnings.catch_warnings():
+                warnings.simplefilter('always', category=FutureWarning)
+                res = io._get_default_encoding(None)
+        self.assertEqual(res, 'ascii')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            if sys.version_info[:2] >= (3, 10):
+                res = io._get_default_encoding('locale')
+                self.assertEqual(len(w), 0)
+                self.assertEqual(res, 'locale')
+            else:
+                with self.assertWarnsRegex(FutureWarning,
+                                           'Could not determine'):
+                    res = io._get_default_encoding('locale')
+                self.assertEqual(res, 'ascii')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            res = io._get_default_encoding('dummy')
+            self.assertEqual(len(w), 0)
+        self.assertEqual(res, 'dummy')
+
+    @unittest.skipIf(not io._locale_encoding,
+                     'Must have a truthy locale encoding')
+    def test_get_default_encoding_none(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=FutureWarning)
+            with self.assertWarnsRegex(FutureWarning, 'The default encoding'):
+                res = io._get_default_encoding(None)
+        self.assertEqual(res, io._locale_encoding)
+
+    @unittest.skipIf(not io._locale_encoding,
+                     'Must have a truthy locale encoding')
+    def test_get_default_encoding_locale(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            res = io._get_default_encoding('locale')
+            self.assertEqual(len(w), 0)
+        if sys.version_info[:2] >= (3, 10):
+            self.assertEqual(res, 'locale')
+        else:
+            self.assertEqual(res, io._locale_encoding)
 
 
 class FileInputTests(unittest.TestCase):

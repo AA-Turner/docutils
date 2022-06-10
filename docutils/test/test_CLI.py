@@ -64,8 +64,8 @@ class CliTests(unittest.TestCase):
                         output, flags=re.DOTALL)
         # normalise error encoding default
         output = output.replace(
-            f'{frontend.OptionParser.default_error_encoding}:backslashreplace',
-            'utf-8:backslashreplace')
+            (frontend.OptionParser.default_error_encoding or 'locale')
+            + ':backslashreplace', 'utf-8:backslashreplace')
         # compare to stored version
         with open('data/help/docutils.txt', encoding='utf-8') as samplefile:
             expected = samplefile.read()
