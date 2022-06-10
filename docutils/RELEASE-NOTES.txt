@@ -125,6 +125,8 @@ Future changes
 * Remove the ``--html-writer`` option of the ``buildhtml.py`` application
   (obsoleted by the `"writer" option`_) in Docutils 2.0.
 
+* Change the default input encoding to UTF-8 in Docutils 1.0.
+
 .. _front end tools: docs/user/tools.html
 .. _input encoding:
 .. _input_encoding: docs/user/config.html#input-encoding
@@ -165,6 +167,9 @@ Release 0.19 (2022-07-05)
   and "python-home" `configuration settings`_ now use the "https:" scheme.
   The PEP-writer template's header is updated to fix links and
   resemble the header of official PEPs.
+
+* Added support for encoding='locale' (:pep:`597`), deprecated implicit
+  auto-detection of input encoding
 
 * Various bugfixes and improvements (see HISTORY_).
 
