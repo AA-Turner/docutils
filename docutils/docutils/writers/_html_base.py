@@ -1096,10 +1096,11 @@ class HTMLTranslator(nodes.NodeVisitor):
         # No native HTML element: use <aside> with ARIA role,
         # wrap groups of footnotes for easier styling
         # (html4css1 uses <div>s in a table).
+        label_style = self.settings.footnote_references  # brackets/superscript
         if not isinstance(node.previous_sibling(), nodes.footnote):
-            self.body.append('<aside class="footnote-list">\n')
-        classes = [node.tagname, self.settings.footnote_references]
-        self.body.append(self.starttag(node, 'aside', classes=classes,
+            self.body.append(f'<aside class="footnote-list {label_style}">\n')
+        self.body.append(self.starttag(node, 'aside',
+                                       classes=[node.tagname, label_style],
                                        role="doc-footnote"))
 
     def depart_footnote(self, node) -> None:
