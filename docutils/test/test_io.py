@@ -25,28 +25,11 @@ from docutils import io as du_io
 DATA_ROOT = os.path.join(os.path.abspath(os.path.dirname(__file__)), 'data')
 
 
-# Stub: Buffer with 'strict' auto-conversion of input to byte string:
-class BBuf(BytesIO):
-    def write(self, data):
-        if isinstance(data, str):
-            data.encode('ascii', 'strict')
-        super().write(data)
-
-
-# Stub: Buffer expecting unicode string:
-class UBuf(StringIO):
-    def write(self, data):
-        # emulate Python 3 handling of stdout, stderr
-        if isinstance(data, bytes):
-            raise TypeError('must be unicode, not bytes')
-        super().write(data)
-
-
-class mock_stdout(UBuf):
+class MockStdout(StringIO):
     encoding = 'utf-8'
 
     def __init__(self):
-        self.buffer = BBuf()
+        self.buffer = BytesIO()
         super().__init__()
 
 
@@ -54,15 +37,15 @@ class HelperTests(unittest.TestCase):
 
     def test_check_encoding_true(self):
         """Return `True` if lookup returns the same codec"""
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'utf-8'), True)
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'utf_8'), True)
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'utf8'), True)
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'UTF-8'), True)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'utf-8'), True)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'utf_8'), True)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'utf8'), True)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'UTF-8'), True)
 
     def test_check_encoding_false(self):
         """Return `False` if lookup returns different codecs"""
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'ascii'), False)
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'latin-1'), False)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'ascii'), False)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'latin-1'), False)
 
     def test_check_encoding_none(self):
         """Cases where the comparison fails."""
@@ -70,12 +53,12 @@ class HelperTests(unittest.TestCase):
         self.assertEqual(du_io.check_encoding(du_io.FileInput(), 'ascii'),
                          None)
         # stream.encoding does not exist:
-        self.assertEqual(du_io.check_encoding(BBuf, 'ascii'), None)
+        self.assertEqual(du_io.check_encoding(BytesIO, 'ascii'), None)
         # encoding is None or empty string:
-        self.assertEqual(du_io.check_encoding(mock_stdout, None), None)
+        self.assertEqual(du_io.check_encoding(MockStdout, None), None)
         self.assertEqual(du_io.check_encoding(mock_stdout, ''), None)
         # encoding is invalid
-        self.assertEqual(du_io.check_encoding(mock_stdout, 'UTF-9'), None)
+        self.assertEqual(du_io.check_encoding(MockStdout, 'UTF-9'), None)
 
     def test_error_string(self):
         us = '\xfc'       # bytes(us) fails
@@ -171,11 +154,11 @@ class OutputTests(unittest.TestCase):
     udata = '\xfc'
 
     def setUp(self):
-        self.bdrain = BBuf()
+        self.bdrain = BytesIO()
         """Buffer accepting binary strings (bytes)"""
-        self.udrain = UBuf()
+        self.udrain = StringIO()
         """Buffer accepting unicode strings"""
-        self.mock_stdout = mock_stdout()
+        self.mock_stdout = MockStdout()
         """Stub of sys.stdout under Python 3"""
 
     def test_write_unicode(self):
@@ -230,8 +213,8 @@ class ErrorOutputTests(unittest.TestCase):
         e = du_io.ErrorOutput()
         self.assertEqual(e.destination, sys.stderr)
 
-    def test_bbuf(self):
-        buf = BBuf()  # buffer storing byte string
+    def test_bytes(self):
+        buf = BytesIO()  # buffer storing bytes
         e = du_io.ErrorOutput(buf, encoding='ascii')
         # write byte-string as-is
         e.write(b'b\xfc')
@@ -248,8 +231,8 @@ class ErrorOutputTests(unittest.TestCase):
         e.write(' u\xfc')
         self.assertEqual(buf.getvalue(), b'b\xfc u\\xfc e\\xfc u\xc3\xbc')
 
-    def test_ubuf(self):
-        buf = UBuf()  # buffer only accepting unicode string
+    def test_string(self):
+        buf = StringIO()  # buffer only accepting unicode string
         # decode of binary strings
         e = du_io.ErrorOutput(buf, encoding='ascii')
         e.write(b'b\xfc')

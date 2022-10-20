@@ -394,7 +394,7 @@ class FileInput(Input):
         """
         Input.__init__(self, source, source_path, encoding, error_handler)
         self.autoclose = autoclose
-        self._stderr = ErrorOutput()
+        self._stderr = sys.stderr
 
         if source is None:
             if source_path:
@@ -494,7 +494,7 @@ class FileOutput(Output):
                           'Docutils 2.0.', DeprecationWarning, stacklevel=2)
         if mode is not None:
             self.mode = mode
-        self._stderr = ErrorOutput()
+        self._stderr = sys.stderr
         if destination is None:
             if destination_path:
                 self.opened = False
