@@ -11,7 +11,8 @@ Tests for the misc.py "date" directive.
 from test import DocutilsTestSupport
 import time
 
-from docutils.io import _locale_encoding  # noqa
+# import the private version of locale encoding to skip the deprecation warning
+from docutils.io import _locale_encoding as locale_encoding  # NoQA
 
 
 def suite():

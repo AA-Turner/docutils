@@ -40,9 +40,62 @@ except ValueError as error:  # OS X may set UTF-8 without language code
 except:  # noqa  any other problems determining the locale -> use None
     _locale_encoding = None
 try:
-    codecs.lookup(_locale_encoding)
-except (LookupError, TypeError):
+    codecs.lookup(_locale_encoding or '')
+except LookupError:
     _locale_encoding = None
+
+
+def __getattr__(name):
+    if name == "locale_encoding":
+        warnings.warn("'docutils.io.locale_encoding' is deprecated and will "
+                      'be removed in Docutils 1.0. Pass an explicit encoding, '
+                      "or 'locale' for the locale encoding.",
+                      DeprecationWarning, stacklevel=2)
+        return _locale_encoding
+    raise AttributeError(f"module {__name__!r} has no attribute {name!r}")
+
+
+def _get_default_encoding(encoding):
+    """Determine appropriate default encoding.
+
+    Returns input for any value apart from None and 'locale'.
+    Otherwise, returns the default locale encoding and raises a warning.
+
+    From Docutils 1.0 the default encoding will be UTF-8 and this function will
+    be removed.
+    """
+    if encoding is not None and encoding != 'locale':
+        return encoding
+    if encoding == 'locale' and sys.version_info[:2] >= (3, 10):
+        return 'locale'
+    # currently the code uses implicit casting to Boolean values via the use of
+    # 'or' short-circuiting -- the better test might be 'is not None', but for
+    # parity of implementation we use 'not' here.
+    if not _locale_encoding:
+        warnings.warn('Could not determine the locale encoding, assuming '
+                      'ASCII. The fallback encoding will change to UTF-8 '
+                      'in Docutils 1.0, pass an explicit input encoding of '
+                      "'ascii' to retain the current behaviour. Note UTF-8 "
+                      'is a strict superset of ASCII, so you should only '
+                      'explicitly set the input encoding as ASCII if you '
+                      'want to error on non-ASCII characters. Otherwise to '
+                      "silence this warning, use 'utf-8'.",
+                      FutureWarning, stacklevel=2)
+        return 'ascii'
+    if encoding is None:
+        warnings.warn("The default encoding will change to 'utf-8' in "
+                      "Docutils 1.0. Pass an explicit encoding, or 'locale' to"
+                      'continue using the locale encoding.',
+                      FutureWarning, stacklevel=2)
+        return _locale_encoding
+    if encoding == 'locale':
+        # see locale.getencoding() in Python 3.11 or newer
+        enc = locale.getdefaultlocale()[1]
+        if enc is None or hasattr(sys, 'getandroidapilevel'):
+            # LANG not set or Android, default to UTF-8
+            return 'utf-8'
+        return enc.lower()
+    return encoding
 
 
 class InputError(OSError): pass
@@ -143,7 +196,8 @@ class Input(TransformSpec):
         if self.encoding:
             # We believe the user/application when the encoding is
             # explicitly given.
-            encoding_candidates = [self.encoding]
+            # Handle self.encoding == 'locale' here
+            encoding_candidates = [_get_default_encoding(self.encoding)]
         else:
             data_encoding = self.determine_encoding_from_data(data)
             if data_encoding:
@@ -166,6 +220,12 @@ class Input(TransformSpec):
             try:
                 decoded = str(data, enc, self.error_handler)
                 self.successful_encoding = enc
+                if len(encodings) == 3 and enc == _locale_encoding:
+                    warnings.warn(
+                        "The default encoding will change to 'utf-8' in "
+                        "Docutils 1.0. Pass an explicit encoding, or 'locale' "
+                        'to continue using the locale encoding.',
+                        FutureWarning, stacklevel=2)
                 # Return decoded, removing BOM and other ZWNBSPs.
                 # TODO: only remove BOM (ZWNBSP at start of data)
                 #       and only if 'self.encoding' is None. (API change)
@@ -223,6 +283,8 @@ class Output(TransformSpec):
 
     def __init__(self, destination=None, destination_path=None,
                  encoding=None, error_handler='strict'):
+        if isinstance(encoding, str) and encoding == 'locale':
+            encoding = _get_default_encoding(encoding)
         self.encoding = encoding
         """Text encoding for the output destination."""
 
@@ -289,8 +351,8 @@ class ErrorOutput:
         self.destination = destination
         """Where warning output is sent."""
 
-        self.encoding = (encoding or getattr(destination, 'encoding', None)
-                         or _locale_encoding or 'ascii')
+        self.encoding = _get_default_encoding(
+            encoding or getattr(destination, 'encoding', None))
         """The output character encoding."""
 
         self.encoding_errors = encoding_errors

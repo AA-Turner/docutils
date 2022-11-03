@@ -24,6 +24,8 @@ import os                   # noqa: E402
 import platform             # noqa: E402
 import warnings             # noqa: E402
 from importlib import import_module  # noqa: E402
+import locale               # noqa: E402
+
 import DocutilsTestSupport  # noqa: E402 must be imported before docutils
 import docutils             # noqa: E402
 
@@ -134,6 +136,14 @@ class NumbersTestResult(unittest.TextTestResult):
             self.stream.flush()
 
 
+def get_locale():
+    enc = locale.getdefaultlocale()[1]
+    if enc is None or hasattr(sys, 'getandroidapilevel'):
+        # LANG not set or Android, default to UTF-8
+        return 'utf-8'
+    return enc.lower()
+
+
 if __name__ == '__main__':
     suite = loadTestModules(DocutilsTestSupport.testroot)
     print(f'Testing Docutils {docutils.__version__} '
@@ -143,6 +153,8 @@ if __name__ == '__main__':
           f'({sys.platform}, {platform.platform()})')
     print(f'Working directory: {os.getcwd()}')
     print(f'Docutils package: {os.path.dirname(docutils.__file__)}')
+    print(f'LANG: {os.getenv("LANG", "LANG NOT SET")}')
+    print(f'Default locale: {get_locale()}')
     sys.stdout.flush()
     result = unittest.TextTestRunner(resultclass=NumbersTestResult).run(suite)
     finish = time.time()

@@ -450,9 +450,7 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
                 'off': False, 'no': False, 'false': False, '': False}
     """Lookup table for boolean configuration file settings."""
 
-    default_error_encoding = (getattr(sys.stderr, 'encoding', None)
-                              or io._locale_encoding  # noqa
-                              or 'ascii')
+    default_error_encoding = getattr(sys.stderr, 'encoding', None)
 
     default_error_encoding_error_handler = 'backslashreplace'
 
@@ -585,9 +583,11 @@ class OptionParser(optparse.OptionParser, docutils.SettingsSpec):
           {'default': 'strict', 'validator': validate_encoding_error_handler}),
          ('Specify text encoding and optionally error handler '
           'for error output.  Default: %s:%s.'
-          % (default_error_encoding, default_error_encoding_error_handler),
+          % (default_error_encoding or 'locale',
+             default_error_encoding_error_handler),
           ['--error-encoding', '-e'],
-          {'metavar': '<name[:handler]>', 'default': default_error_encoding,
+          {'metavar': '<name[:handler]>',
+           'default': default_error_encoding or 'locale',
            'validator': validate_encoding_and_error_handler}),
          ('Specify the error handler for unencodable characters in '
           'error output.  Default: %s.'

@@ -11,6 +11,8 @@ Test module for io.py.
 from io import StringIO, BytesIO
 import sys
 import unittest
+import unittest.mock
+import warnings
 
 from docutils import io
 
@@ -131,7 +133,12 @@ print("hello world")
     def test_heuristics_no_utf8(self):
         # if no encoding is given and decoding with 'utf-8' fails,
         # use either the locale encoding (if specified) or 'latin-1':
-        probed_encodings = (io._locale_encoding, 'latin-1')  # noqa
+        if io._locale_encoding not in ('utf-8', 'utf8'):  # NoQA
+            # in Python 3, the locale encoding is used without --input-encoding
+            # skipping the heuristic unless decoding fails.
+            return
+        # use private locale encoding to skip deprecation warning
+        probed_encodings = (io._locale_encoding, 'latin-1')  # NoQA
         input = io.FileInput(source_path='data/latin1.txt')
         data = input.read()
         if input.successful_encoding not in probed_encodings:
@@ -249,6 +256,62 @@ class ErrorOutputTests(unittest.TestCase):
         e.encoding = 'latin1'
         e.write(b' b\xfc')
         self.assertEqual(buf.getvalue(), 'b\ufffd u\xfc e\xfc b\xfc')
+
+
+class DeprecationTests(unittest.TestCase):
+    def test_locale_encoding(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=DeprecationWarning)
+            with self.assertWarnsRegex(DeprecationWarning,
+                                       'docutils.io.locale_encoding'):
+                io.locale_encoding
+
+    @unittest.mock.patch("docutils.io._locale_encoding", None)
+    def test_get_default_encoding_locale_encoding_falsy(self):
+        with self.assertWarnsRegex(FutureWarning, 'Could not determine'):
+            with warnings.catch_warnings():
+                warnings.simplefilter('always', category=FutureWarning)
+                res = io._get_default_encoding(None)
+        self.assertEqual(res, 'ascii')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            if sys.version_info[:2] >= (3, 10):
+                res = io._get_default_encoding('locale')
+                self.assertEqual(len(w), 0)
+                self.assertEqual(res, 'locale')
+            else:
+                with self.assertWarnsRegex(FutureWarning,
+                                           'Could not determine'):
+                    res = io._get_default_encoding('locale')
+                self.assertEqual(res, 'ascii')
+
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            res = io._get_default_encoding('dummy')
+            self.assertEqual(len(w), 0)
+        self.assertEqual(res, 'dummy')
+
+    @unittest.skipIf(not io._locale_encoding,
+                     'Must have a truthy locale encoding')
+    def test_get_default_encoding_none(self):
+        with warnings.catch_warnings():
+            warnings.simplefilter('always', category=FutureWarning)
+            with self.assertWarnsRegex(FutureWarning, 'The default encoding'):
+                res = io._get_default_encoding(None)
+        self.assertEqual(res, io._locale_encoding)
+
+    @unittest.skipIf(not io._locale_encoding,
+                     'Must have a truthy locale encoding')
+    def test_get_default_encoding_locale(self):
+        with warnings.catch_warnings(record=True) as w:
+            warnings.simplefilter('always', category=FutureWarning)
+            res = io._get_default_encoding('locale')
+            self.assertEqual(len(w), 0)
+        if sys.version_info[:2] >= (3, 10):
+            self.assertEqual(res, 'locale')
+        else:
+            self.assertEqual(res, io._locale_encoding)
 
 
 class FileInputTests(unittest.TestCase):

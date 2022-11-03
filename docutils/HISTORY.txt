@@ -83,6 +83,13 @@ Release 0.19 (2022-07-05)
     "input_encoding" setting is None.
   - Fix error when reading of UTF-16 encoded source without trailing newline.
 
+* docutils/io.py:
+
+  - Add support for encoding='locale' (:pep:`597`).
+  - Deprecated ``docutils.io.locale_encoding``
+  - Deprecated implicit auto-detection of input-encoding. Use encoding='locale'
+    to use the locale encoding.
+
 * docutils/parsers/__init__.py
 
   - Aliases "markdown" and "commonmark" point to "commonmark_wrapper".
