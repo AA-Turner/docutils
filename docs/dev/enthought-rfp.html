@@ -1,0 +1,167 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Janet Swisher, Senior Technical Writer" />
+<meta name="dcterms.rights" content="2004 by Enthought, Inc." />
+<title>Enthought API Documentation Tool</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<main id="enthought-api-documentation-tool">
+<h1 class="title">Enthought API Documentation Tool</h1>
+<p class="subtitle" id="request-for-proposals">Request for Proposals</p>
+<dl class="docinfo simple">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>Janet Swisher, Senior Technical Writer</p></dd>
+<dt class="organization">Organization<span class="colon">:</span></dt>
+<dd class="organization"><a class="reference external" href="http://www.enthought.com">Enthought, Inc.</a></dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">2004 by Enthought, Inc.</dd>
+<dt class="license">License<span class="colon">:</span></dt>
+<dd class="license"><p><a class="reference external" href="https://docutils.sourceforge.io/licenses/enthought.txt">Enthought License</a> (BSD Style)</p>
+</dd>
+</dl>
+<p>The following is excerpted from the full RFP, and is published here
+with permission from <a class="reference external" href="http://www.enthought.com">Enthought, Inc.</a>  See the <a class="reference external" href="enthought-plan.html">Plan for Enthought
+API Documentation Tool</a>.</p>
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="auto-toc simple">
+<li><p><a class="reference internal" href="#requirements" id="toc-entry-1"><span class="sectnum">1 </span>Requirements</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#documentation-extraction" id="toc-entry-2"><span class="sectnum">1.1 </span>Documentation Extraction</a></p></li>
+<li><p><a class="reference internal" href="#source-format" id="toc-entry-3"><span class="sectnum">1.2 </span>Source Format</a></p></li>
+<li><p><a class="reference internal" href="#output-format" id="toc-entry-4"><span class="sectnum">1.3 </span>Output Format</a></p></li>
+<li><p><a class="reference internal" href="#output-structure-and-navigation" id="toc-entry-5"><span class="sectnum">1.4 </span>Output Structure and Navigation</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#license" id="toc-entry-6"><span class="sectnum">2 </span>License</a></p></li>
+</ul>
+</nav>
+<section id="requirements">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink"><span class="sectnum">1 </span>Requirements</a><a class="self-link" title="link to this section" href="#requirements"></a></h2>
+<p>The documentation tool will address the following high-level goals:</p>
+<section id="documentation-extraction">
+<h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink"><span class="sectnum">1.1 </span>Documentation Extraction</a><a class="self-link" title="link to this section" href="#documentation-extraction"></a></h3>
+<ol class="arabic simple">
+<li><p>Documentation will be generated directly from Python source code,
+drawing from the code structure, docstrings, and possibly other
+comments.</p></li>
+<li><p>The tool will extract logical constructs as appropriate, minimizing
+the need for comments that are redundant with the code structure.
+The output should reflect both documented and undocumented
+elements.</p></li>
+</ol>
+</section>
+<section id="source-format">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink"><span class="sectnum">1.2 </span>Source Format</a><a class="self-link" title="link to this section" href="#source-format"></a></h3>
+<ol class="arabic">
+<li><p>The docstrings will be formatted in as terse syntax as possible.
+Required tags, syntax, and white space should be minimized.</p></li>
+<li><p>The tool must support the use of Traits.  Special comment syntax
+for Traits may be necessary.  Information about the Traits package
+is available at <a class="reference external" href="http://code.enthought.com/traits/">http://code.enthought.com/traits/</a>.  In the
+following example, each trait definition is prefaced by a plain
+comment:</p>
+<pre class="literal-block">__traits__ = {
+
+# The current selection within the frame.
+'selection' : Trait([], TraitInstance(list)),
+
+# The frame has been activated or deactivated.
+'activated' : TraitEvent(),
+
+'closing' : TraitEvent(),
+
+# The frame is closed.
+'closed' : TraitEvent(),
+}</pre>
+</li>
+<li><p>Support for ReStructuredText (ReST) format is desirable, because
+much of the existing docstrings uses ReST.  However, the complete
+ReST specification need not be supported, if a subset can achieve
+the project goals.  If the tool does not support ReST, the
+contractor should also provide a tool or path to convert existing
+docstrings.</p></li>
+</ol>
+</section>
+<section id="output-format">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink"><span class="sectnum">1.3 </span>Output Format</a><a class="self-link" title="link to this section" href="#output-format"></a></h3>
+<ol class="arabic simple">
+<li><p>Documentation will be output as a navigable suite of HTML
+files.</p></li>
+<li><p>The style of the HTML files will be customizable by a cascading
+style sheet and/or a customizable template.</p></li>
+<li><p>Page elements such as headers and footer should be customizable, to
+support differing requirements from one documentation project to
+the next.</p></li>
+</ol>
+</section>
+<section id="output-structure-and-navigation">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink"><span class="sectnum">1.4 </span>Output Structure and Navigation</a><a class="self-link" title="link to this section" href="#output-structure-and-navigation"></a></h3>
+<ol class="arabic">
+<li><p>The navigation scheme for the HTML files should not rely on frames,
+and should harmonize with conversion to Microsoft HTML Help (.chm)
+format.</p></li>
+<li><p>The output should be structured to make navigable the architecture
+of the Python code.  Packages, modules, classes, traits, and
+functions should be presented in clear, logical hierarchies.
+Diagrams or trees for inheritance, collaboration, sub-packaging,
+etc. are desirable but not required.</p></li>
+<li><p>The output must include indexes that provide a comprehensive view
+of all packages, modules, and classes.  These indexes will provide
+readers with a clear and exhaustive view of the code base.  These
+indexes should be presented in a way that is easily accessible and
+allows easy navigation.</p></li>
+<li><p>Cross-references to other documented elements will be used
+throughout the documentation, to enable the reader to move quickly
+relevant information.  For example, where type information for an
+element is available, the type definition should be
+cross-referenced.</p></li>
+<li><p>The HTML suite should provide consistent navigation back to the
+home page, which will include the following information:</p>
+<ul class="simple">
+<li><p>Bibliographic information</p>
+<ul>
+<li><p>Author</p></li>
+<li><p>Copyright</p></li>
+<li><p>Release date</p></li>
+<li><p>Version number</p></li>
+</ul>
+</li>
+<li><p>Abstract</p></li>
+<li><p>References</p>
+<ul>
+<li><p>Links to related internal docs (i.e., other docs for the same
+product)</p></li>
+<li><p>Links to related external docs (e.g., supporting development
+docs, Python support docs, docs for included packages)</p></li>
+</ul>
+</li>
+</ul>
+<p>It should be possible to specify similar information at the top
+level of each package, so that packages can be included as
+appropriate for a given application.</p>
+</li>
+</ol>
+</section>
+</section>
+<section id="license">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink"><span class="sectnum">2 </span>License</a><a class="self-link" title="link to this section" href="#license"></a></h2>
+<p>Enthought intends to release the software under an open-source
+(&quot;BSD-style&quot;) license.</p>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="enthought-rfp.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

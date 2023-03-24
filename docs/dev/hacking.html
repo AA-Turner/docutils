@@ -1,0 +1,268 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Lea Wiemann" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Hacker's Guide</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-hacker-s-guide">
+<h1 class="title"><a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Hacker's Guide</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>Lea Wiemann</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+<dt class="prerequisites">Prerequisites<span class="colon">:</span></dt>
+<dd class="prerequisites"><p>You have used <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> and played around with
+the <a class="reference external" href="../user/tools.html">Docutils front-end tools</a> before.  Some (basic) Python
+knowledge is certainly helpful (though not necessary, strictly
+speaking).</p>
+</dd>
+</dl>
+<div class="topic abstract" role="doc-abstract">
+<p class="topic-title">Abstract</p>
+<p>This is the introduction to Docutils for all persons who
+want to extend Docutils in some way.</p>
+</div>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#overview-of-the-docutils-architecture" id="toc-entry-1">Overview of the Docutils Architecture</a></p>
+<ul>
+<li><p><a class="reference internal" href="#reading-the-document" id="toc-entry-2">Reading the Document</a></p></li>
+<li><p><a class="reference internal" href="#parsing-the-document" id="toc-entry-3">Parsing the Document</a></p></li>
+<li><p><a class="reference internal" href="#transforming-the-document" id="toc-entry-4">Transforming the Document</a></p></li>
+<li><p><a class="reference internal" href="#writing-the-document" id="toc-entry-5">Writing the Document</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#extending-docutils" id="toc-entry-6">Extending Docutils</a></p>
+<ul>
+<li><p><a class="reference internal" href="#modifying-the-document-tree-before-it-is-written" id="toc-entry-7">Modifying the Document Tree Before It Is Written</a></p></li>
+<li><p><a class="reference internal" href="#the-node-interface" id="toc-entry-8">The Node Interface</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#what-now" id="toc-entry-9">What Now?</a></p></li>
+</ul>
+</nav>
+<section id="overview-of-the-docutils-architecture">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Overview of the Docutils Architecture</a><a class="self-link" title="link to this section" href="#overview-of-the-docutils-architecture"></a></h2>
+<p>To give you an understanding of the Docutils architecture, we'll dive
+right into the internals using a practical example.</p>
+<p>Consider the following reStructuredText file:</p>
+<pre class="literal-block">My *favorite* language is Python_.
+
+.. _Python: https://www.python.org/</pre>
+<p>Using the <span class="docutils literal">rst2html.py</span> front-end tool, you would get an HTML output
+which looks like this:</p>
+<pre class="literal-block">[uninteresting HTML code removed]
+&lt;body&gt;
+&lt;div class=&quot;document&quot;&gt;
+&lt;p&gt;My &lt;em&gt;favorite&lt;/em&gt; language is &lt;a class=&quot;reference&quot; href=&quot;https://www.python.org/&quot;&gt;Python&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>While this looks very simple, it's enough to illustrate all internal
+processing stages of Docutils.  Let's see how this document is
+processed from the reStructuredText source to the final HTML output:</p>
+<section id="reading-the-document">
+<h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Reading the Document</a><a class="self-link" title="link to this section" href="#reading-the-document"></a></h3>
+<p>The <strong>Reader</strong> reads the document from the source file and passes it
+to the parser (see below).  The default reader is the standalone
+reader (<span class="docutils literal">docutils/readers/standalone.py</span>) which just reads the input
+data from a single text file.  Unless you want to do really fancy
+things, there is no need to change that.</p>
+<p>Since you probably won't need to touch readers, we will just move on
+to the next stage:</p>
+</section>
+<section id="parsing-the-document">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Parsing the Document</a><a class="self-link" title="link to this section" href="#parsing-the-document"></a></h3>
+<p>The <strong>Parser</strong> analyzes the the input document and creates a <strong>node
+tree</strong> representation.  In this case we are using the
+<strong>reStructuredText parser</strong>:</p>
+<pre class="code python literal-block"><code><span class="keyword namespace">from</span> <span class="name namespace">docutils</span> <span class="keyword namespace">import</span> <span class="name">frontend</span><span class="punctuation">,</span> <span class="name">utils</span><span class="whitespace">
+</span><span class="keyword namespace">from</span> <span class="name namespace">docutils.parsers.rst</span> <span class="keyword namespace">import</span> <span class="name">Parser</span><span class="whitespace">
+</span><span class="name">settings</span> <span class="operator">=</span> <span class="name">frontend</span><span class="operator">.</span><span class="name">get_default_settings</span><span class="punctuation">(</span><span class="name">Parser</span><span class="punctuation">)</span><span class="whitespace">
+</span><span class="keyword">with</span> <span class="name builtin">open</span><span class="punctuation">(</span><span class="literal string single">'test.txt'</span><span class="punctuation">,</span> <span class="name">encoding</span><span class="operator">=</span><span class="literal string single">'utf-8'</span><span class="punctuation">)</span> <span class="keyword">as</span> <span class="name">file</span><span class="punctuation">:</span><span class="whitespace">
+</span>    <span class="name">document</span> <span class="operator">=</span> <span class="name">utils</span><span class="operator">.</span><span class="name">new_document</span><span class="punctuation">(</span><span class="name">file</span><span class="operator">.</span><span class="name">name</span><span class="punctuation">,</span> <span class="name">settings</span><span class="punctuation">)</span><span class="whitespace">
+</span>    <span class="name">Parser</span><span class="punctuation">()</span><span class="operator">.</span><span class="name">parse</span><span class="punctuation">(</span><span class="name">file</span><span class="operator">.</span><span class="name">read</span><span class="punctuation">(),</span> <span class="name">document</span><span class="punctuation">)</span></code></pre>
+<p>Let us now examine the node tree.
+With <span class="docutils literal"><span class="pre">print(document.pformat())</span></span> we get:</p>
+<pre class="literal-block">&lt;document source=&quot;test.txt&quot;&gt;
+    &lt;paragraph&gt;
+        My
+        &lt;emphasis&gt;
+            favorite
+         language is
+        &lt;reference name=&quot;Python&quot; refname=&quot;python&quot;&gt;
+            Python
+        .
+    &lt;target ids=&quot;python&quot; names=&quot;python&quot; refuri=&quot;https://www.python.org/&quot;&gt;</pre>
+<p>The top-level node is <span class="docutils literal">document</span>.  It has a <span class="docutils literal">source</span> attribute
+whose value is <span class="docutils literal">text.txt</span>.  There are two children: A <span class="docutils literal">paragraph</span>
+node and a <span class="docutils literal">target</span> node.  The <span class="docutils literal">paragraph</span> in turn has children: A
+text node (&quot;My &quot;), an <span class="docutils literal">emphasis</span> node, a text node (&quot; language is &quot;),
+a <span class="docutils literal">reference</span> node, and again a <span class="docutils literal">Text</span> node (&quot;.&quot;).</p>
+<p>These node types (<span class="docutils literal">document</span>, <span class="docutils literal">paragraph</span>, <span class="docutils literal">emphasis</span>, etc.) are
+all defined in <span class="docutils literal">docutils/nodes.py</span>.  The node types are internally
+arranged as a class hierarchy (for example, both <span class="docutils literal">emphasis</span> and
+<span class="docutils literal">reference</span> have the common superclass <span class="docutils literal">Inline</span>).  To get an
+overview of the node class hierarchy, use epydoc (type <span class="docutils literal">epydoc nodes.py</span>) and look at the class hierarchy tree.</p>
+<aside class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>While <a class="reference external" href="../user/tools.html#rst2pseudoxml">rst2pseudoxml</a> shows the node tree after <a class="reference internal" href="#transforming-the-document">transforming the
+document</a>, the script <a class="reference external" href="https://docutils.sourceforge.io/tools/dev/quicktest.py">quicktest.py</a> (in the <span class="docutils literal">tools/dev/</span> directory
+of the Docutils distribution) shows the direct result of parsing a
+reStructuredText sample.</p>
+</aside>
+</section>
+<section id="transforming-the-document">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Transforming the Document</a><a class="self-link" title="link to this section" href="#transforming-the-document"></a></h3>
+<p>In the node tree above, the <span class="docutils literal">reference</span> node does not contain the
+target URI (<span class="docutils literal"><span class="pre">https://www.python.org/</span></span>) yet.</p>
+<p>Assigning the target URI (from the <span class="docutils literal">target</span> node) to the
+<span class="docutils literal">reference</span> node is <em>not</em> done by the parser (the parser only
+translates the input document into a node tree).</p>
+<p>Instead, it's done by a <strong>Transform</strong>.  In this case (resolving a
+reference), it's done by the <span class="docutils literal">ExternalTargets</span> transform in
+<span class="docutils literal">docutils/transforms/references.py</span>.</p>
+<p>The Transforms are applied after parsing.  To see how the node tree
+has changed after applying the Transforms, we use the
+<a class="reference external" href="../user/tools.html#rst2pseudoxml">rst2pseudoxml</a> tool <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>:</p>
+<pre class="literal-block">$ rst2pseudoxml.py test.txt
+&lt;document source=&quot;test.txt&quot;&gt;
+    &lt;paragraph&gt;
+        My
+        &lt;emphasis&gt;
+            favorite
+         language is
+        &lt;reference name=&quot;Python&quot; **refuri=&quot;https://www.python.org/&quot;**&gt;
+            Python
+        .
+    &lt;target ids=&quot;python&quot; names=&quot;python&quot; ``refuri=&quot;https://www.python.org/&quot;``&gt;</pre>
+<p>For our small test document, the only change is that the <span class="docutils literal">refname</span>
+attribute of the reference has been replaced by a <span class="docutils literal">refuri</span>
+attribute—the reference has been resolved.</p>
+<p>While this does not look very exciting, transforms are a powerful tool
+to apply any kind of transformation on the node tree.
+In fact, there are quite a lot of Transforms, which do various useful
+things like creating the table of contents, applying substitution
+references or resolving auto-numbered footnotes. For details, see
+<a class="reference external" href="../api/transforms.html">Docutils Transforms</a>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-1">1</a><span class="fn-bracket">]</span></span>
+<p>You can also get a standard XML representation of the
+node tree by using <a class="reference external" href="../user/tools.html#rst2xml">rst2xml</a> instead of <a class="reference external" href="../user/tools.html#rst2pseudoxml">rst2pseudoxml</a>.</p>
+</aside>
+</aside>
+</section>
+<section id="writing-the-document">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Writing the Document</a><a class="self-link" title="link to this section" href="#writing-the-document"></a></h3>
+<p>To get an HTML document out of the node tree, we use a <strong>Writer</strong>, the
+HTML writer in this case (<span class="docutils literal">docutils/writers/html4css1.py</span>).</p>
+<p>The writer receives the node tree and returns the output document.
+For HTML output, we can test this using the <span class="docutils literal">rst2html.py</span> tool:</p>
+<pre class="literal-block">$ rst2html.py --link-stylesheet test.txt
+&lt;?xml version=&quot;1.0&quot; encoding=&quot;utf-8&quot; ?&gt;
+&lt;!DOCTYPE html PUBLIC &quot;-//W3C//DTD XHTML 1.0 Transitional//EN&quot; &quot;https://www.w3.org/TR/xhtml1/DTD/xhtml1-transitional.dtd&quot;&gt;
+&lt;html xmlns=&quot;https://www.w3.org/1999/xhtml&quot; xml:lang=&quot;en&quot; lang=&quot;en&quot;&gt;
+&lt;head&gt;
+&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=utf-8&quot; /&gt;
+&lt;meta name=&quot;generator&quot; content=&quot;Docutils 0.3.10: https://docutils.sourceforge.io/&quot; /&gt;
+&lt;title&gt;&lt;/title&gt;
+&lt;link rel=&quot;stylesheet&quot; href=&quot;../docutils/writers/html4css1/html4css1.css&quot; type=&quot;text/css&quot; /&gt;
+&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;document&quot;&gt;
+&lt;p&gt;My &lt;em&gt;favorite&lt;/em&gt; language is &lt;a class=&quot;reference&quot; href=&quot;https://www.python.org/&quot;&gt;Python&lt;/a&gt;.&lt;/p&gt;
+&lt;/div&gt;
+&lt;/body&gt;
+&lt;/html&gt;</pre>
+<p>So here we finally have our HTML output.  The actual document contents
+are in the fourth-last line.  Note, by the way, that the HTML writer
+did not render the (invisible) <span class="docutils literal">target</span> node—only the
+<span class="docutils literal">paragraph</span> node and its children appear in the HTML output.</p>
+</section>
+</section>
+<section id="extending-docutils">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Extending Docutils</a><a class="self-link" title="link to this section" href="#extending-docutils"></a></h2>
+<p>Now you'll ask, &quot;how do I actually extend Docutils?&quot;</p>
+<p>First of all, once you are clear about <em>what</em> you want to achieve, you
+have to decide <em>where</em> to implement it—in the Parser (e.g. by
+adding a directive or role to the reStructuredText parser), as a
+Transform, or in the Writer.  There is often one obvious choice among
+those three (Parser, Transform, Writer).  If you are unsure, ask on
+the <a class="reference external" href="../user/mailing-lists.html#docutils-develop">Docutils-develop</a> mailing list.</p>
+<p>In order to find out how to start, it is often helpful to look at
+similar features which are already implemented.  For example, if you
+want to add a new directive to the reStructuredText parser, look at
+the implementation of a similar directive in
+<span class="docutils literal">docutils/parsers/rst/directives/</span>.</p>
+<section id="modifying-the-document-tree-before-it-is-written">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Modifying the Document Tree Before It Is Written</a><a class="self-link" title="link to this section" href="#modifying-the-document-tree-before-it-is-written"></a></h3>
+<p>You can modify the document tree right before the writer is called.
+One possibility is to use the <a class="reference external" href="../api/publisher.html#publish_doctree">publish_doctree</a> and
+<a class="reference external" href="../api/publisher.html#publish_from_doctree">publish_from_doctree</a> functions.</p>
+<p>To retrieve the document tree, call:</p>
+<pre class="literal-block">document = docutils.core.publish_doctree(...)</pre>
+<p>Please see the docstring of publish_doctree for a list of parameters.</p>
+<!-- XXX Need to write a well-readable list of (commonly used) options
+of the publish_* functions.  Probably in api/publisher.txt. -->
+<p><span class="docutils literal">document</span> is the root node of the document tree.  You can now
+change the document by accessing the <span class="docutils literal">document</span> node and its
+children—see <a class="reference internal" href="#the-node-interface">The Node Interface</a> below.</p>
+<p>When you're done with modifying the document tree, you can write it
+out by calling:</p>
+<pre class="literal-block">output = docutils.core.publish_from_doctree(document, ...)</pre>
+</section>
+<section id="the-node-interface">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">The Node Interface</a><a class="self-link" title="link to this section" href="#the-node-interface"></a></h3>
+<p>As described in the overview above, Docutils' internal representation
+of a document is a tree of nodes.  We'll now have a look at the
+interface of these nodes.</p>
+<p>(To be completed.)</p>
+</section>
+</section>
+<section id="what-now">
+<h2><a class="toc-backref" href="#toc-entry-9" role="doc-backlink">What Now?</a><a class="self-link" title="link to this section" href="#what-now"></a></h2>
+<p>This document is not complete.  Many topics could (and should) be
+covered here.  To find out with which topics we should write about
+first, we are awaiting <em>your</em> feedback.  So please ask your questions
+on the <a class="reference external" href="../user/mailing-lists.html#docutils-develop">Docutils-develop</a> mailing list.</p>
+<!-- Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+sentence-end-double-space: t
+fill-column: 70
+End: -->
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="hacking.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

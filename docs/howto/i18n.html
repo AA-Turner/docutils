@@ -1,0 +1,198 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Internationalization</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-internationalization">
+<h1 class="title"><a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Internationalization</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#language-module-names" id="toc-entry-1">Language Module Names</a></p></li>
+<li><p><a class="reference internal" href="#docutils-language-module" id="toc-entry-2">Docutils Language Module</a></p></li>
+<li><p><a class="reference internal" href="#restructuredtext-language-module" id="toc-entry-3">reStructuredText Language Module</a></p></li>
+<li><p><a class="reference internal" href="#testing-the-language-modules" id="toc-entry-4">Testing the Language Modules</a></p></li>
+<li><p><a class="reference internal" href="#submitting-the-language-modules" id="toc-entry-5">Submitting the Language Modules</a></p></li>
+</ul>
+</nav>
+<p>This document describes the internationalization facilities of the
+<a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> project.  <a class="reference external" href="http://www.debian.org/doc/manuals/intro-i18n/">Introduction to i18n</a> by Tomohiro KUBOTA is a
+good general reference.  &quot;Internationalization&quot; is often abbreviated
+as &quot;i18n&quot;: &quot;i&quot; + 18 letters + &quot;n&quot;.</p>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The i18n facilities of Docutils should be considered a &quot;first
+draft&quot;.  They work so far, but improvements are welcome.
+Specifically, standard i18n facilities like &quot;gettext&quot; have yet to
+be explored.</p>
+</aside>
+<p>Docutils is designed to work flexibly with text in multiple languages
+(one language at a time).  Language-specific features are (or should
+be <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>) fully parameterized.  To enable a new language, two modules
+have to be added to the project: one for Docutils itself (the
+<a class="reference internal" href="#docutils-language-module">Docutils Language Module</a>) and one for the reStructuredText parser
+(the <a class="reference internal" href="#restructuredtext-language-module">reStructuredText Language Module</a>). Users may add local language
+support via a module in the PYTHONPATH root (e.g. the working directory).</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-1">1</a><span class="fn-bracket">]</span></span>
+<p>If anything in Docutils is insufficiently parameterized, it
+should be considered a bug.  Please report bugs to the Docutils
+project bug tracker on SourceForge at
+<a class="reference external" href="https://sourceforge.net/p/docutils/bugs/">https://sourceforge.net/p/docutils/bugs/</a></p>
+</aside>
+</aside>
+<section id="language-module-names">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Language Module Names</a><a class="self-link" title="link to this section" href="#language-module-names"></a></h2>
+<p>Language modules are named using <a class="reference external" href="https://www.w3.org/International/articles/language-tags/">language tags</a> as defined in
+<a class="reference external" href="https://www.rfc-editor.org/rfc/bcp/bcp47.txt">BCP 47</a>. <a class="footnote-reference brackets" href="#footnote-2" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> in lowercase, converting hyphens to underscores <a class="footnote-reference brackets" href="#footnote-3" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>A typical language identifier consists of a 2-letter language code
+from <a class="reference external" href="http://www.loc.gov/standards/iso639-2/php/English_list.php">ISO 639</a> (3-letter codes can be used if no 2-letter code
+exists). The language identifier can have an optional subtag,
+typically for variations based on country (from <a class="reference external" href="http://www.iso.ch/iso/en/prods-services/iso3166ma/02iso-3166-code-lists/index.html">ISO 3166</a> 2-letter
+country codes).  If no language identifier is specified, the default
+is &quot;en&quot; for English.  Examples of module names include <span class="docutils literal">en.py</span>,
+<span class="docutils literal">fr.py</span>, <span class="docutils literal">ja.py</span>, and <span class="docutils literal">pt_br.py</span>.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-2">2</a><span class="fn-bracket">]</span></span>
+<p>BCP stands for 'Best Current Practice', and is a persistent
+name for a series of RFCs whose numbers change as they are updated.
+The latest RFC describing language tag syntax is RFC 5646, Tags for
+the Identification of Languages, and it obsoletes the older RFCs
+4646, 3066 and 1766.</p>
+</aside>
+<aside class="footnote brackets" id="footnote-3" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-3">3</a><span class="fn-bracket">]</span></span>
+<p>Subtags are separated from primary tags by underscores instead
+of hyphens, to conform to Python naming rules.</p>
+</aside>
+</aside>
+</section>
+<section id="docutils-language-module">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Docutils Language Module</a><a class="self-link" title="link to this section" href="#docutils-language-module"></a></h2>
+<p>Modules in <span class="docutils literal">docutils/languages</span> contain language mappings for
+markup-independent language-specific features of Docutils.  To make a
+new language module, just copy the <span class="docutils literal">en.py</span> file, rename it with the
+code for your language (see <a class="reference internal" href="#language-module-names">Language Module Names</a> above), and
+translate the terms as described below.</p>
+<p>Each Docutils language module contains three module attributes:</p>
+<dl>
+<dt><span class="docutils literal">labels</span></dt>
+<dd><p>This is a mapping of node class names to language-dependent
+boilerplate label text.  The label text is used by Writer
+components when they encounter <a class="reference external" href="../ref/doctree.html">document tree</a> elements whose
+<a class="reference external" href="../ref/doctree.html#element-reference">class names</a> are the mapping keys.</p>
+<p>The entry <strong>values</strong> (<em>not</em> the keys) should be translated to the
+target language.</p>
+</dd>
+<dt><span class="docutils literal">bibliographic_fields</span></dt>
+<dd><p>This is a mapping of language-dependent field names (converted to
+lower case) to canonical field names (keys of
+<span class="docutils literal">DocInfo.biblio_notes</span> in <span class="docutils literal">docutils.transforms.frontmatter</span>).
+It is used when transforming <a class="reference external" href="../ref/rst/restructuredtext.html#bibliographic-fields">bibliographic fields</a>.</p>
+<p>The <strong>keys</strong> should be translated to the target language.</p>
+</dd>
+<dt><span class="docutils literal">author_separators</span></dt>
+<dd><p>This is a list of strings used to parse the '<a class="reference external" href="..ref/doctree.html#authors">Authors</a>'
+bibliographic field.  They separate individual authors' names, and
+are tried in order (i.e., earlier items take priority, and the
+first item that matches wins).  The English-language module
+defines them as <span class="docutils literal"><span class="pre">[';',</span> <span class="pre">',']</span></span>; semi-colons can be used to
+separate names like &quot;Arthur Pewtie, Esq.&quot;.</p>
+<p>Most languages won't have to &quot;translate&quot; this list.</p>
+</dd>
+</dl>
+</section>
+<section id="restructuredtext-language-module">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">reStructuredText Language Module</a><a class="self-link" title="link to this section" href="#restructuredtext-language-module"></a></h2>
+<p>Modules in <span class="docutils literal">docutils/parsers/rst/languages</span> contain language
+mappings for language-specific features of the reStructuredText
+parser.  To make a new language module, just copy the <span class="docutils literal">en.py</span> file,
+rename it with the code for your language (see <a class="reference internal" href="#language-module-names">Language Module
+Names</a> above), and translate the terms as described below.</p>
+<p>Each reStructuredText language module contains two module attributes:</p>
+<dl>
+<dt><span class="docutils literal">directives</span></dt>
+<dd><p>This is a mapping from language-dependent directive names to
+canonical directive names.  The canonical directive names are
+registered in <span class="docutils literal">docutils/parsers/rst/directives/__init__.py</span>,
+in <span class="docutils literal">_directive_registry</span> and documented in
+<a class="reference external" href="../ref/rst/directives.html">reStructuredText Directives</a>.</p>
+<p>The keys should be translated to the target language.  Synonyms
+(multiple keys with the same values) are allowed; this is useful
+for abbreviations.</p>
+</dd>
+<dt><span class="docutils literal">roles</span></dt>
+<dd><p>This is a mapping language-dependent role names to canonical role
+names for interpreted text.  The canonical role names are
+registered in <span class="docutils literal">docutils/parsers/rst/states.py</span>, in
+<span class="docutils literal">Inliner._interpreted_roles</span> (this may change) and documented
+in <a class="reference external" href="../ref/rst/roles.html">reStructuredText Interpreted Text Roles</a>.</p>
+<p>The keys should be translated to the target language.  Synonyms
+(multiple keys with the same values) are allowed; this is useful
+for abbreviations.</p>
+</dd>
+</dl>
+</section>
+<section id="testing-the-language-modules">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Testing the Language Modules</a><a class="self-link" title="link to this section" href="#testing-the-language-modules"></a></h2>
+<p>Whenever a new language module is added or an existing one modified,
+the unit tests should be run.  The test modules can be found in the
+docutils/test directory from <a class="reference external" href="https://sourceforge.net/p/docutils/code/HEAD/tree/trunk/">code</a> or from the <a class="reference external" href="https://sourceforge.net/p/docutils/code/HEAD/tarball">latest snapshot</a>.</p>
+<p>The <span class="docutils literal">test_language.py</span> module can be run as a script.  With no
+arguments, it will test all language modules.  With one or more
+language codes, it will test just those languages.  For example:</p>
+<pre class="literal-block">$ python test_language.py en
+..
+----------------------------------------
+Ran 2 tests in 0.095s
+
+OK</pre>
+<p>Use the &quot;alltests.py&quot; script to run all test modules, exhaustively
+testing the parser and other parts of the Docutils system.</p>
+</section>
+<section id="submitting-the-language-modules">
+<h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Submitting the Language Modules</a><a class="self-link" title="link to this section" href="#submitting-the-language-modules"></a></h2>
+<p>If you do not have repository write access and want to contribute your
+language modules, feel free to submit them via the <a class="reference external" href="https://sourceforge.net/p/docutils/patches/">SourceForge patch
+tracker</a>.</p>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="i18n.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

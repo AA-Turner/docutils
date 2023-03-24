@@ -1,0 +1,101 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Lea Wiemann" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Writing HTML (CSS) Stylesheets for Docutils</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body>
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="writing-html-css-stylesheets-for-docutils">
+<h1 class="title">Writing HTML (CSS) Stylesheets for <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a></h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>Lea Wiemann</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<p>The look of Docutils' HTML output is customizable via CSS stylesheets.
+The default stylesheets can be found in the
+<span class="docutils literal">docutils/writers/html*/</span> directories of the <span class="docutils literal">html4css1</span> and
+<span class="docutils literal"><span class="pre">html-base</span></span> writers in the Docutils installation.  Use the front-end
+command (<span class="docutils literal">rst2html.py</span> or <span class="docutils literal">rst2html5.py</span>) with the
+<span class="docutils literal"><span class="pre">--help</span></span> option and look at the description of the <span class="docutils literal"><span class="pre">--stylesheet-path</span></span>
+command-line option for the exact machine-specific location.</p>
+<p>To customize the look of HTML documents, you can override the settings
+of the default stylesheet in your own stylesheet. Specify both, the
+default stylesheet and your stylesheet to the <span class="docutils literal"><span class="pre">--stylesheet</span></span> or
+<span class="docutils literal"><span class="pre">--stylesheet-path</span></span> command line option (or the corresponding
+settings in a <a class="reference external" href="../user/config.txt">configuration</a> file), e.g.</p>
+<pre class="literal-block">rst2html.py --stylesheet=html4css1.css,transition-stars.css</pre>
+<p>This is the preferable approach if you want to embed the stylesheet(s), as
+this ensures that an up-to-date version of <span class="docutils literal">html4css1.css</span> is embedded.</p>
+<p>Alternatively, copy the default style sheet to the same place as your
+output HTML files will go and place a new file (e.g. called
+<span class="docutils literal"><span class="pre">my-docutils.css</span></span>) in the same directory and use the following
+template:</p>
+<pre class="literal-block">/*
+:Author: Your Name
+:Contact: Your Email Address
+:Copyright: This stylesheet has been placed in the public domain.
+
+Stylesheet for use with Docutils.  [Optionally place a more
+detailed description here.]
+*/
+
+&#64;import url(html4css1.css);
+
+/* Your customizations go here.  For example: */
+
+h1, h2, h3, h4, h5, h6, p.topic-title {
+  font-family: sans-serif }</pre>
+<p>For help on the CSS syntax, see, e.g., the <a class="reference external" href="https://www.w3.org/Style/CSS/#specs">W3C Specification</a>, the
+<a class="reference external" href="http://www.htmlhelp.com/reference/css/">WDG's guide to Cascading Style Sheets</a>, or the <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/CSS">MDN Web Docs</a>.</p>
+<p>It is important that you do not edit a copy of <span class="docutils literal">html4css1.css</span>
+directly because <span class="docutils literal">html4css1.css</span> is frequently updated with each new
+release of Docutils.</p>
+<p>Also make sure that you import <span class="docutils literal">html4css1.css</span> (using &quot;<span class="docutils literal">&#64;import url(html4css1.css);</span>&quot;) because the definitions contained in the
+default stylesheet are required for correct rendering (margins,
+alignment, etc.).</p>
+<p>If you think your stylesheet is fancy and you would like to let others
+benefit from your efforts, you are encouraged to post the stylesheet to the
+<a class="reference external" href="../user/mailing-lists.html#docutils-users">Docutils-users</a> mailing list. It might find its place in the <a class="reference external" href="../../../sandbox/stylesheets/">stylesheet
+collection</a> in the Docutils <a class="reference external" href="../../../sandbox">Sandbox</a>.</p>
+<p>If you decide to share your stylesheet with other users of Docutils,
+please keep website-specific customizations not applicable to
+Docutils' HTML code in a separate stylesheet.</p>
+<!-- base for relative links is /docutils/docs/howto/ -->
+<!-- Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+sentence-end-double-space: t
+fill-column: 70
+End: -->
+</main>
+<footer>
+<p><a class="reference external" href="html-stylesheets.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

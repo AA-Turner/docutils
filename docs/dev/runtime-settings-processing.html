@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger, Günter Milde" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Runtime Settings Processing</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="runtime-settings-processing">
+<h1 class="title">Runtime Settings Processing</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger, Günter Milde</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<div class="topic abstract" role="doc-abstract">
+<p class="topic-title">Abstract</p>
+<p>A detailled description of Docutil's settings processing
+framework.</p>
+</div>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#settings-priority" id="toc-entry-1">Settings priority</a></p></li>
+<li><p><a class="reference internal" href="#runtime-settings-processing-for-command-line-tools" id="toc-entry-2">Runtime settings processing for command-line tools</a></p></li>
+<li><p><a class="reference internal" href="#runtime-settings-processing-for-other-applications" id="toc-entry-3">Runtime settings processing for other applications</a></p></li>
+</ul>
+</nav>
+<p>The <span class="docutils literal">docutils/__init__.py</span>, <span class="docutils literal">docutils/core.py</span>, and
+<span class="docutils literal">docutils.frontend.py</span> modules are described.
+Following along with the actual code is recommended.</p>
+<p>See <a class="reference external" href="../api/runtime-settings.html">Docutils Runtime Settings</a> for a high-level description of the core
+API and <a class="reference external" href="../user/config.html#configuration-files">Docutils Configuration</a> for a description of the individual
+settings.</p>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This document is informal.
+It describes the state in Docutils 0.18.1.
+Implementation details will change with the move to replace the
+deprecated <a class="reference external" href="https://docs.python.org/dev/library/optparse.html">optparse</a> module with <a class="reference external" href="https://docs.python.org/dev/library/argparse.html">argparse</a>.</p>
+</aside>
+<section id="settings-priority">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Settings priority</a><a class="self-link" title="link to this section" href="#settings-priority"></a></h2>
+<p>Docutils overlays default and explicitly specified values from various
+sources such that settings behave the way we want and expect them to
+behave.</p>
+<p>The souces are overlaid in the following order (later sources
+overwrite earlier ones):</p>
+<ol class="arabic">
+<li><p>Defaults specified in <a class="reference external" href="../api/runtime-settings.html#settingsspec-settings-spec">settings_spec</a> and
+<a class="reference external" href="../api/runtime-settings.html#settingsspec-settings-defaults">settings_defaults</a> attributes for each <a class="reference external" href="../api/runtime-settings.html#components">component</a>.
+(<a class="reference internal" href="#optionparser-populate-from-components">details</a>)</p>
+</li>
+<li><p>Defaults specified in <a class="reference external" href="../api/runtime-settings.html#settingsspec-settings-default-overrides">settings_default_overrides</a> attribute for
+each <a class="reference external" href="../api/runtime-settings.html#components">component</a>.
+(<a class="reference internal" href="#component-settings-default-overrides">details</a>)</p>
+</li>
+<li><p>Settings specified in the <a class="reference external" href="../api/runtime-settings.html#settings-overrides-parameter">settings_overrides parameter</a> of the
+<a class="reference external" href="../api/runtime-settings.html#convenience-functions">convenience functions</a> rsp. the <cite>settings_overrides</cite> attribute of
+a <cite>core.Publisher</cite> instance.
+(<a class="reference internal" href="#optionparser-defaults">details</a>)</p>
+</li>
+<li><p>If enabled, settings specified in <a class="reference external" href="../api/runtime-settings.html#active-sections">active sections</a> of the
+<a class="reference external" href="../user/config.html#configuration-files">configuration files</a> in the order described in
+<a class="reference external" href="../user/config.html#configuration-file-sections-entries">Configuration File Sections &amp; Entries</a>. (<a class="reference internal" href="#optionparser-get-standard-config-settings">details</a>)</p>
+<p>See also <a class="reference external" href="../user/config.html#configuration-file-sections-entries">Configuration File Sections &amp; Entries</a>.</p>
+</li>
+<li><p>If enabled, command line arguments (<a class="reference internal" href="#publisher-process-command-line">details</a>).</p>
+</li>
+</ol>
+<p>Settings assigned to the <a class="reference external" href="../api/runtime-settings.html#settings-parameter">settings parameter</a> of the
+<a class="reference external" href="../api/runtime-settings.html#convenience-functions">convenience functions</a> or the <span class="docutils literal">Publisher.settings</span> attribute
+are used <strong>instead of</strong> the above sources
+(see below for details for <a class="reference internal" href="#publisher-publish">command-line tools</a> and
+<a class="reference internal" href="#publisher-process-programmatic-settings">other applications</a>).</p>
+</section>
+<section id="runtime-settings-processing-for-command-line-tools">
+<span id="command-line-tools"></span><h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Runtime settings processing for command-line tools</a><a class="self-link" title="link to this section" href="#runtime-settings-processing-for-command-line-tools"></a></h2>
+<p>The command-line <a class="reference external" href="../user/tools.html">front-end tools</a> usually import and call
+the <a class="reference external" href="../api/runtime-settings.html#convenience-functions">convenience function</a> <span class="docutils literal">docutils.core.publish_cmdline()</span>.</p>
+<ol class="arabic">
+<li><p><span class="docutils literal">docutils.core.publish_cmdline()</span> creates a <a class="reference external" href="../peps/pep-0258.html#publisher">Publisher</a> instance:</p>
+<pre class="literal-block">publisher = core.Publisher(…, settings)</pre>
+<p>eventually sets the <a class="reference external" href="../api/runtime-settings.html#components">components</a> from the respective names, and calls</p>
+<pre class="literal-block">publisher.publish(argv, …, settings_spec,
+                  settings_overrides, config_section, …)</pre>
+</li>
+<li id="publisher-publish"><p>If <cite>publisher.settings</cite> is None, <span class="docutils literal">publisher.publish()</span> calls:</p>
+<pre class="literal-block">publisher.process_command_line(…,
+    settings_spec, config_section, **defaults)</pre>
+<p>with <cite>defaults</cite> taken from <cite>publisher.settings_overrides</cite>.</p>
+<p>If <cite>publisher.settings</cite> is defined, steps 3 to 5 are skipped.</p>
+</li>
+<li><p><span class="docutils literal">publisher.process_command_line()</span> calls:</p>
+<pre class="literal-block">optpar = publisher.setup_option_parser(…,
+             settings_spec, config_section, **defaults)</pre>
+</li>
+<li id="publisher-setup-option-parser"><p><span class="docutils literal">publisher.setup_option_parser()</span></p>
+<ul>
+<li><p>merges the value of the <a class="reference external" href="../api/runtime-settings.html#config-section-parameter">config_section parameter</a> into
+<cite>settings_spec</cite> and</p></li>
+<li><p>creates an <cite>OptionParser</cite> instance</p>
+<pre class="literal-block">optpar = docutils.frontend.OptionParser(components, defaults)</pre>
+<p>with <cite>components</cite> the tuple of the <a class="reference external" href="../api/runtime-settings.html#settingsspec">SettingsSpec</a> instances
+<span class="docutils literal">(publisher.parser, publisher.reader, publisher.writer, settings_spec)</span></p>
+</li>
+</ul>
+</li>
+<li id="optionparser-populate-from-components"><p>The <cite>OptionParser</cite> instance prepends itself to the <cite>components</cite> tuple
+and calls <span class="docutils literal">self.populate_from_components(components)</span>, which updates
+the attribute <span class="docutils literal">self.defaults</span> in two steps:</p>
+<ol class="loweralpha simple">
+<li><p>For each component passed, <span class="docutils literal">component.settings_spec</span> is processed
+and <span class="docutils literal">component.settings_defaults</span> is applied.</p>
+</li>
+<li id="component-settings-default-overrides"><p>In a second loop, for each component
+<span class="docutils literal">component.settings_default_overrides</span> is applied. This way,
+<span class="docutils literal">component.settings_default_overrides</span> can override the default
+settings of any other component.</p></li>
+</ol>
+</li>
+<li id="optionparser-defaults"><p>Back in <span class="docutils literal">OptionParser.__init__()</span>, <span class="docutils literal">self.defaults</span> is updated with
+the <cite>defaults</cite> argument passed to <span class="docutils literal"><span class="pre">OptionParser(…)</span></span> in step 5.</p>
+<p>This means that the <cite>settings_overrides</cite> argument of the
+<a class="reference external" href="../api/runtime-settings.html#convenience-functions">convenience functions</a> has priority over all
+<span class="docutils literal">SettingsSpec.settings_spec</span> defaults.</p>
+</li>
+<li id="optionparser-get-standard-config-settings"><p>If configuration files are enabled,
+<span class="docutils literal">self.get_standard_config_settings()</span> is called.</p>
+<p>This reads the Docutils <a class="reference external" href="../user/config.html#configuration-files">configuration files</a>, and returns a
+dictionary of settings in <a class="reference external" href="../api/runtime-settings.html#active-sections">active sections</a> which is used to update
+<span class="docutils literal">optpar.defaults</span>. So configuration file settings have priority over
+all software-defined defaults.</p>
+</li>
+<li id="publisher-process-command-line"><p><span class="docutils literal">publisher.process_command_line()</span> calls <span class="docutils literal">optpar.parse_args()</span>.
+The OptionParser parses all command line options and returns a
+<cite>docutils.frontend.Values</cite> object.
+This is assigned to <span class="docutils literal">publisher.settings</span>.
+So command-line options have priority over configuration file
+settings.</p></li>
+<li><p>The <cite>&lt;source&gt;</cite> and <cite>&lt;destination&gt;</cite> command-line arguments
+are also parsed, and assigned to <span class="docutils literal">publisher.settings._source</span>
+and <span class="docutils literal">publisher.settings._destination</span> respectively.</p></li>
+<li><p><span class="docutils literal">publisher.publish()</span> calls <span class="docutils literal">publisher.set_io()</span> with no arguments.
+If either <span class="docutils literal">publisher.source</span> or <span class="docutils literal">publisher.destination</span> are not
+set, the corresponding <span class="docutils literal">publisher.set_source()</span> and
+<span class="docutils literal">publisher.set_destination()</span> are called:</p>
+<dl class="simple">
+<dt><span class="docutils literal">publisher.set_source()</span></dt>
+<dd><p>checks for a <span class="docutils literal">source_path</span> argument, and if there is none (which
+is the case for command-line use), it is taken from
+<span class="docutils literal">publisher.settings._source</span>.  <span class="docutils literal">publisher.source</span> is set by
+instantiating a <span class="docutils literal">publisher.source_class</span> object.
+For command-line front-end tools, the default
+<span class="docutils literal">publisher.source_class</span> (i.e. <span class="docutils literal">docutils.io.FileInput</span>)
+is used.</p>
+</dd>
+<dt><span class="docutils literal">publisher.set_destination()</span></dt>
+<dd><p>does the same job for the destination. (the default
+<span class="docutils literal">publisher.destination_class</span> is <span class="docutils literal">docutils.io.FileOutput</span>).</p>
+</dd>
+</dl>
+</li>
+<li id="accessing-the-runtime-settings"><p><span class="docutils literal">publisher.publish()</span> passes <span class="docutils literal">publisher.settings</span> to the <a class="reference external" href="../peps/pep-0258.html#reader">reader</a>
+component's <span class="docutils literal">read()</span> method.</p></li>
+<li><p>The reader component creates a new <a class="reference external" href="../ref/doctree.html#document">document root node</a>.
+<span class="docutils literal">nodes.document.__init__()</span> adds the settings to the internal
+attributes.</p>
+<p>All components acting on the Document Tree are handed the
+<span class="docutils literal">document</span> root node and can access the runtime settings as
+<span class="docutils literal">document.settings</span>.</p>
+</li>
+</ol>
+</section>
+<section id="runtime-settings-processing-for-other-applications">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Runtime settings processing for other applications</a><a class="self-link" title="link to this section" href="#runtime-settings-processing-for-other-applications"></a></h2>
+<p>The <a class="reference external" href="../api/runtime-settings.html#convenience-functions">convenience functions</a> , <span class="docutils literal">core.publish_file()</span>,
+<span class="docutils literal">core.publish_string()</span>, or <span class="docutils literal">core.publish_parts()</span> do not parse the
+command line for settings.</p>
+<ol class="arabic">
+<li><p>The convenience functions call the generic programmatic interface
+function <span class="docutils literal">core.publish_programmatically()</span> that creates a
+<cite>core.Publisher</cite> instance</p>
+<pre class="literal-block">pub = core.Publisher(…, settings)</pre>
+<p>eventually sets the <a class="reference external" href="../api/runtime-settings.html#components">components</a> from the respective names, and calls</p>
+<pre class="literal-block">publisher.process_programmatic_settings(
+    settings_spec, settings_overrides, config_section)</pre>
+</li>
+<li id="publisher-process-programmatic-settings"><p>If <cite>publisher.settings</cite> is None,
+<span class="docutils literal">publisher.process_programmatic_settings()</span> calls:</p>
+<pre class="literal-block">publisher.get_settings(settings_spec, config_section, **defaults)</pre>
+<p>with <cite>defaults</cite> taken from <cite>publisher.settings_overrides</cite>.</p>
+<p>If <cite>publisher.settings</cite> is defined, the following steps are skipped.</p>
+</li>
+<li><p><span class="docutils literal">publisher.get_settings()</span> calls:</p>
+<pre class="literal-block">optpar = publisher.setup_option_parser(…,
+             settings_spec, config_section, **defaults)</pre>
+</li>
+<li><p>The OptionParser instance determines setting defaults
+as described in <a class="reference internal" href="#publisher-setup-option-parser">steps 4 to 7</a> in the previous section.</p>
+</li>
+<li><p>Back in <span class="docutils literal">publisher.get_settings()</span>, the <span class="docutils literal">frontend.Values</span> instance
+returned by <span class="docutils literal">optpar.get_default_values()</span> is stored in
+<span class="docutils literal">publisher.settings</span>.</p></li>
+<li><p><span class="docutils literal">publish_programmatically()</span> continues with setting
+<span class="docutils literal">publisher.source</span> and <span class="docutils literal">publisher.destination</span>.</p></li>
+<li><p>Finally, <span class="docutils literal">publisher.publish()</span> is called. As <span class="docutils literal">publisher.settings</span>
+is not None, no further command line processing takes place.</p></li>
+<li><p>All components acting on the Document Tree are handed the
+<span class="docutils literal">document</span> root node and can access the runtime settings as
+<span class="docutils literal">document.settings</span> (cf. <a class="reference internal" href="#accessing-the-runtime-settings">steps 11 and 12</a> in the previous section).</p>
+</li>
+</ol>
+<!-- References: -->
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="runtime-settings-processing.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

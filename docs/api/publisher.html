@@ -1,0 +1,428 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>The Docutils Publisher</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="the-docutils-publisher">
+<h1 class="title">The Docutils Publisher</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#publisher-convenience-functions" id="toc-entry-1">Publisher Convenience Functions</a></p>
+<ul>
+<li><p><a class="reference internal" href="#configuration" id="toc-entry-2">Configuration</a></p></li>
+<li><p><a class="reference internal" href="#encodings" id="toc-entry-3">Encodings</a></p>
+<ul>
+<li><p><a class="reference internal" href="#explicit-encoding-declaration" id="toc-entry-4">Explicit encoding declaration</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#publish-parts-details" id="toc-entry-5"><span class="docutils literal">publish_parts()</span> Details</a></p>
+<ul>
+<li><p><a class="reference internal" href="#parts-provided-by-all-writers" id="toc-entry-6">Parts Provided By All Writers</a></p></li>
+<li><p><a class="reference internal" href="#parts-provided-by-the-html-writers" id="toc-entry-7">Parts Provided By the HTML Writers</a></p>
+<ul>
+<li><p><a class="reference internal" href="#html4-writer" id="toc-entry-8">HTML4 Writer</a></p></li>
+<li><p><a class="reference internal" href="#pep-html-writer" id="toc-entry-9">PEP/HTML Writer</a></p></li>
+<li><p><a class="reference internal" href="#s5-html-writer" id="toc-entry-10">S5/HTML Writer</a></p></li>
+<li><p><a class="reference internal" href="#html5-writer" id="toc-entry-11">HTML5 Writer</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#parts-provided-by-the-latex2e-writer" id="toc-entry-12">Parts Provided by the LaTeX2e Writer</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>The <span class="docutils literal">docutils.core.Publisher</span> class is the core of Docutils,
+managing all the processing and relationships between components.  See
+<a class="reference external" href="../peps/pep-0258.html">PEP 258</a> for an overview of Docutils components.</p>
+<p>The <span class="docutils literal">docutils.core.publish_*</span> convenience functions are the normal
+entry points for using Docutils as a library.</p>
+<p>See <a class="reference external" href="../howto/cmdline-tool.html">Inside A Docutils Command-Line Front-End Tool</a> for an overview
+of a typical Docutils front-end tool, including how the Publisher
+class is used.</p>
+<section id="publisher-convenience-functions">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Publisher Convenience Functions</a><a class="self-link" title="link to this section" href="#publisher-convenience-functions"></a></h2>
+<p>Each of these functions set up a <span class="docutils literal">docutils.core.Publisher</span> object,
+then call its <span class="docutils literal">publish</span> method.  <span class="docutils literal">docutils.core.Publisher.publish</span>
+handles everything else.  There are several convenience functions in
+the <span class="docutils literal">docutils.core</span> module:</p>
+<dl class="field-list">
+<dt><span class="target" id="publish-cmdline">publish_cmdline()</span><span class="colon">:</span></dt>
+<dd><p>for command-line front-end tools, like
+<span class="docutils literal">rst2html.py</span>.  There are several examples in the <span class="docutils literal">tools/</span>
+directory.  A detailed analysis of one such tool is in <a class="reference external" href="../howto/cmdline-tool.html">Inside A
+Docutils Command-Line Front-End Tool</a></p>
+</dd>
+<dt><span class="target" id="publish-file">publish_file()</span><span class="colon">:</span></dt>
+<dd><p>for programmatic use with file-like I/O.  In
+addition to writing the encoded output to a file, also returns the
+encoded output as a <cite>bytes</cite> instance.</p>
+</dd>
+<dt><span class="target" id="publish-string">publish_string()</span><span class="colon">:</span></dt>
+<dd><p>for programmatic use with <a class="reference internal" href="#string-i-o">string I/O</a>.  Returns
+the encoded output as a string <a class="footnote-reference brackets" href="#string-output" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+</dd>
+<dt><span class="target" id="publish-parts">publish_parts()</span><span class="colon">:</span></dt>
+<dd><p>for programmatic use with string input <a class="footnote-reference brackets" href="#string-input" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>;
+returns a dictionary of document parts.  Dictionary keys are the names of
+parts, and values are <cite>str</cite> instances; encoding is up to the client.
+Useful when only portions of the processed document are desired.
+See <a class="reference internal" href="#publish-parts-details">publish_parts() Details</a> below.</p>
+<p>There are usage examples in the <a class="reference external" href="../../docutils/examples.py">docutils/examples.py</a> module.</p>
+</dd>
+<dt><span class="target" id="publish-doctree">publish_doctree()</span><span class="colon">:</span></dt>
+<dd><p>for programmatic use with string input <a class="footnote-reference brackets" href="#string-input" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>;
+returns a Docutils document tree data structure (doctree).
+The doctree can be modified, pickled &amp; unpickled, etc., and then
+reprocessed with <a class="reference internal" href="#publish-from-doctree">publish_from_doctree()</a>.</p>
+</dd>
+<dt><span class="target" id="publish-from-doctree">publish_from_doctree()</span><span class="colon">:</span></dt>
+<dd><p>for programmatic use to render from an
+existing document tree data structure (doctree); returns the encoded
+output as a string <a class="footnote-reference brackets" href="#string-output" id="footnote-reference-4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>.</p>
+</dd>
+<dt><span class="target" id="publish-programmatically">publish_programmatically()</span><span class="colon">:</span></dt>
+<dd><p>for custom programmatic use.  This
+function implements common code and is used by <span class="docutils literal">publish_file</span>,
+<span class="docutils literal">publish_string</span>, and <span class="docutils literal">publish_parts</span>.  It returns a 2-tuple:
+the encoded string output <a class="footnote-reference brackets" href="#string-output" id="footnote-reference-5" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and the Publisher object.</p>
+</dd>
+</dl>
+<span class="target" id="string-i-o"></span><aside class="footnote-list brackets">
+<aside class="footnote brackets" id="string-input" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-2">1</a>,<a role="doc-backlink" href="#footnote-reference-3">2</a>)</span>
+<p>Input can be a <cite>str</cite> or <cite>bytes</cite> instance.
+<cite>bytes</cite> are decoded with <a class="reference external" href="../user/config.html#input-encoding">input_encoding</a>.</p>
+</aside>
+<aside class="footnote brackets" id="string-output" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-1">1</a>,<a role="doc-backlink" href="#footnote-reference-4">2</a>,<a role="doc-backlink" href="#footnote-reference-5">3</a>)</span>
+<p>Output is a <cite>bytes</cite> instance unless
+<a class="reference external" href="../user/config.html#output-encoding">output_encoding</a> is set to the special value <span class="docutils literal">&quot;unicode&quot;</span>.</p>
+</aside>
+</aside>
+<section id="configuration">
+<h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Configuration</a><a class="self-link" title="link to this section" href="#configuration"></a></h3>
+<p>To pass application-specific setting defaults to the Publisher
+convenience functions, use the <span class="docutils literal">settings_overrides</span> parameter.  Pass
+a dictionary of setting names &amp; values, like this:</p>
+<pre class="literal-block">overrides = {'input_encoding': 'ascii',
+             'output_encoding': 'latin-1'}
+output = publish_string(..., settings_overrides=overrides)</pre>
+<p>Settings from command-line options override configuration file
+settings, and they override application defaults.  For details, see
+<a class="reference external" href="./runtime-settings.html">Docutils Runtime Settings</a>.  See <a class="reference external" href="../user/config.html">Docutils Configuration</a> for
+details about individual settings.</p>
+</section>
+<section id="encodings">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Encodings</a><a class="self-link" title="link to this section" href="#encodings"></a></h3>
+<p>The default <strong>input encoding</strong> is UTF-8 (codec 'utf-8-sig').
+A different encoding can be specified with the <a class="reference external" href="../user/config.html#input-encoding">input_encoding</a> setting
+or an <a class="reference internal" href="#explicit-encoding-declaration">explicit encoding declaration</a> (BOM or special comment).
+If the encoding is unspecified and decoding with UTF-8 fails,
+the <a class="reference external" href="https://docs.python.org/3/library/locale.html#locale.getpreferredencoding">preferred encoding</a> is used as a fallback
+(if it maps to a valid codec and differs from UTF-8).</p>
+<p>The default behaviour differs from Python's <cite>open()</cite>:</p>
+<ul class="simple">
+<li><p>The UTF-8 encoding is tried before the <a class="reference external" href="https://docs.python.org/3/library/locale.html#locale.getpreferredencoding">preferred encoding</a>.
+(This is almost sure to fail if the actual source encoding differs.)</p></li>
+<li><p>An <a class="reference internal" href="#explicit-encoding-declaration">explicit encoding declaration</a> in the source takes precedence
+over the <a class="reference external" href="https://docs.python.org/3/library/locale.html#locale.getpreferredencoding">preferred encoding</a>.</p></li>
+<li><p>An optional <a class="reference external" href="https://docs.python.org/3/library/codecs.html#codecs.BOM">BOM</a> is removed from UTF-8 encoded sources.</p></li>
+</ul>
+<p>The default <strong>output encoding</strong> of Docutils is UTF-8.
+A different encoding can be specified with the <a class="reference external" href="../user/config.html#output-encoding">output_encoding</a> setting.
+Docutils may introduce some non-ASCII text if you use
+<a class="reference external" href="../ref/rst/restructuredtext.html#auto-symbol-footnotes">auto-symbol footnotes</a> or the <a class="reference external" href="../ref/rst/directives.html#table-of-contents">&quot;contents&quot; directive</a>.</p>
+<section id="explicit-encoding-declaration">
+<h4><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Explicit encoding declaration</a><a class="self-link" title="link to this section" href="#explicit-encoding-declaration"></a></h4>
+<p>A <cite>Unicode byte order mark</cite> (<a class="reference external" href="https://docs.python.org/3/library/codecs.html#codecs.BOM">BOM</a>) in the source is interpreted as
+encoding declaration.</p>
+<p>The encoding of a reStructuredText source file can also be given by a
+&quot;magic comment&quot; similar to <a class="reference external" href="https://peps.python.org/pep-0263">PEP 263</a>.
+This makes the input encoding both <em>visible</em> and <em>changeable</em>
+on a per-source file basis.</p>
+<p>To declare the input encoding, a comment like</p>
+<pre class="literal-block">.. text encoding: &lt;encoding name&gt;</pre>
+<p>must be placed into the source file either as first or second line.</p>
+<p>Examples: (using formats recognized by popular editors)</p>
+<pre class="literal-block">.. -*- mode: rst -*-
+   -*- coding: latin1 -*-</pre>
+<p>or:</p>
+<pre class="literal-block">.. vim: set fileencoding=cp737 :</pre>
+<p>More precisely, the first and second line are searched for the following
+regular expression:</p>
+<pre class="literal-block">coding[:=]\s*([-\w.]+)</pre>
+<p>The first group of this expression is then interpreted as encoding name.
+If the first line matches the second line is ignored.</p>
+</section>
+</section>
+</section>
+<section id="publish-parts-details">
+<h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink"><span class="docutils literal">publish_parts()</span> Details</a><a class="self-link" title="link to this section" href="#publish-parts-details"></a></h2>
+<p>The <span class="docutils literal">docutils.core.publish_parts()</span> convenience function returns a
+dictionary of document parts.  Dictionary keys are the names of parts,
+and values are <cite>str</cite> instances.</p>
+<p>Each Writer component may publish a different set of document parts,
+described below.  Not all writers implement all parts.</p>
+<section id="parts-provided-by-all-writers">
+<h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Parts Provided By All Writers</a><a class="self-link" title="link to this section" href="#parts-provided-by-all-writers"></a></h3>
+<dl class="simple">
+<dt><span class="target" id="encoding">encoding</span></dt>
+<dd><p>The output encoding setting.</p>
+</dd>
+<dt><span class="target" id="version">version</span></dt>
+<dd><p>The version of Docutils used.</p>
+</dd>
+<dt><span class="target" id="whole">whole</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['whole']</span></span> contains the entire formatted document.</p>
+</dd>
+</dl>
+</section>
+<section id="parts-provided-by-the-html-writers">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Parts Provided By the HTML Writers</a><a class="self-link" title="link to this section" href="#parts-provided-by-the-html-writers"></a></h3>
+<section id="html4-writer">
+<h4><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">HTML4 Writer</a><a class="self-link" title="link to this section" href="#html4-writer"></a></h4>
+<dl>
+<dt><span class="target" id="body">body</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body']</span></span> is equivalent to parts['<a class="reference internal" href="#fragment">fragment</a>'].  It is
+<em>not</em> equivalent to parts['<a class="reference internal" href="#html-body">html_body</a>'].</p>
+</dd>
+<dt><span class="target" id="body-prefix">body_prefix</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body_prefix']</span></span> contains:</p>
+<pre class="literal-block">&lt;/head&gt;
+&lt;body&gt;
+&lt;div class=&quot;document&quot; ...&gt;</pre>
+<p>and, if applicable:</p>
+<pre class="literal-block">&lt;div class=&quot;header&quot;&gt;
+...
+&lt;/div&gt;</pre>
+</dd>
+<dt><span class="target" id="body-pre-docinfo">body_pre_docinfo</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body_pre_docinfo]</span></span> contains (as applicable):</p>
+<pre class="literal-block">&lt;h1 class=&quot;title&quot;&gt;...&lt;/h1&gt;
+&lt;h2 class=&quot;subtitle&quot; id=&quot;...&quot;&gt;...&lt;/h2&gt;</pre>
+</dd>
+<dt><span class="target" id="body-suffix">body_suffix</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body_suffix']</span></span> contains:</p>
+<pre class="literal-block">&lt;/div&gt;</pre>
+<p>(the end-tag for <span class="docutils literal">&lt;div <span class="pre">class=&quot;document&quot;&gt;</span></span>), the footer division
+if applicable:</p>
+<pre class="literal-block">&lt;div class=&quot;footer&quot;&gt;
+...
+&lt;/div&gt;</pre>
+<p>and:</p>
+<pre class="literal-block">&lt;/body&gt;
+&lt;/html&gt;</pre>
+</dd>
+<dt><span class="target" id="docinfo">docinfo</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['docinfo']</span></span> contains the document bibliographic data, the
+docinfo field list rendered as a table.</p>
+</dd>
+<dt><span class="target" id="footer">footer</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['footer']</span></span> contains the document footer content, meant to
+appear at the bottom of a web page, or repeated at the bottom of
+every printed page.</p>
+</dd>
+<dt><span class="target" id="fragment">fragment</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['fragment']</span></span> contains the document body (<em>not</em> the HTML
+<span class="docutils literal">&lt;body&gt;</span>).  In other words, it contains the entire document,
+less the document title, subtitle, docinfo, header, and footer.</p>
+</dd>
+<dt><span class="target" id="head">head</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['head']</span></span> contains <span class="docutils literal">&lt;meta ... /&gt;</span> tags and the document
+<span class="docutils literal"><span class="pre">&lt;title&gt;...&lt;/title&gt;</span></span>.</p>
+</dd>
+<dt><span class="target" id="head-prefix">head_prefix</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['head_prefix']</span></span> contains the XML declaration, the DOCTYPE
+declaration, the <span class="docutils literal">&lt;html <span class="pre">...&gt;</span></span> start tag and the <span class="docutils literal">&lt;head&gt;</span> start
+tag.</p>
+</dd>
+<dt><span class="target" id="header">header</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['header']</span></span> contains the document header content, meant to
+appear at the top of a web page, or repeated at the top of every
+printed page.</p>
+</dd>
+<dt><span class="target" id="html-body">html_body</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['html_body']</span></span> contains the HTML <span class="docutils literal">&lt;body&gt;</span> content, less
+the <span class="docutils literal">&lt;body&gt;</span> and <span class="docutils literal">&lt;/body&gt;</span> tags themselves.</p>
+</dd>
+<dt><span class="target" id="html-head">html_head</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['html_head']</span></span> contains the HTML <span class="docutils literal">&lt;head&gt;</span> content, less
+the stylesheet link and the <span class="docutils literal">&lt;head&gt;</span> and <span class="docutils literal">&lt;/head&gt;</span> tags
+themselves.  Since <span class="docutils literal">publish_parts</span> returns <cite>str</cite> instances and
+does not know about the output encoding, the &quot;Content-Type&quot; meta
+tag's &quot;charset&quot; value is left unresolved, as &quot;%s&quot;:</p>
+<pre class="literal-block">&lt;meta http-equiv=&quot;Content-Type&quot; content=&quot;text/html; charset=%s&quot; /&gt;</pre>
+<p>The interpolation should be done by client code.</p>
+</dd>
+<dt><span class="target" id="html-prolog">html_prolog</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['html_prolog]</span></span> contains the XML declaration and the
+doctype declaration.  The XML declaration's &quot;encoding&quot; attribute's
+value is left unresolved, as &quot;%s&quot;:</p>
+<pre class="literal-block">&lt;?xml version=&quot;1.0&quot; encoding=&quot;%s&quot; ?&gt;</pre>
+<p>The interpolation should be done by client code.</p>
+</dd>
+<dt><span class="target" id="html-subtitle">html_subtitle</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['html_subtitle']</span></span> contains the document subtitle,
+including the enclosing <span class="docutils literal">&lt;h2 <span class="pre">class=&quot;subtitle&quot;&gt;</span></span> and <span class="docutils literal">&lt;/h2&gt;</span>
+tags.</p>
+</dd>
+<dt><span class="target" id="html-title">html_title</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['html_title']</span></span> contains the document title, including the
+enclosing <span class="docutils literal">&lt;h1 <span class="pre">class=&quot;title&quot;&gt;</span></span> and <span class="docutils literal">&lt;/h1&gt;</span> tags.</p>
+</dd>
+<dt><span class="target" id="meta">meta</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['meta']</span></span> contains all <span class="docutils literal">&lt;meta ... /&gt;</span> tags.</p>
+</dd>
+<dt><span class="target" id="stylesheet">stylesheet</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['stylesheet']</span></span> contains the embedded stylesheet or
+stylesheet link.</p>
+</dd>
+<dt><span class="target" id="subtitle">subtitle</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['subtitle']</span></span> contains the document subtitle text and any
+inline markup.  It does not include the enclosing <span class="docutils literal">&lt;h2&gt;</span> and
+<span class="docutils literal">&lt;/h2&gt;</span> tags.</p>
+</dd>
+<dt><span class="target" id="title">title</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['title']</span></span> contains the document title text and any inline
+markup.  It does not include the enclosing <span class="docutils literal">&lt;h1&gt;</span> and <span class="docutils literal">&lt;/h1&gt;</span>
+tags.</p>
+</dd>
+</dl>
+</section>
+<section id="pep-html-writer">
+<h4><a class="toc-backref" href="#toc-entry-9" role="doc-backlink">PEP/HTML Writer</a><a class="self-link" title="link to this section" href="#pep-html-writer"></a></h4>
+<p>The PEP/HTML writer provides the same parts as the <a class="reference internal" href="#html4-writer">HTML4 writer</a>,
+plus the following:</p>
+<dl class="simple">
+<dt><span class="target" id="pepnum">pepnum</span></dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['pepnum']</span></span> contains the PEP number
+(extracted from the <a class="reference external" href="https://peps.python.org/pep-0001/#pep-header-preamble">header preamble</a>).</p>
+</dd>
+</dl>
+</section>
+<section id="s5-html-writer">
+<h4><a class="toc-backref" href="#toc-entry-10" role="doc-backlink">S5/HTML Writer</a><a class="self-link" title="link to this section" href="#s5-html-writer"></a></h4>
+<p>The S5/HTML writer provides the same parts as the <a class="reference internal" href="#html4-writer">HTML4 writer</a>.</p>
+</section>
+<section id="html5-writer">
+<h4><a class="toc-backref" href="#toc-entry-11" role="doc-backlink">HTML5 Writer</a><a class="self-link" title="link to this section" href="#html5-writer"></a></h4>
+<p>The HTML5 writer provides the same parts as the <a class="reference internal" href="#html4-writer">HTML4 writer</a>.
+However, it uses semantic HTML5 elements for the document, header and
+footer.</p>
+</section>
+</section>
+<section id="parts-provided-by-the-latex2e-writer">
+<h3><a class="toc-backref" href="#toc-entry-12" role="doc-backlink">Parts Provided by the LaTeX2e Writer</a><a class="self-link" title="link to this section" href="#parts-provided-by-the-latex2e-writer"></a></h3>
+<p>See the template files <a class="reference external" href="https://docutils.sourceforge.io/docutils/writers/latex2e/default.tex">default.tex</a>, <a class="reference external" href="https://docutils.sourceforge.io/docutils/writers/latex2e/titlepage.tex">titlepage.tex</a>, <a class="reference external" href="https://docutils.sourceforge.io/docutils/writers/latex2e/titlingpage.tex">titlingpage.tex</a>,
+and <a class="reference external" href="https://docutils.sourceforge.io/docutils/writers/latex2e/xelatex.tex">xelatex.tex</a> for examples how these parts can be combined
+into a valid LaTeX document.</p>
+<dl>
+<dt>abstract</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['abstract']</span></span> contains the formatted content of the
+'abstract' docinfo field.</p>
+</dd>
+<dt>body</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body']</span></span> contains the document's content. In other words, it
+contains the entire document, except the document title, subtitle, and
+docinfo.</p>
+<p>This part can be included into another LaTeX document body using the
+<span class="docutils literal">\input{}</span> command.</p>
+</dd>
+<dt>body_pre_docinfo</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['body_pre_docinfo]</span></span> contains the <span class="docutils literal">\maketitle</span> command.</p>
+</dd>
+<dt>dedication</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['dedication']</span></span> contains the formatted content of the
+'dedication' docinfo field.</p>
+</dd>
+<dt>docinfo</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['docinfo']</span></span> contains the document bibliographic data, the
+docinfo field list rendered as a table.</p>
+<p>With <span class="docutils literal"><span class="pre">--use-latex-docinfo</span></span> 'author', 'organization', 'contact',
+'address' and 'date' info is moved to titledata.</p>
+<p>'dedication' and 'abstract' are always moved to separate parts.</p>
+</dd>
+<dt>fallbacks</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['fallbacks']</span></span> contains fallback definitions for
+Docutils-specific commands and environments.</p>
+</dd>
+<dt>head_prefix</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['head_prefix']</span></span> contains the declaration of
+documentclass and document options.</p>
+</dd>
+<dt>latex_preamble</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['latex_preamble']</span></span> contains the argument of the
+<span class="docutils literal"><span class="pre">--latex-preamble</span></span> option.</p>
+</dd>
+<dt>pdfsetup</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['pdfsetup']</span></span> contains the PDF properties
+(&quot;hyperref&quot; package setup).</p>
+</dd>
+<dt>requirements</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['requirements']</span></span> contains required packages and setup
+before the stylesheet inclusion.</p>
+</dd>
+<dt>stylesheet</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['stylesheet']</span></span> contains the embedded stylesheet(s) or
+stylesheet loading command(s).</p>
+</dd>
+<dt>subtitle</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['subtitle']</span></span> contains the document subtitle text and any
+inline markup.</p>
+</dd>
+<dt>title</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['title']</span></span> contains the document title text and any inline
+markup.</p>
+</dd>
+<dt>titledata</dt>
+<dd><p><span class="docutils literal"><span class="pre">parts['titledata]</span></span> contains the combined title data in
+<span class="docutils literal">\title</span>, <span class="docutils literal">\author</span>, and <span class="docutils literal">\date</span> macros.</p>
+<p>With <span class="docutils literal"><span class="pre">--use-latex-docinfo</span></span>, this includes the 'author',
+'organization', 'contact', 'address' and 'date' docinfo items.</p>
+</dd>
+</dl>
+</section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="publisher.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

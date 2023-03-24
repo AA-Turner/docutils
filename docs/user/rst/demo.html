@@ -1,0 +1,775 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta content="reStructuredText, demonstration, demo, parser" name="keywords" />
+<meta content="A demonstration of the reStructuredText markup language, containing examples of all basic constructs and many advanced constructs." lang="en" name="description" xml:lang="en" />
+<meta content="reStructuredText, test, parser" name="keywords" />
+<meta content="A test document, containing at least one example of each reStructuredText construct." lang="en" name="description" xml:lang="en" />
+<meta name="author" content="David Goodger" />
+<meta name="author" content="Me" />
+<meta name="author" content="Myself" />
+<meta name="author" content="I" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain. You may do with it as you wish. You may copy, modify, redistribute, reattribute, sell, buy, rent, lease, destroy, or improve it, quote it at length, excerpt, incorporate, collate, fold, staple, or mutilate it, or do anything else to it that your or anyone else's heart desires." />
+<title>reStructuredText Demonstration</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<main id="restructuredtext-demonstration">
+<h1 class="title">reStructuredText Demonstration</h1>
+<p class="subtitle" id="examples-of-syntax-constructs">Examples of Syntax Constructs</p>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="address">Address<span class="colon">:</span></dt>
+<dd class="address"><pre class="address">123 Example Street
+Example, EX  Canada
+A1B 2C3
+</pre>
+</dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="authors">Authors<span class="colon">:</span></dt>
+<dd class="authors"><p>Me</p>
+<p>Myself</p>
+<p>I</p>
+</dd>
+<dt class="organization">Organization<span class="colon">:</span></dt>
+<dd class="organization">humankind</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="status">Status<span class="colon">:</span></dt>
+<dd class="status">This is a &quot;work in progress&quot;</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="version">Version<span class="colon">:</span></dt>
+<dd class="version">1</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain. You
+may do with it as you wish. You may copy, modify,
+redistribute, reattribute, sell, buy, rent, lease,
+destroy, or improve it, quote it at length, excerpt,
+incorporate, collate, fold, staple, or mutilate it, or do
+anything else to it that your or anyone else's heart
+desires.</dd>
+<dt class="field-name">field name<span class="colon">:</span></dt>
+<dd class="field-name"><p>This is a generic bibliographic field.</p>
+</dd>
+<dt class="field-name-2">field name 2<span class="colon">:</span></dt>
+<dd class="field-name-2"><p>Generic bibliographic fields may contain multiple body elements.</p>
+<p>Like this.</p>
+</dd>
+</dl>
+<div class="topic dedication" role="doc-dedication">
+<p class="topic-title">Dedication</p>
+<p>For Docutils users &amp; co-developers.</p>
+</div>
+<div class="topic abstract" role="doc-abstract">
+<p class="topic-title">Abstract</p>
+<p>This document is a demonstration of the reStructuredText markup
+language, containing examples of all basic reStructuredText
+constructs and many advanced constructs.</p>
+</div>
+<!-- This is a comment. Note how any initial comments are moved by
+transforms to after the document title, subtitle, and docinfo. -->
+<!-- Above is the document title, and below is the subtitle.
+They are transformed from section titles after parsing. -->
+<!-- bibliographic fields (which also require a transform): -->
+<nav class="contents" id="table-of-contents" role="doc-toc">
+<p class="topic-title">Table of Contents</p>
+<ul class="auto-toc simple">
+<li><p><a class="reference internal" href="#structural-elements" id="toc-entry-1"><span class="sectnum">1 </span>Structural Elements</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#section-title" id="toc-entry-2"><span class="sectnum">1.1 </span>Section Title</a></p></li>
+<li><p><a class="reference internal" href="#transitions" id="toc-entry-3"><span class="sectnum">1.2 </span>Transitions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#body-elements" id="toc-entry-4"><span class="sectnum">2 </span>Body Elements</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#paragraphs" id="toc-entry-5"><span class="sectnum">2.1 </span>Paragraphs</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#inline-markup" id="toc-entry-6"><span class="sectnum">2.1.1 </span>Inline Markup</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#bullet-lists" id="toc-entry-7"><span class="sectnum">2.2 </span>Bullet Lists</a></p></li>
+<li><p><a class="reference internal" href="#enumerated-lists" id="toc-entry-8"><span class="sectnum">2.3 </span>Enumerated Lists</a></p></li>
+<li><p><a class="reference internal" href="#definition-lists" id="toc-entry-9"><span class="sectnum">2.4 </span>Definition Lists</a></p></li>
+<li><p><a class="reference internal" href="#field-lists" id="toc-entry-10"><span class="sectnum">2.5 </span>Field Lists</a></p></li>
+<li><p><a class="reference internal" href="#option-lists" id="toc-entry-11"><span class="sectnum">2.6 </span>Option Lists</a></p></li>
+<li><p><a class="reference internal" href="#literal-blocks" id="toc-entry-12"><span class="sectnum">2.7 </span>Literal Blocks</a></p></li>
+<li><p><a class="reference internal" href="#line-blocks" id="toc-entry-13"><span class="sectnum">2.8 </span>Line Blocks</a></p></li>
+<li><p><a class="reference internal" href="#block-quotes" id="toc-entry-14"><span class="sectnum">2.9 </span>Block Quotes</a></p></li>
+<li><p><a class="reference internal" href="#doctest-blocks" id="toc-entry-15"><span class="sectnum">2.10 </span>Doctest Blocks</a></p></li>
+<li><p><a class="reference internal" href="#tables" id="toc-entry-16"><span class="sectnum">2.11 </span>Tables</a></p></li>
+<li><p><a class="reference internal" href="#footnotes" id="toc-entry-17"><span class="sectnum">2.12 </span>Footnotes</a></p></li>
+<li><p><a class="reference internal" href="#citations" id="toc-entry-18"><span class="sectnum">2.13 </span>Citations</a></p></li>
+<li><p><a class="reference internal" href="#targets" id="toc-entry-19"><span class="sectnum">2.14 </span>Targets</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#duplicate-target-names" id="toc-entry-20"><span class="sectnum">2.14.1 </span>Duplicate Target Names</a></p></li>
+<li><p><a class="reference internal" href="#duplicate-target-names-1" id="toc-entry-21"><span class="sectnum">2.14.2 </span>Duplicate Target Names</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#directives" id="toc-entry-22"><span class="sectnum">2.15 </span>Directives</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#document-parts" id="toc-entry-23"><span class="sectnum">2.15.1 </span>Document Parts</a></p></li>
+<li><p><a class="reference internal" href="#images" id="toc-entry-24"><span class="sectnum">2.15.2 </span>Images</a></p></li>
+<li><p><a class="reference internal" href="#admonitions" id="toc-entry-25"><span class="sectnum">2.15.3 </span>Admonitions</a></p></li>
+<li><p><a class="reference internal" href="#topics-sidebars-and-rubrics" id="toc-entry-26"><span class="sectnum">2.15.4 </span>Topics, Sidebars, and Rubrics</a></p></li>
+<li><p><a class="reference internal" href="#target-footnotes" id="toc-entry-27"><span class="sectnum">2.15.5 </span>Target Footnotes</a></p></li>
+<li><p><a class="reference internal" href="#replacement-text" id="toc-entry-28"><span class="sectnum">2.15.6 </span>Replacement Text</a></p></li>
+<li><p><a class="reference internal" href="#compound-paragraph" id="toc-entry-29"><span class="sectnum">2.15.7 </span>Compound Paragraph</a></p></li>
+<li><p><a class="reference internal" href="#meta" id="toc-entry-30"><span class="sectnum">2.15.8 </span>Meta</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#substitution-definitions" id="toc-entry-31"><span class="sectnum">2.16 </span>Substitution Definitions</a></p></li>
+<li><p><a class="reference internal" href="#comments" id="toc-entry-32"><span class="sectnum">2.17 </span>Comments</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#error-handling" id="toc-entry-33"><span class="sectnum">3 </span>Error Handling</a></p></li>
+</ul>
+</nav>
+<section id="structural-elements">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink"><span class="sectnum">1 </span>Structural Elements</a><a class="self-link" title="link to this section" href="#structural-elements"></a></h2>
+<section id="section-title">
+<h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink"><span class="sectnum">1.1 </span>Section Title</a><a class="self-link" title="link to this section" href="#section-title"></a></h3>
+<p>That's it, the text just above this line.</p>
+</section>
+<section id="transitions">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink"><span class="sectnum">1.2 </span>Transitions</a><a class="self-link" title="link to this section" href="#transitions"></a></h3>
+<p>Here's a transition:</p>
+<hr class="docutils" />
+<p>It divides the section.</p>
+</section>
+</section>
+<section id="body-elements">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink"><span class="sectnum">2 </span>Body Elements</a><a class="self-link" title="link to this section" href="#body-elements"></a></h2>
+<section id="paragraphs">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink"><span class="sectnum">2.1 </span>Paragraphs</a><a class="self-link" title="link to this section" href="#paragraphs"></a></h3>
+<p>A paragraph.</p>
+<section id="inline-markup">
+<h4><a class="toc-backref" href="#toc-entry-6" role="doc-backlink"><span class="sectnum">2.1.1 </span>Inline Markup</a><a class="self-link" title="link to this section" href="#inline-markup"></a></h4>
+<p>Paragraphs contain text and may contain inline markup: <em>emphasis</em>,
+<strong>strong emphasis</strong>, <span class="docutils literal">inline literals</span>, standalone hyperlinks
+(<a class="reference external" href="https://www.python.org">https://www.python.org</a>), external hyperlinks (<a class="reference external" href="https://www.python.org">Python</a> <a class="footnote-reference brackets" href="#footnote-6" id="footnote-reference-9" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>), internal
+cross-references (<a class="reference internal" href="#example">example</a>), external hyperlinks with embedded URIs
+(<a class="reference external" href="https://www.python.org">Python web site</a>), footnote references
+(manually numbered <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>, anonymous auto-numbered <a class="footnote-reference brackets" href="#footnote-2" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, labeled
+auto-numbered <a class="footnote-reference brackets" href="#label" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>, or symbolic <a class="footnote-reference brackets" href="#footnote-3" id="footnote-reference-4" role="doc-noteref"><span class="fn-bracket">[</span>*<span class="fn-bracket">]</span></a>), citation references
+(<a class="citation-reference" href="#cit2002" id="citation-reference-1" role="doc-biblioref">[CIT2002]</a>), substitution references (<img alt="EXAMPLE" src="images/biohazard.png" />), and <span class="target" id="inline-hyperlink-targets">inline
+hyperlink targets</span> (see <a class="reference internal" href="#targets">Targets</a> below for a reference back to here).
+Character-level inline markup is also possible (although exceedingly
+ugly!) in <em>re</em><span class="docutils literal">Structured</span><em>Text</em>.  Problems are indicated by
+<a href="#system-message-1"><span class="problematic" id="problematic-1">|problematic|</span></a> text (generated by processing errors; this one is
+intentional).</p>
+<p>The default role for interpreted text is <cite>Title Reference</cite>.  Here are
+some explicit interpreted text roles: a PEP reference (<a class="reference external" href="https://peps.python.org/pep-0287">PEP 287</a>); an
+RFC reference (<a class="reference external" href="https://tools.ietf.org/html/rfc2822.html">RFC 2822</a>); a <sub>subscript</sub>; a <sup>superscript</sup>;
+and explicit roles for <em>standard</em> <strong>inline</strong>
+<span class="docutils literal">markup</span>.</p>
+<!-- DO NOT RE-WRAP THE FOLLOWING PARAGRAPH! -->
+<p>Let's test wrapping and whitespace significance in inline literals:
+<span class="docutils literal">This is an example of <span class="pre">--inline-literal</span> <span class="pre">--text,</span> <span class="pre">--including</span> <span class="pre">some--</span> <span class="pre">strangely--hyphenated-words.</span>  <span class="pre">Adjust-the-width-of-your-browser-window</span> to see how the text is wrapped.  <span class="pre">--</span> <span class="pre">----</span> <span class="pre">--------</span>  Now note    the spacing    between the    words of    this sentence    (words should    be grouped    in pairs).</span></p>
+<p>If the <span class="docutils literal"><span class="pre">--pep-references</span></span> option was supplied, there should be a
+live link to PEP 258 here.</p>
+</section>
+</section>
+<section id="bullet-lists">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink"><span class="sectnum">2.2 </span>Bullet Lists</a><a class="self-link" title="link to this section" href="#bullet-lists"></a></h3>
+<ul>
+<li><p>A bullet list</p>
+<ul class="simple">
+<li><p>Nested bullet list.</p></li>
+<li><p>Nested item 2.</p></li>
+</ul>
+</li>
+<li><p>Item 2.</p>
+<p>Paragraph 2 of item 2.</p>
+<ul class="simple">
+<li><p>Nested bullet list.</p></li>
+<li><p>Nested item 2.</p>
+<ul>
+<li><p>Third level.</p></li>
+<li><p>Item 2.</p></li>
+</ul>
+</li>
+<li><p>Nested item 3.</p></li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="enumerated-lists">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink"><span class="sectnum">2.3 </span>Enumerated Lists</a><a class="self-link" title="link to this section" href="#enumerated-lists"></a></h3>
+<ol class="arabic">
+<li><p>Arabic numerals.</p>
+<ol class="loweralpha simple">
+<li><p>lower alpha)</p>
+<ol class="lowerroman simple">
+<li><p>(lower roman)</p>
+<ol class="upperalpha simple">
+<li><p>upper alpha.</p>
+<ol class="upperroman simple">
+<li><p>upper roman)</p></li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+</ol>
+</li>
+<li><p>Lists that don't start at 1:</p>
+<ol class="arabic simple" start="3">
+<li><p>Three</p></li>
+<li><p>Four</p></li>
+</ol>
+<ol class="upperalpha simple" start="3">
+<li><p>C</p></li>
+<li><p>D</p></li>
+</ol>
+<ol class="lowerroman simple" start="3">
+<li><p>iii</p></li>
+<li><p>iv</p></li>
+</ol>
+</li>
+<li><p>List items may also be auto-enumerated.</p></li>
+</ol>
+</section>
+<section id="definition-lists">
+<h3><a class="toc-backref" href="#toc-entry-9" role="doc-backlink"><span class="sectnum">2.4 </span>Definition Lists</a><a class="self-link" title="link to this section" href="#definition-lists"></a></h3>
+<dl>
+<dt>Term</dt>
+<dd><p>Definition</p>
+</dd>
+<dt>Term<span class="classifier">classifier</span></dt>
+<dd><p>Definition paragraph 1.</p>
+<p>Definition paragraph 2.</p>
+</dd>
+<dt>Term</dt>
+<dd><p>Definition</p>
+</dd>
+</dl>
+</section>
+<section id="field-lists">
+<h3><a class="toc-backref" href="#toc-entry-10" role="doc-backlink"><span class="sectnum">2.5 </span>Field Lists</a><a class="self-link" title="link to this section" href="#field-lists"></a></h3>
+<dl class="field-list">
+<dt>what<span class="colon">:</span></dt>
+<dd><p>Field lists map field names to field bodies, like database
+records.  They are often part of an extension syntax.  They are
+an unambiguous variant of RFC 2822 fields.</p>
+</dd>
+<dt>how arg1 arg2<span class="colon">:</span></dt>
+<dd><p>The field marker is a colon, the field name, and a colon.</p>
+<p>The field body may contain one or more body elements, indented
+relative to the field marker.</p>
+</dd>
+</dl>
+</section>
+<section id="option-lists">
+<h3><a class="toc-backref" href="#toc-entry-11" role="doc-backlink"><span class="sectnum">2.6 </span>Option Lists</a><a class="self-link" title="link to this section" href="#option-lists"></a></h3>
+<p>For listing command-line options:</p>
+<dl class="option-list">
+<dt><kbd><span class="option">-a</span></kbd></dt>
+<dd><p>command-line option &quot;a&quot;</p>
+</dd>
+<dt><kbd><span class="option">-b <var>file</var></span></kbd></dt>
+<dd><p>options can have arguments
+and long descriptions</p>
+</dd>
+<dt><kbd><span class="option">--long</span></kbd></dt>
+<dd><p>options can be long also</p>
+</dd>
+<dt><kbd><span class="option">--input=<var>file</var></span></kbd></dt>
+<dd><p>long options can also have
+arguments</p>
+</dd>
+<dt><kbd><span class="option">--very-long-option</span></kbd></dt>
+<dd><p>The description can also start on the next line.</p>
+<p>The description may contain multiple body elements,
+regardless of where it starts.</p>
+</dd>
+<dt><kbd><span class="option">-x</span>, <span class="option">-y</span>, <span class="option">-z</span></kbd></dt>
+<dd><p>Multiple options are an &quot;option group&quot;.</p>
+</dd>
+<dt><kbd><span class="option">-v</span>, <span class="option">--verbose</span></kbd></dt>
+<dd><p>Commonly-seen: short &amp; long options.</p>
+</dd>
+<dt><kbd><span class="option">-1 <var>file</var></span>, <span class="option">--one=<var>file</var></span>, <span class="option">--two <var>file</var></span></kbd></dt>
+<dd><p>Multiple options with arguments.</p>
+</dd>
+<dt><kbd><span class="option">/V</span></kbd></dt>
+<dd><p>DOS/VMS-style options too</p>
+</dd>
+</dl>
+<p>There must be at least two spaces between the option and the
+description.</p>
+</section>
+<section id="literal-blocks">
+<h3><a class="toc-backref" href="#toc-entry-12" role="doc-backlink"><span class="sectnum">2.7 </span>Literal Blocks</a><a class="self-link" title="link to this section" href="#literal-blocks"></a></h3>
+<p>Literal blocks are indicated with a double-colon (&quot;::&quot;) at the end of
+the preceding paragraph (over there <span class="docutils literal"><span class="pre">--&gt;</span></span>).  They can be indented:</p>
+<pre class="literal-block">if literal_block:
+    text = 'is left as-is'
+    spaces_and_linebreaks = 'are preserved'
+    markup_processing = None</pre>
+<p>Or they can be quoted without indentation:</p>
+<pre class="literal-block">&gt;&gt; Great idea!
+&gt;
+&gt; Why didn't I think of that?</pre>
+</section>
+<section id="line-blocks">
+<h3><a class="toc-backref" href="#toc-entry-13" role="doc-backlink"><span class="sectnum">2.8 </span>Line Blocks</a><a class="self-link" title="link to this section" href="#line-blocks"></a></h3>
+<div class="line-block">
+<div class="line">This is a line block.  It ends with a blank line.</div>
+<div class="line-block">
+<div class="line">Each new line begins with a vertical bar (&quot;|&quot;).</div>
+<div class="line">Line breaks and initial indents are preserved.</div>
+</div>
+<div class="line">Continuation lines are wrapped portions of long lines;
+they begin with a space in place of the vertical bar.</div>
+<div class="line-block">
+<div class="line">The left edge of a continuation line need not be aligned with
+the left edge of the text above it.</div>
+</div>
+</div>
+<div class="line-block">
+<div class="line">This is a second line block.</div>
+<div class="line"><br /></div>
+<div class="line">Blank lines are permitted internally, but they must begin with a &quot;|&quot;.</div>
+</div>
+<p>Take it away, Eric the Orchestra Leader!</p>
+<blockquote>
+<div class="line-block">
+<div class="line">A one, two, a one two three four</div>
+<div class="line"><br /></div>
+<div class="line">Half a bee, philosophically,</div>
+<div class="line-block">
+<div class="line">must, <em>ipso facto</em>, half not be.</div>
+</div>
+<div class="line">But half the bee has got to be,</div>
+<div class="line-block">
+<div class="line"><em>vis a vis</em> its entity.  D'you see?</div>
+<div class="line"><br /></div>
+</div>
+<div class="line">But can a bee be said to be</div>
+<div class="line-block">
+<div class="line">or not to be an entire bee,</div>
+<div class="line-block">
+<div class="line">when half the bee is not a bee,</div>
+<div class="line-block">
+<div class="line">due to some ancient injury?</div>
+<div class="line"><br /></div>
+</div>
+</div>
+</div>
+<div class="line">Singing...</div>
+</div>
+</blockquote>
+</section>
+<section id="block-quotes">
+<h3><a class="toc-backref" href="#toc-entry-14" role="doc-backlink"><span class="sectnum">2.9 </span>Block Quotes</a><a class="self-link" title="link to this section" href="#block-quotes"></a></h3>
+<p>Block quotes consist of indented body elements:</p>
+<blockquote>
+<p>My theory by A. Elk.  Brackets Miss, brackets.  This theory goes
+as follows and begins now.  All brontosauruses are thin at one
+end, much much thicker in the middle and then thin again at the
+far end.  That is my theory, it is mine, and belongs to me and I
+own it, and what it is too.</p>
+<p class="attribution">—Anne Elk (Miss)</p>
+</blockquote>
+</section>
+<section id="doctest-blocks">
+<h3><a class="toc-backref" href="#toc-entry-15" role="doc-backlink"><span class="sectnum">2.10 </span>Doctest Blocks</a><a class="self-link" title="link to this section" href="#doctest-blocks"></a></h3>
+<pre class="code python doctest">&gt;&gt;&gt; print 'Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;'
+Python-specific usage examples; begun with &quot;&gt;&gt;&gt;&quot;
+&gt;&gt;&gt; print '(cut and pasted from interactive Python sessions)'
+(cut and pasted from interactive Python sessions)
+</pre>
+</section>
+<section id="tables">
+<h3><a class="toc-backref" href="#toc-entry-16" role="doc-backlink"><span class="sectnum">2.11 </span>Tables</a><a class="self-link" title="link to this section" href="#tables"></a></h3>
+<p>Here's a grid table followed by a simple table:</p>
+<table>
+<colgroup>
+<col style="width: 42.9%" />
+<col style="width: 21.4%" />
+<col style="width: 17.9%" />
+<col style="width: 17.9%" />
+</colgroup>
+<thead>
+<tr><th class="head"><p>Header row, column 1
+(header rows optional)</p></th>
+<th class="head"><p>Header 2</p></th>
+<th class="head"><p>Header 3</p></th>
+<th class="head"><p>Header 4</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>body row 1, column 1</p></td>
+<td><p>column 2</p></td>
+<td><p>column 3</p></td>
+<td><p>column 4</p></td>
+</tr>
+<tr><td><p>body row 2</p></td>
+<td colspan="3"><p>Cells may span columns.</p></td>
+</tr>
+<tr><td><p>body row 3</p></td>
+<td rowspan="2"><p>Cells may
+span rows.</p></td>
+<td colspan="2" rowspan="2"><ul class="simple">
+<li><p>Table cells</p></li>
+<li><p>contain</p></li>
+<li><p>body elements.</p></li>
+</ul>
+</td>
+</tr>
+<tr><td><p>body row 4</p></td>
+</tr>
+<tr><td><p>body row 5</p></td>
+<td colspan="2"><p>Cells may also be
+empty: <span class="docutils literal"><span class="pre">--&gt;</span></span></p></td>
+<td></td>
+</tr>
+</tbody>
+</table>
+<table>
+<colgroup>
+<col style="width: 31.2%" />
+<col style="width: 31.2%" />
+<col style="width: 37.5%" />
+</colgroup>
+<thead>
+<tr><th class="head" colspan="2"><p>Inputs</p></th>
+<th class="head"><p>Output</p></th>
+</tr>
+<tr><th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>A or B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr><td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+<tr><td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+<tr><td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="footnotes">
+<h3><a class="toc-backref" href="#toc-entry-17" role="doc-backlink"><span class="sectnum">2.12 </span>Footnotes</a><a class="self-link" title="link to this section" href="#footnotes"></a></h3>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-1">1</a>,<a role="doc-backlink" href="#footnote-reference-5">2</a>)</span>
+<p>A footnote contains body elements, consistently indented by at
+least 3 spaces.</p>
+<p>This is the footnote's second paragraph.</p>
+</aside>
+<aside class="footnote brackets" id="label" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-3">1</a>,<a role="doc-backlink" href="#footnote-reference-6">2</a>)</span>
+<p>Footnotes may be numbered, either manually (as in <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-5" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>) or
+automatically using a &quot;#&quot;-prefixed label.  This footnote has a
+label so it can be referred to from multiple places, both as a
+footnote reference (<a class="footnote-reference brackets" href="#label" id="footnote-reference-6" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a>) and as a hyperlink reference
+(<a class="reference internal" href="#label">label</a>).</p>
+</aside>
+<aside class="footnote brackets" id="footnote-2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-2">3</a><span class="fn-bracket">]</span></span>
+<p>This footnote is numbered automatically and anonymously using a
+label of &quot;#&quot; only.</p>
+</aside>
+<aside class="footnote brackets" id="footnote-3" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-4">*</a><span class="fn-bracket">]</span></span>
+<p>Footnotes may also use symbols, specified with a &quot;*&quot; label.
+Here's a reference to the next footnote: <a class="footnote-reference brackets" href="#footnote-4" id="footnote-reference-7" role="doc-noteref"><span class="fn-bracket">[</span>†<span class="fn-bracket">]</span></a>.</p>
+</aside>
+<aside class="footnote brackets" id="footnote-4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-7">†</a><span class="fn-bracket">]</span></span>
+<p>This footnote shows the next symbol in the sequence.</p>
+</aside>
+<aside class="footnote brackets" id="footnote-5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></span>
+<p>Here's an unreferenced footnote, with a reference to a
+nonexistent footnote: <a href="#system-message-3"><span class="problematic" id="footnote-reference-8">[5]_</span></a>.</p>
+</aside>
+</aside>
+</section>
+<section id="citations">
+<h3><a class="toc-backref" href="#toc-entry-18" role="doc-backlink"><span class="sectnum">2.13 </span>Citations</a><a class="self-link" title="link to this section" href="#citations"></a></h3>
+<div role="list" class="citation-list">
+<div class="citation" id="cit2002" role="doc-biblioentry">
+<span class="label"><span class="fn-bracket">[</span>CIT2002<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#citation-reference-1">1</a>,<a role="doc-backlink" href="#citation-reference-2">2</a>)</span>
+<p>Citations are text-labeled footnotes. They may be
+rendered separately and differently from footnotes.</p>
+</div>
+</div>
+<p>Here's a reference to the above, <a class="citation-reference" href="#cit2002" id="citation-reference-2" role="doc-biblioref">[CIT2002]</a>, and a <a href="#system-message-4"><span class="problematic" id="citation-reference-3">[nonexistent]_</span></a>
+citation.</p>
+</section>
+<section id="targets">
+<h3><a class="toc-backref" href="#toc-entry-19" role="doc-backlink"><span class="sectnum">2.14 </span>Targets</a><a class="self-link" title="link to this section" href="#targets"></a></h3>
+<p id="example">This paragraph is pointed to by the explicit &quot;example&quot; target. A
+reference can be found under <a class="reference internal" href="#inline-markup">Inline Markup</a>, above. <a class="reference internal" href="#inline-hyperlink-targets">Inline
+hyperlink targets</a> are also possible.</p>
+<p>Section headers are implicit targets, referred to by name. See
+<a class="reference internal" href="#targets">Targets</a>, which is a subsection of <a class="reference internal" href="#body-elements">Body Elements</a>.</p>
+<p>Explicit external targets are interpolated into references such as
+&quot;<a class="reference external" href="https://www.python.org">Python</a> <a class="footnote-reference brackets" href="#footnote-6" id="footnote-reference-10" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>&quot;.</p>
+<p>Targets may be indirect and anonymous.  Thus <a class="reference internal" href="#targets">this phrase</a> may also
+refer to the <a class="reference internal" href="#targets">Targets</a> section.</p>
+<p>Here's a <a href="#system-message-5"><span class="problematic" id="problematic-3">`hyperlink reference without a target`_</span></a>, which generates an
+error.</p>
+<section id="duplicate-target-names">
+<h4><a class="toc-backref" href="#toc-entry-20" role="doc-backlink"><span class="sectnum">2.14.1 </span>Duplicate Target Names</a><a class="self-link" title="link to this section" href="#duplicate-target-names"></a></h4>
+<p>Duplicate names in section headers or other implicit targets will
+generate &quot;info&quot; (level-1) system messages.  Duplicate names in
+explicit targets will generate &quot;warning&quot; (level-2) system messages.</p>
+</section>
+<section id="duplicate-target-names-1">
+<h4><a class="toc-backref" href="#toc-entry-21" role="doc-backlink"><span class="sectnum">2.14.2 </span>Duplicate Target Names</a><a class="self-link" title="link to this section" href="#duplicate-target-names-1"></a></h4>
+<p>Since there are two &quot;Duplicate Target Names&quot; section headers, we
+cannot uniquely refer to either of them by name.  If we try to (like
+this: <a href="#system-message-6"><span class="problematic" id="problematic-4">`Duplicate Target Names`_</span></a>), an error is generated.</p>
+</section>
+</section>
+<section id="directives">
+<h3><a class="toc-backref" href="#toc-entry-22" role="doc-backlink"><span class="sectnum">2.15 </span>Directives</a><a class="self-link" title="link to this section" href="#directives"></a></h3>
+<nav class="contents local" id="contents">
+<ul class="auto-toc simple">
+<li><p><a class="reference internal" href="#document-parts" id="toc-entry-34"><span class="sectnum">2.15.1 </span>Document Parts</a></p></li>
+<li><p><a class="reference internal" href="#images" id="toc-entry-35"><span class="sectnum">2.15.2 </span>Images</a></p></li>
+<li><p><a class="reference internal" href="#admonitions" id="toc-entry-36"><span class="sectnum">2.15.3 </span>Admonitions</a></p></li>
+<li><p><a class="reference internal" href="#topics-sidebars-and-rubrics" id="toc-entry-37"><span class="sectnum">2.15.4 </span>Topics, Sidebars, and Rubrics</a></p></li>
+<li><p><a class="reference internal" href="#target-footnotes" id="toc-entry-38"><span class="sectnum">2.15.5 </span>Target Footnotes</a></p></li>
+<li><p><a class="reference internal" href="#replacement-text" id="toc-entry-39"><span class="sectnum">2.15.6 </span>Replacement Text</a></p></li>
+<li><p><a class="reference internal" href="#compound-paragraph" id="toc-entry-40"><span class="sectnum">2.15.7 </span>Compound Paragraph</a></p></li>
+<li><p><a class="reference internal" href="#meta" id="toc-entry-41"><span class="sectnum">2.15.8 </span>Meta</a></p></li>
+</ul>
+</nav>
+<p>These are just a sample of the many reStructuredText Directives.  For
+others, please see
+<a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html">https://docutils.sourceforge.io/docs/ref/rst/directives.html</a>.</p>
+<section id="document-parts">
+<h4><a class="toc-backref" href="#toc-entry-34" role="doc-backlink"><span class="sectnum">2.15.1 </span>Document Parts</a><a class="self-link" title="link to this section" href="#document-parts"></a></h4>
+<p>An example of the &quot;contents&quot; directive can be seen above this section
+(a local, untitled table of <a class="reference internal" href="#contents">contents</a>) and at the beginning of the
+document (a document-wide <a class="reference internal" href="#table-of-contents">table of contents</a>).</p>
+</section>
+<section id="images">
+<h4><a class="toc-backref" href="#toc-entry-35" role="doc-backlink"><span class="sectnum">2.15.2 </span>Images</a><a class="self-link" title="link to this section" href="#images"></a></h4>
+<p>An image directive (also clickable -- a hyperlink reference):</p>
+<a class="reference internal image-reference" href="#directives"><img alt="images/title.png" src="images/title.png" /></a>
+<p>A figure directive:</p>
+<figure>
+<img alt="reStructuredText, the markup syntax" src="images/title.png" />
+<figcaption>
+<p>A figure is an image with a caption and/or a legend:</p>
+<div class="legend">
+<table>
+<colgroup>
+<col style="width: 20.3%" />
+<col style="width: 79.7%" />
+</colgroup>
+<tbody>
+<tr><td><p>re</p></td>
+<td><p>Revised, revisited, based on 're' module.</p></td>
+</tr>
+<tr><td><p>Structured</p></td>
+<td><p>Structure-enhanced text, structuredtext.</p></td>
+</tr>
+<tr><td><p>Text</p></td>
+<td><p>Well it is, isn't it?</p></td>
+</tr>
+</tbody>
+</table>
+<p>This paragraph is also part of the legend.</p>
+</div>
+</figcaption>
+</figure>
+</section>
+<section id="admonitions">
+<h4><a class="toc-backref" href="#toc-entry-36" role="doc-backlink"><span class="sectnum">2.15.3 </span>Admonitions</a><a class="self-link" title="link to this section" href="#admonitions"></a></h4>
+<aside class="admonition attention">
+<p class="admonition-title">Attention!</p>
+<p>Directives at large.</p>
+</aside>
+<aside class="admonition caution">
+<p class="admonition-title">Caution!</p>
+<p>Don't take any wooden nickels.</p>
+</aside>
+<aside class="admonition danger">
+<p class="admonition-title">!DANGER!</p>
+<p>Mad scientist at work!</p>
+</aside>
+<aside class="admonition error">
+<p class="admonition-title">Error</p>
+<p>Does not compute.</p>
+</aside>
+<aside class="admonition hint">
+<p class="admonition-title">Hint</p>
+<p>It's bigger than a bread box.</p>
+</aside>
+<aside class="admonition important">
+<p class="admonition-title">Important</p>
+<ul class="simple">
+<li><p>Wash behind your ears.</p></li>
+<li><p>Clean up your room.</p></li>
+<li><p>Call your mother.</p></li>
+<li><p>Back up your data.</p></li>
+</ul>
+</aside>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>This is a note.</p>
+</aside>
+<aside class="admonition tip">
+<p class="admonition-title">Tip</p>
+<p>15% if the service is good.</p>
+</aside>
+<aside class="admonition warning">
+<p class="admonition-title">Warning</p>
+<p>Strong prose may provoke extreme mental exertion.
+Reader discretion is strongly advised.</p>
+</aside>
+<aside class="admonition admonition-and-by-the-way">
+<p class="admonition-title">And, by the way...</p>
+<p>You can make up your own admonition too.</p>
+</aside>
+</section>
+<section id="topics-sidebars-and-rubrics">
+<h4><a class="toc-backref" href="#toc-entry-37" role="doc-backlink"><span class="sectnum">2.15.4 </span>Topics, Sidebars, and Rubrics</a><a class="self-link" title="link to this section" href="#topics-sidebars-and-rubrics"></a></h4>
+<aside class="sidebar">
+<p class="sidebar-title">Optional Sidebar Title</p>
+<p class="sidebar-subtitle">Optional Subtitle</p>
+<p>This is a sidebar.  It is for text outside the flow of the main
+text.</p>
+<p class="rubric">This is a rubric inside a sidebar</p>
+<p>Sidebars often appears beside the main text with a border and
+background color.</p>
+</aside>
+<aside class="topic">
+<p class="topic-title">Topic Title</p>
+<p>This is a topic.</p>
+</aside>
+<p class="rubric">This is a rubric</p>
+</section>
+<section id="target-footnotes">
+<h4><a class="toc-backref" href="#toc-entry-38" role="doc-backlink"><span class="sectnum">2.15.5 </span>Target Footnotes</a><a class="self-link" title="link to this section" href="#target-footnotes"></a></h4>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-9">1</a>,<a role="doc-backlink" href="#footnote-reference-10">2</a>,<a role="doc-backlink" href="#footnote-reference-11">3</a>)</span>
+<p><a class="reference external" href="https://www.python.org">https://www.python.org</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-7" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-12">6</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html#metadata">https://docutils.sourceforge.io/docs/ref/rst/directives.html#metadata</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-8" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-13">7</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag">https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag</a></p>
+</aside>
+</aside>
+</section>
+<section id="replacement-text">
+<h4><a class="toc-backref" href="#toc-entry-39" role="doc-backlink"><span class="sectnum">2.15.6 </span>Replacement Text</a><a class="self-link" title="link to this section" href="#replacement-text"></a></h4>
+<p>I recommend you try <a class="reference external" href="https://www.python.org">Python, <em>the</em> best language around</a> <a class="footnote-reference brackets" href="#footnote-6" id="footnote-reference-11" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>.</p>
+</section>
+<section id="compound-paragraph">
+<h4><a class="toc-backref" href="#toc-entry-40" role="doc-backlink"><span class="sectnum">2.15.7 </span>Compound Paragraph</a><a class="self-link" title="link to this section" href="#compound-paragraph"></a></h4>
+<div class="compound">
+<p>This paragraph contains a literal block:</p>
+<pre class="literal-block">Connecting... OK
+Transmitting data... OK
+Disconnecting... OK</pre>
+<p>and thus consists of a simple paragraph, a literal block, and
+another simple paragraph.  Nonetheless it is semantically <em>one</em>
+paragraph.</p>
+</div>
+<p>This construct is called a <em>compound paragraph</em> and can be produced
+with the &quot;compound&quot; directive.</p>
+</section>
+<section id="meta">
+<h4><a class="toc-backref" href="#toc-entry-41" role="doc-backlink"><span class="sectnum">2.15.8 </span>Meta</a><a class="self-link" title="link to this section" href="#meta"></a></h4>
+<p>The <a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html#metadata">“meta” directive</a> <a class="footnote-reference brackets" href="#footnote-7" id="footnote-reference-12" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> is used to specify metadata to be stored in,
+e.g., HTML <a class="reference external" href="https://developer.mozilla.org/en-US/docs/Web/HTML/Viewport_meta_tag">META</a> <a class="footnote-reference brackets" href="#footnote-8" id="footnote-reference-13" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> tags or ODT file properties.</p>
+</section>
+</section>
+<section id="substitution-definitions">
+<h3><a class="toc-backref" href="#toc-entry-31" role="doc-backlink"><span class="sectnum">2.16 </span>Substitution Definitions</a><a class="self-link" title="link to this section" href="#substitution-definitions"></a></h3>
+<p>An inline image (<img alt="EXAMPLE" src="images/biohazard.png" />) example:</p>
+<p>(Substitution definitions are not visible in the HTML source.)</p>
+</section>
+<section id="comments">
+<h3><a class="toc-backref" href="#toc-entry-32" role="doc-backlink"><span class="sectnum">2.17 </span>Comments</a><a class="self-link" title="link to this section" href="#comments"></a></h3>
+<p>Here's one:</p>
+<!-- Comments begin with two dots and a space. Anything may
+follow, except for the syntax of footnotes, hyperlink
+targets, directives, or substitution definitions.
+
+Double-dashes - - "- -" - - must be escaped somehow in HTML output. -->
+<p>(View the HTML source to see the comment.)</p>
+</section>
+</section>
+<section id="error-handling">
+<h2><a class="toc-backref" href="#toc-entry-33" role="doc-backlink"><span class="sectnum">3 </span>Error Handling</a><a class="self-link" title="link to this section" href="#error-handling"></a></h2>
+<p>Any errors caught during processing will generate system messages.</p>
+<p><a href="#system-message-2"><span class="problematic" id="problematic-2">|*** Expect 6 errors (including this one). ***|</span></a></p>
+<p>There should be six messages in the following, auto-generated
+section, &quot;Docutils System Messages&quot;:</p>
+<!-- section should be added by Docutils automatically -->
+</section>
+<section class="system-messages">
+<h2>Docutils System Messages</h2>
+<aside class="system-message" id="system-message-1">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 89); <em><a href="#problematic-1">backlink</a></em></p>
+<p>Undefined substitution referenced: &quot;problematic&quot;.</p>
+</aside>
+<aside class="system-message" id="system-message-2">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 562); <em><a href="#problematic-2">backlink</a></em></p>
+<p>Undefined substitution referenced: &quot;*** Expect 6 errors (including this one). ***&quot;.</p>
+</aside>
+<aside class="system-message" id="system-message-3">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 346); <em><a href="#footnote-reference-8">backlink</a></em></p>
+<p>Unknown target name: &quot;5&quot;.</p>
+</aside>
+<aside class="system-message" id="system-message-4">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 355); <em><a href="#citation-reference-3">backlink</a></em></p>
+<p>Unknown target name: &quot;nonexistent&quot;.</p>
+</aside>
+<aside class="system-message" id="system-message-5">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 380); <em><a href="#problematic-3">backlink</a></em></p>
+<p>Unknown target name: &quot;hyperlink reference without a target&quot;.</p>
+</aside>
+<aside class="system-message" id="system-message-6">
+<p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">docs/user/rst/demo.txt</span>, line 393); <em><a href="#problematic-4">backlink</a></em></p>
+<p>Duplicate target name, cannot be used as a unique reference: &quot;duplicate target names&quot;.</p>
+</aside>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="demo.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

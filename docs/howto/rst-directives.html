@@ -1,0 +1,425 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Dethe Elza" />
+<meta name="author" content="David Goodger" />
+<meta name="author" content="Lea Wiemann" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Creating reStructuredText Directives</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="creating-restructuredtext-directives">
+<h1 class="title">Creating <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> Directives</h1>
+<dl class="docinfo">
+<dt class="authors">Authors<span class="colon">:</span></dt>
+<dd class="authors"><p>Dethe Elza</p>
+<p>David Goodger</p>
+<p>Lea Wiemann</p>
+</dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<p>Directives are the primary extension mechanism of reStructuredText.
+This document aims to make the creation of new directives as easy and
+understandable as possible.  There are only a couple of
+reStructuredText-specific features the developer needs to know to
+create a basic directive.</p>
+<p>The syntax of directives is detailed in the <a class="reference external" href="../ref/rst/restructuredtext.html#directives">reStructuredText Markup
+Specification</a>, and standard directives are described in
+<a class="reference external" href="../ref/rst/directives.html">reStructuredText Directives</a>.</p>
+<p>Directives are a reStructuredText markup/parser concept.  There is no
+&quot;directive&quot; document tree element, no single element that corresponds
+exactly to the concept of directives.  Instead, choose the most
+appropriate elements from the existing Docutils elements.  Directives
+build structures using the existing building blocks.  See <a class="reference external" href="../ref/doctree.html">The
+Docutils Document Tree</a> and the <span class="docutils literal">docutils.nodes</span> module for more
+about the building blocks of Docutils documents.</p>
+<nav class="contents" id="table-of-contents" role="doc-toc">
+<p class="topic-title">Table of Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#the-directive-class" id="toc-entry-1">The Directive Class</a></p></li>
+<li><p><a class="reference internal" href="#option-conversion-functions" id="toc-entry-2">Option Conversion Functions</a></p></li>
+<li><p><a class="reference internal" href="#error-handling" id="toc-entry-3">Error Handling</a></p></li>
+<li><p><a class="reference internal" href="#register-the-directive" id="toc-entry-4">Register the Directive</a></p></li>
+<li><p><a class="reference internal" href="#examples" id="toc-entry-5">Examples</a></p>
+<ul>
+<li><p><a class="reference internal" href="#admonitions" id="toc-entry-6">Admonitions</a></p></li>
+<li><p><a class="reference internal" href="#image" id="toc-entry-7">&quot;image&quot;</a></p></li>
+<li><p><a class="reference internal" href="#the-pending-element" id="toc-entry-8">The Pending Element</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="the-directive-class">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">The Directive Class</a><a class="self-link" title="link to this section" href="#the-directive-class"></a></h2>
+<p>Directives are created by defining a directive class that inherits
+from <span class="docutils literal">docutils.parsers.rst.Directive</span>:</p>
+<pre class="literal-block">from docutils.parsers import rst
+
+class MyDirective(rst.Directive):
+
+    ...</pre>
+<p>To understand how to implement the directive, let's have a look at the
+docstring of the <span class="docutils literal">Directive</span> base class:</p>
+<pre class="literal-block">&gt;&gt;&gt; from docutils.parsers import rst
+&gt;&gt;&gt; print rst.Directive.__doc__
+
+    Base class for reStructuredText directives.
+
+    The following attributes may be set by subclasses.  They are
+    interpreted by the directive parser (which runs the directive
+    class):
+
+    - `required_arguments`: The number of required arguments (default:
+      0).
+
+    - `optional_arguments`: The number of optional arguments (default:
+      0).
+
+    - `final_argument_whitespace`: A boolean, indicating if the final
+      argument may contain whitespace (default: False).
+
+    - `option_spec`: A dictionary, mapping known option names to
+      conversion functions such as `int` or `float` (default: {}, no
+      options).  Several conversion functions are defined in the
+      directives/__init__.py module.
+
+      Option conversion functions take a single parameter, the option
+      argument (a string or ``None``), validate it and/or convert it
+      to the appropriate form.  Conversion functions may raise
+      `ValueError` and `TypeError` exceptions.
+
+    - `has_content`: A boolean; True if content is allowed.  Client
+      code must handle the case where content is required but not
+      supplied (an empty content list will be supplied).
+
+    Arguments are normally single whitespace-separated words.  The
+    final argument may contain whitespace and/or newlines if
+    `final_argument_whitespace` is True.
+
+    If the form of the arguments is more complex, specify only one
+    argument (either required or optional) and set
+    `final_argument_whitespace` to True; the client code must do any
+    context-sensitive parsing.
+
+    When a directive implementation is being run, the directive class
+    is instantiated, and the `run()` method is executed.  During
+    instantiation, the following instance variables are set:
+
+    - ``name`` is the directive type or name (string).
+
+    - ``arguments`` is the list of positional arguments (strings).
+
+    - ``options`` is a dictionary mapping option names (strings) to
+      values (type depends on option conversion functions; see
+      `option_spec` above).
+
+    - ``content`` is a list of strings, the directive content line by line.
+
+    - ``lineno`` is the line number of the first line of the directive.
+
+    - ``content_offset`` is the line offset of the first line of the content from
+      the beginning of the current input.  Used when initiating a nested parse.
+
+    - ``block_text`` is a string containing the entire directive.
+
+    - ``state`` is the state which called the directive function.
+
+    - ``state_machine`` is the state machine which controls the state which called
+      the directive function.
+
+    Directive functions return a list of nodes which will be inserted
+    into the document tree at the point where the directive was
+    encountered.  This can be an empty list if there is nothing to
+    insert.
+
+    For ordinary directives, the list must contain body elements or
+    structural elements.  Some directives are intended specifically
+    for substitution definitions, and must return a list of `Text`
+    nodes and/or inline elements (suitable for inline insertion, in
+    place of the substitution reference).  Such directives must verify
+    substitution definition context, typically using code like this::
+
+        if not isinstance(state, states.SubstitutionDef):
+            error = state_machine.reporter.error(
+                'Invalid context: the &quot;%s&quot; directive can only be used '
+                'within a substitution definition.' % (name),
+                nodes.literal_block(block_text, block_text), line=lineno)
+            return [error]
+
+&gt;&gt;&gt;</pre>
+</section>
+<section id="option-conversion-functions">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Option Conversion Functions</a><a class="self-link" title="link to this section" href="#option-conversion-functions"></a></h2>
+<p>An option specification (<span class="docutils literal">Directive.option_spec</span>) must be defined
+detailing the options available to the directive.  An option spec is a
+mapping of option name to conversion function; conversion functions
+are applied to each option value to check validity and convert them to
+the expected type.  Python's built-in conversion functions are often
+usable for this, such as <span class="docutils literal">int</span>, <span class="docutils literal">float</span>.  Other useful conversion
+functions are included in the <span class="docutils literal">docutils.parsers.rst.directives</span>
+package (in the <span class="docutils literal">__init__.py</span> module):</p>
+<ul class="simple">
+<li><p><span class="docutils literal">flag</span>: For options with no option arguments.  Checks for an
+argument (raises <span class="docutils literal">ValueError</span> if found), returns <span class="docutils literal">None</span> for
+valid flag options.</p></li>
+<li><p><span class="docutils literal">unchanged_required</span>: Returns the text argument, unchanged.
+Raises <span class="docutils literal">ValueError</span> if no argument is found.</p></li>
+<li><p><span class="docutils literal">unchanged</span>: Returns the text argument, unchanged.  Returns an
+empty string (&quot;&quot;) if no argument is found.</p></li>
+<li><p><span class="docutils literal">path</span>: Returns the path argument unwrapped (with newlines
+removed).  Raises <span class="docutils literal">ValueError</span> if no argument is found.</p></li>
+<li><p><span class="docutils literal">uri</span>: Returns the URI argument with whitespace removed.  Raises
+<span class="docutils literal">ValueError</span> if no argument is found.</p></li>
+<li><p><span class="docutils literal">nonnegative_int</span>: Checks for a nonnegative integer argument,
+and raises <span class="docutils literal">ValueError</span> if not.</p></li>
+<li><p><span class="docutils literal">class_option</span>: Converts the argument into an ID-compatible
+string and returns it.  Raises <span class="docutils literal">ValueError</span> if no argument is
+found.</p></li>
+<li><p><span class="docutils literal">unicode_code</span>: Convert a Unicode character code to a Unicode
+character.</p></li>
+<li><p><span class="docutils literal">single_char_or_unicode</span>: A single character is returned as-is.
+Unicode characters codes are converted as in <span class="docutils literal">unicode_code</span>.</p></li>
+<li><p><span class="docutils literal">single_char_or_whitespace_or_unicode</span>: As with
+<span class="docutils literal">single_char_or_unicode</span>, but &quot;tab&quot; and &quot;space&quot; are also
+supported.</p></li>
+<li><p><span class="docutils literal">positive_int</span>: Converts the argument into an integer.  Raises
+ValueError for negative, zero, or non-integer values.</p></li>
+<li><p><span class="docutils literal">positive_int_list</span>: Converts a space- or comma-separated list
+of integers into a Python list of integers.  Raises ValueError for
+non-positive-integer values.</p></li>
+<li><p><span class="docutils literal">encoding</span>: Verifies the encoding argument by lookup.  Raises
+ValueError for unknown encodings.</p></li>
+</ul>
+<p>A further utility function, <span class="docutils literal">choice</span>, is supplied to enable
+options whose argument must be a member of a finite set of possible
+values.  A custom conversion function must be written to use it.
+For example:</p>
+<pre class="literal-block">from docutils.parsers.rst import directives
+
+def yesno(argument):
+    return directives.choice(argument, ('yes', 'no'))</pre>
+<p>For example, here is an option spec for a directive which allows two
+options, &quot;name&quot; and &quot;value&quot;, each with an option argument:</p>
+<pre class="literal-block">option_spec = {'name': unchanged, 'value': int}</pre>
+</section>
+<section id="error-handling">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Error Handling</a><a class="self-link" title="link to this section" href="#error-handling"></a></h2>
+<p>If your directive implementation encounters an error during
+processing, you should call <span class="docutils literal">self.error()</span> inside the <span class="docutils literal">run()</span>
+method:</p>
+<pre class="literal-block">if error_condition:
+    raise self.error('Error message.')</pre>
+<p>The <span class="docutils literal">self.error()</span> method will immediately raise an exception that
+will be caught by the reStructuredText directive handler.  The
+directive handler will then insert an error-level system message in
+the document at the place where the directive occurred.</p>
+<p>Instead of <span class="docutils literal">self.error</span>, you can also use <span class="docutils literal">self.severe</span> and
+<span class="docutils literal">self.warning</span> for more or less severe problems.</p>
+<p>If you want to return a system message <em>and</em> document contents, you need to
+create the system message yourself instead of using the <span class="docutils literal">self.error</span>
+convenience method:</p>
+<pre class="literal-block">def run(self):
+    # Create node(s).
+    node = nodes.paragraph(...)
+    # Node list to return.
+    node_list = [node]
+    if error_condition:
+         # Create system message.
+         error = self.reporter.error(
+             'Error in &quot;%s&quot; directive: Your error message.' % self.name,
+             nodes.literal_block(block_text, block_text), line=lineno)
+         node_list.append(error)
+    return node_list</pre>
+</section>
+<section id="register-the-directive">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Register the Directive</a><a class="self-link" title="link to this section" href="#register-the-directive"></a></h2>
+<ul>
+<li><p>If the directive is a general-use <strong>addition to the Docutils core</strong>,
+it must be registered with the parser and language mappings added:</p>
+<ol class="arabic simple">
+<li><p>Register the new directive using its canonical name in
+<span class="docutils literal">docutils/parsers/rst/directives/__init__.py</span>, in the
+<span class="docutils literal">_directive_registry</span> dictionary.  This allows the
+reStructuredText parser to find and use the directive.</p></li>
+<li><p>Add an entry to the <span class="docutils literal">directives</span> dictionary in
+<span class="docutils literal">docutils/parsers/rst/languages/en.py</span> for the directive, mapping
+the English name to the canonical name (both lowercase).  Usually
+the English name and the canonical name are the same.</p></li>
+<li><p>Update all the other language modules as well.  For languages in
+which you are proficient, please add translations.  For other
+languages, add the English directive name plus &quot;(translation
+required)&quot;.</p></li>
+</ol>
+</li>
+<li><p>If the directive is <strong>application-specific</strong>, use the
+<span class="docutils literal">register_directive</span> function:</p>
+<pre class="literal-block">from docutils.parsers.rst import directives
+directives.register_directive(directive_name, directive_class)</pre>
+</li>
+</ul>
+</section>
+<section id="examples">
+<h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Examples</a><a class="self-link" title="link to this section" href="#examples"></a></h2>
+<p>For the most direct and accurate information, &quot;Use the Source, Luke!&quot;.
+All standard directives are documented in <a class="reference external" href="../ref/rst/directives.html">reStructuredText
+Directives</a>, and the source code implementing them is located in the
+<span class="docutils literal">docutils/parsers/rst/directives</span> package.  The <span class="docutils literal">__init__.py</span>
+module contains a mapping of directive name to module and function
+name.  Several representative directives are described below.</p>
+<section id="admonitions">
+<h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Admonitions</a><a class="self-link" title="link to this section" href="#admonitions"></a></h3>
+<p><a class="reference external" href="../ref/rst/directives.html#specific-admonitions">Admonition directives</a>, such as &quot;note&quot; and &quot;caution&quot;, are quite
+simple.  They have no directive arguments or options.  Admonition
+directive content is interpreted as ordinary reStructuredText.</p>
+<p>The resulting document tree for a simple reStructuredText line
+&quot;<span class="docutils literal">.. note:: This is a note.</span>&quot; looks as follows:</p>
+<blockquote>
+<dl class="simple">
+<dt>&lt;note&gt;</dt>
+<dd><dl class="simple">
+<dt>&lt;paragraph&gt;</dt>
+<dd><p>This is a note.</p>
+</dd>
+</dl>
+</dd>
+</dl>
+</blockquote>
+<p>The directive class for the &quot;note&quot; directive simply derives from a
+generic admonition directive class:</p>
+<pre class="literal-block">class Note(BaseAdmonition):
+
+    node_class = nodes.note</pre>
+<p>Note that the only thing distinguishing the various admonition
+directives is the element (node class) generated.  In the code above,
+the node class is set as a class attribute and is read by the
+<span class="docutils literal">run()</span> method of <span class="docutils literal">BaseAdmonition</span>, where the actual processing
+takes place:</p>
+<pre class="literal-block"># Import Docutils document tree nodes module.
+from docutils import nodes
+# Import Directive base class.
+from docutils.parsers.rst import Directive
+
+class BaseAdmonition(Directive):
+
+    required_arguments = 0
+    optional_arguments = 0
+    final_argument_whitespace = True
+    option_spec = {}
+    has_content = True
+
+    node_class = None
+    &quot;&quot;&quot;Subclasses must set this to the appropriate admonition node class.&quot;&quot;&quot;
+
+    def run(self):
+        # Raise an error if the directive does not have contents.
+        self.assert_has_content()
+        text = '\n'.join(self.content)
+        # Create the admonition node, to be populated by `nested_parse`.
+        admonition_node = self.node_class(rawsource=text)
+        # Parse the directive contents.
+        self.state.nested_parse(self.content, self.content_offset,
+                                admonition_node)
+        return [admonition_node]</pre>
+<p>Three things are noteworthy in the <span class="docutils literal">run()</span> method above:</p>
+<ul class="simple">
+<li><p>The <span class="docutils literal">admonition_node = self.node_class(text)</span> line creates the
+wrapper element, using the class set by the specific admonition
+subclasses (as in note, <span class="docutils literal">node_class = nodes.note</span>).</p></li>
+<li><p>The call to <span class="docutils literal">state.nested_parse()</span> is what does the actual
+processing.  It parses the directive content and adds any generated
+elements as child elements of <span class="docutils literal">admonition_node</span>.</p></li>
+<li><p>If there was no directive content, the <span class="docutils literal">assert_has_content()</span>
+convenience method raises an error exception by calling
+<span class="docutils literal">self.error()</span> (see <a class="reference internal" href="#error-handling">Error Handling</a> above).</p></li>
+</ul>
+</section>
+<section id="image">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">&quot;image&quot;</a><a class="self-link" title="link to this section" href="#image"></a></h3>
+<p>The &quot;<a class="reference external" href="../ref/rst/directives.html#image">image</a>&quot; directive is used to insert a picture into a document.
+This directive has one argument, the path to the image file, and
+supports several options.  There is no directive content.  Here's an
+early version of the image directive class:</p>
+<pre class="literal-block"># Import Docutils document tree nodes module.
+from docutils import nodes
+# Import ``directives`` module (contains conversion functions).
+from docutils.parsers.rst import directives
+# Import Directive base class.
+from docutils.parsers.rst import Directive
+
+def align(argument):
+    &quot;&quot;&quot;Conversion function for the &quot;align&quot; option.&quot;&quot;&quot;
+    return directives.choice(argument, ('left', 'center', 'right'))
+
+class Image(Directive):
+
+    required_arguments = 1
+    optional_arguments = 0
+    final_argument_whitespace = True
+    option_spec = {'alt': directives.unchanged,
+                   'height': directives.nonnegative_int,
+                   'width': directives.nonnegative_int,
+                   'scale': directives.nonnegative_int,
+                   'align': align,
+                   }
+    has_content = False
+
+    def run(self):
+        reference = directives.uri(self.arguments[0])
+        self.options['uri'] = reference
+        image_node = nodes.image(rawsource=self.block_text,
+                                 **self.options)
+        return [image_node]</pre>
+<p>Several things are noteworthy in the code above:</p>
+<ul class="simple">
+<li><p>The &quot;image&quot; directive requires a single argument, which is allowed
+to contain whitespace (<span class="docutils literal">final_argument_whitespace = True</span>).  This
+is to allow for long URLs which may span multiple lines.  The first
+line of the <span class="docutils literal">run()</span> method joins the URL, discarding any embedded
+whitespace.</p></li>
+<li><p>The reference is added to the <span class="docutils literal">options</span> dictionary under the
+&quot;uri&quot; key; this becomes an attribute of the <span class="docutils literal">nodes.image</span> element
+object.  Any other attributes have already been set explicitly in
+the reStructuredText source text.</p></li>
+</ul>
+</section>
+<section id="the-pending-element">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">The Pending Element</a><a class="self-link" title="link to this section" href="#the-pending-element"></a></h3>
+<p>Directives that cause actions to be performed <em>after</em> the complete
+document tree has been generated can be implemented using a
+<span class="docutils literal">pending</span> node.  The <span class="docutils literal">pending</span> node causes a <a class="reference external" href="../api/transforms.html">transform</a> to be run
+after the document has been parsed.</p>
+<p>For an example usage of the <span class="docutils literal">pending</span> node, see the implementation
+of the <span class="docutils literal">contents</span> directive in
+<a class="reference external" href="https://docutils.sourceforge.io/docutils/parsers/rst/directives/parts.py">docutils.parsers.rst.directives.parts</a>.</p>
+</section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="rst-directives.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

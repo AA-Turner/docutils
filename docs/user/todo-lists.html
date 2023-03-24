@@ -1,0 +1,168 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Docutils TODO lists</title>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body>
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-todo-lists">
+<h1 class="title">Docutils TODO lists</h1>
+
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<p>TODO lists allow you to create a list of items with checkboxes.
+In <a class="reference external" href="https://www.markdownguide.org/extended-syntax/">extended Markdown</a>, they are called <cite>task lists</cite>.</p>
+<section id="checkbox-variants">
+<h2>Checkbox variants<a class="self-link" title="link to this section" href="#checkbox-variants"></a></h2>
+<p>[x] ASCII-art checkbox.</p>
+<p>[ ] ASCII space character and NBSP are smaller than the x.</p>
+<p>[ ] The &quot;figure space&quot; has the correct width but is not easy to type.</p>
+<p>You may define substitutions for ballot box and checked ballot box or
+other suitable Unicode characters:</p>
+<p>☐ U+2610 BALLOT BOX</p>
+<p>☑ U+2611 BALLOT BOX WITH CHECK</p>
+<p>🗹 U+1F5F9 BALLOT BOX WITH BOLD CHECK</p>
+</section>
+<section id="list-markup">
+<h2>List Markup<a class="self-link" title="link to this section" href="#list-markup"></a></h2>
+<section id="paragraphs">
+<h3>Paragraphs<a class="self-link" title="link to this section" href="#paragraphs"></a></h3>
+<p>☑ Simple <em>paragraphs</em> are easy for small lists with short values</p>
+<p>☐ but not well suited for complex TODO items.</p>
+</section>
+<section id="line-blocks">
+<h3>Line Blocks<a class="self-link" title="link to this section" href="#line-blocks"></a></h3>
+<div class="line-block">
+<div class="line">☑ Line blocks are rendered as &quot;unstyled&quot; lists.</div>
+<div class="line">🗹 They don't need additional styling.</div>
+<div class="line">☐ However, you cannot nest block elements.</div>
+</div>
+</section>
+<section id="description-lists">
+<h3>Description Lists<a class="self-link" title="link to this section" href="#description-lists"></a></h3>
+<dl class="simple description">
+<dt>☑</dt>
+<dd><p>A <em>description list</em> works out of the box in HTML5 and XeTeX.</p>
+</dd>
+<dt>☐</dt>
+<dd><p>It looks suboptimal in the rST source (definition list with class
+value &quot;description&quot;).</p>
+</dd>
+<dt>[x]</dt>
+<dd><p>Lists may use ASCII-art or substitutions.</p>
+</dd>
+<dt>[ ]</dt>
+<dd><p>All list markup variants require special styling based on a
+preceding <a class="reference external" href="https://docutils.sourceforge.io/docs/ref/rst/directives.html#class">class</a> directive.</p>
+</dd>
+</dl>
+</section>
+<section id="bullet-lists">
+<h3>Bullet Lists<a class="self-link" title="link to this section" href="#bullet-lists"></a></h3>
+<ul class="todo">
+<li><p>☑ bullet lists (similar to the <a class="reference external" href="https://www.markdownguide.org">Markdown</a> for <cite>task
+lists</cite>) can be styled accordingly.</p></li>
+<li><p>☐ They don't look good in the rST source.</p></li>
+<li><p>[x] Lists may use ASCII-art or substitutions.</p></li>
+<li><p>[ ] The &quot;figure space&quot; has the correct width.</p></li>
+<li><p>☑ Another idea: use bullet lists with <span class="docutils literal">+</span> and <span class="docutils literal">-</span> markers.</p>
+<blockquote>
+<ul class="simple">
+<li><p>Clean and simple markup in the source.</p></li>
+</ul>
+<ul class="simple">
+<li><p>A new marker character starts a new list :-(</p></li>
+<li><p>Requires change to the writer: Pass the &quot;bullet&quot; attribute to
+the output document (use <a class="reference external" href="https://html.spec.whatwg.org/#embedding-custom-non-visible-data-with-the-data-*-attributes">HTML5 &quot;data-&quot; attriibutes</a>?).</p></li>
+</ul>
+</blockquote>
+</li>
+</ul>
+</section>
+<section id="field-lists">
+<h3>Field Lists<a class="self-link" title="link to this section" href="#field-lists"></a></h3>
+<dl class="todo field-list simple">
+<dt>☑<span class="colon">:</span></dt>
+<dd><p>Compile this example with <span class="docutils literal">rst2html5.py</span>,</p>
+</dd>
+<dt>🗹<span class="colon">:</span></dt>
+<dd><p>compare markup variants,</p>
+</dd>
+<dt>☐<span class="colon">:</span></dt>
+<dd><p>select the best.</p>
+</dd>
+</dl>
+<dl class="todo monospace field-list simple">
+<dt>[x]<span class="colon">:</span></dt>
+<dd><p>ASCII-art checkbox.</p>
+</dd>
+<dt>[ ]<span class="colon">:</span></dt>
+<dd><p>The &quot;figure space&quot; has the correct width.</p>
+</dd>
+<dt>[ ]<span class="colon">:</span></dt>
+<dd><p>CSS styling can switch to monospace fonts for the ASCII-art boxes,
+so an ASCII space character can be used.</p>
+</dd>
+</dl>
+<dl class="todo monospace brackets field-list simple">
+<dt>x<span class="colon">:</span></dt>
+<dd><p>ASCII-art checkbox - brackets added by CSS.</p>
+</dd>
+<dt> <span class="colon">:</span></dt>
+<dd><p>Simple rST source, easy typing.</p>
+</dd>
+</dl>
+<dl class="todo monospace framed field-list simple">
+<dt>x<span class="colon">:</span></dt>
+<dd><p>checkbox border added by CSS.</p>
+</dd>
+<dt> <span class="colon">:</span></dt>
+<dd><p>Simple rST source, easy typing.</p>
+</dd>
+</dl>
+<p>I recommend a field list with class argument and some CSS styling.</p>
+<!-- ! The follwing CSS rules are included here as raw HTML to keep the
+example compact. They compromise the HTML validity, as styling is not
+allowed in the document body.
+For production use, place CSS styling rules in a custom style sheet. -->
+<style type="text/css"><!--
+ ul.todo {list-style-type: none;
+          padding-left: 0;}
+ ul.todo > li > p {padding-left: 1.2em;
+                   text-indent: -1.2em;}
+
+ dl.todo > dt > .colon {display: none}
+ dl.todo > dd {margin-left: 2.5em;}
+
+ dl.monospace > dt {font-family: monospace;}
+
+ dl.brackets > dt:before {content: '[';}
+ dl.brackets > dt:after {content: ']';}
+
+ dl.framed > dt {border: solid;
+                 border-width: thin;
+                 padding: 0 0.2em;
+                 margin-top: 0.2em;
+                 line-height: 0.9;
+                }
+
+ --></style></section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="todo-lists.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

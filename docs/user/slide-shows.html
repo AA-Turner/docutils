@@ -1,0 +1,901 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger &amp; Chris Liechti" />
+<meta name="dcterms.date" content="$Date$" />
+<title>Easy Slide Shows With reST &amp; S5</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<main id="easy-slide-shows-with-rest-s5">
+<h1 class="title">Easy Slide Shows With reST &amp; S5</h1>
+<dl class="docinfo simple">
+<dt class="authors">Authors<span class="colon">:</span></dt>
+<dd class="authors"><p>David Goodger &amp; Chris Liechti</p>
+</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+</dl>
+<!-- Definitions of interpreted text roles (classes) for S5/HTML data. -->
+<!-- This data file has been placed in the public domain. -->
+<!-- Colours
+======= -->
+<!-- Text Sizes
+========== -->
+<!-- Display in Slides (Presentation Mode) Only
+========================================== -->
+<!-- Display in Outline Mode Only
+============================ -->
+<!-- Display in Print Only
+===================== -->
+<!-- Display in Handout Mode Only
+============================ -->
+<!-- Incremental Display
+=================== -->
+<!-- This document has been placed in the public domain. -->
+<div class="handout docutils container">
+<p>How to create quick, good-looking presentation slide shows with
+<a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a>/<a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-2" id="footnote-reference-4" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and <a class="reference external" href="http://meyerweb.com/eric/tools/s5/">S5</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-3" id="footnote-reference-5" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+<p>This document serves both as a user manual and as a usage example
+of the s5_html.py writer and the rst2s5.py front end.</p>
+<p>To view this document as a slide show see
+<a class="reference external" href="https://docutils.sourceforge.io/docs/user/slide-shows.s5.html">https://docutils.sourceforge.io/docs/user/slide-shows.s5.html</a> (or <a class="reference external" href="slide-shows.s5.html">your
+local copy</a>).</p>
+</div>
+<nav class="contents handout" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="toc-entry-1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#features-1" id="toc-entry-2">Features (1)</a></p></li>
+<li><p><a class="reference internal" href="#features-2-handouts" id="toc-entry-3">Features (2): Handouts</a></p></li>
+<li><p><a class="reference internal" href="#caveats" id="toc-entry-4">Caveats</a></p>
+<ul>
+<li><p><a class="reference internal" href="#subsections" id="toc-entry-5">3. Subsections ...</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#generating-a-slide-show-1" id="toc-entry-6">Generating a Slide Show (1)</a></p></li>
+<li><p><a class="reference internal" href="#generating-a-slide-show-2" id="toc-entry-7">Generating a Slide Show (2)</a></p></li>
+<li><p><a class="reference internal" href="#examples-1" id="toc-entry-8">Examples (1)</a></p></li>
+<li><p><a class="reference internal" href="#examples-2-incremental-text" id="toc-entry-9">Examples (2): Incremental Text</a></p></li>
+<li><p><a class="reference internal" href="#examples-3-incr-graphics" id="toc-entry-10">Examples (3): Incr. Graphics</a></p></li>
+<li><p><a class="reference internal" href="#themes" id="toc-entry-11">Themes</a></p></li>
+<li><p><a class="reference internal" href="#example-themes" id="toc-entry-12">Example Themes</a></p></li>
+<li><p><a class="reference internal" href="#example-themes-small-text" id="toc-entry-13">Example Themes: Small Text</a></p></li>
+<li><p><a class="reference internal" href="#example-themes-large-text" id="toc-entry-14">Example Themes: Large Text</a></p></li>
+<li><p><a class="reference internal" href="#example-themes-medium-text" id="toc-entry-15">Example Themes: Medium Text</a></p></li>
+<li><p><a class="reference internal" href="#s5-theme-files" id="toc-entry-16">S5 Theme Files</a></p></li>
+<li><p><a class="reference internal" href="#making-a-custom-theme" id="toc-entry-17">Making a Custom Theme</a></p></li>
+<li><p><a class="reference internal" href="#classes-incremental-1" id="toc-entry-18">Classes: Incremental (1)</a></p></li>
+<li><p><a class="reference internal" href="#classes-incremental-2" id="toc-entry-19">Classes: Incremental (2)</a></p></li>
+<li><p><a class="reference internal" href="#classes-incremental-3" id="toc-entry-20">Classes: Incremental (3)</a></p></li>
+<li><p><a class="reference internal" href="#classes-text-size" id="toc-entry-21">Classes: Text Size</a></p></li>
+<li><p><a class="reference internal" href="#classes-alignment" id="toc-entry-22">Classes: Alignment</a></p></li>
+<li><p><a class="reference internal" href="#classes-text-colours" id="toc-entry-23">Classes: Text Colours</a></p></li>
+<li><p><a class="reference internal" href="#classes-borderless-tables" id="toc-entry-24">Classes: Borderless Tables</a></p></li>
+<li><p><a class="reference internal" href="#classes-print-only" id="toc-entry-25">Classes: Print-Only</a></p></li>
+<li><p><a class="reference internal" href="#useful-extensions-for-firefox" id="toc-entry-26">Useful Extensions For Firefox</a></p></li>
+<li><p><a class="reference internal" href="#to-do" id="toc-entry-27">To Do</a></p></li>
+<li><p><a class="reference internal" href="#that-s-all-folks" id="toc-entry-28">That's All, Folks!</a></p></li>
+</ul>
+</nav>
+<ul class="tiny simple">
+<li><p>S5 themes are designed for full-screen display areas with a 4:3
+aspect ratio.  If the slide text doesn't fit in your browser window,
+try decreasing the text size.</p></li>
+<li><p>Use the space bar to advance, Page Up/Down &amp; arrow keys to navigate.</p></li>
+<li><p>Best viewed in <a class="reference external" href="http://www.mozilla.com/firefox/">Firefox</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-4" id="footnote-reference-7" role="doc-noteref"><span class="fn-bracket">[</span>4<span class="fn-bracket">]</span></a>, Safari, and Konqueror.  Click the &quot;Ø&quot;
+button to switch between presentation &amp; handout/outline modes.  Hit
+the &quot;C&quot; key to display the navigation controls, or mouse over the
+lower right-hand corner.</p></li>
+<li><p>Functionality is limited in Opera.  Switch to full-screen mode (F11
+key) to activate Opera Show.</p></li>
+<li><p>S5 works in Internet Explorer, but it may look ugly.</p></li>
+</ul>
+<div class="handout docutils container">
+<p>The first slide of a presentation consists of all visible text up
+to the first section title.  The document title is also added to
+the footer of all slides.</p>
+<p>The &quot;footer&quot; directive is used to specify part of the slide footer
+text.  It is currently limited to one short line (one paragraph).</p>
+<p>There is no support for the &quot;header&quot; directive in the themes
+included with Docutils.</p>
+</div>
+<section id="introduction">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Introduction</a><a class="self-link" title="link to this section" href="#introduction"></a></h2>
+<p class="handout"><span class="docutils literal">rst2s5.py</span> is a <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-1" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> front end that outputs HTML for use
+with <a class="reference external" href="http://meyerweb.com/eric/tools/s5/">S5</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-3" id="footnote-reference-6" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>, a &quot;Simple Standards-based Slide Show System&quot; by Eric
+Meyer.</p>
+<aside class="topic handout">
+<p class="topic-title">Installation</p>
+<p>Prerequisites: Python and the <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-1" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a> package have to be
+installed.  See the <a class="reference external" href="https://docutils.sourceforge.io/README.html">Docutils README</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-6" id="footnote-reference-9" role="doc-noteref"><span class="fn-bracket">[</span>6<span class="fn-bracket">]</span></a> file for installation
+instructions.</p>
+</aside>
+<ul>
+<li><p>reStructuredText</p>
+<p class="handout">Uses normal reStructuredText as input.</p>
+</li>
+<li><p>One section per slide</p>
+<p class="handout">Each first-level section is converted into a single slide.</p>
+</li>
+<li><p>XHTML output</p>
+<div class="handout docutils container">
+<p>Presentations can be viewed using most modern graphical web
+browsers.  The browser must support CSS, JavaScript, and XHTML.
+S5 even works with IE!</p>
+<p>S5 was designed to add the functionality of the <a class="reference external" href="http://www.opera.com/support/tutorials/operashow/">Opera Show</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-5" id="footnote-reference-8" role="doc-noteref"><span class="fn-bracket">[</span>5<span class="fn-bracket">]</span></a>
+standard (without Opera Show's limitations) to non-Opera
+browsers.  Unfortunately, most of S5's CSS and JavaScript
+extensions don't function in the Opera browser.</p>
+</div>
+</li>
+<li><p>Themes</p>
+<p class="handout">A variety of themes are available.  See <a class="reference internal" href="#example-themes">Example Themes</a>, below.</p>
+</li>
+<li><p><span class="docutils literal">rst2s5.py</span></p>
+<p class="handout">The front-end tool to generate S5 slide shows.</p>
+</li>
+</ul>
+<aside class="topic handout">
+<p class="topic-title">Keyboard Controls</p>
+<p>The following apply in any supporting browser besides Opera, which
+uses the default Opera Show controls instead.</p>
+<table>
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<thead>
+<tr><th class="head"><p>Action</p></th>
+<th class="head"><p>Key(s)</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>Go to the next slide</p></td>
+<td><ul class="simple">
+<li><p>[Space bar]</p></li>
+<li><p>[Return]</p></li>
+<li><p>[Enter]</p></li>
+<li><p>[Right arrow]</p></li>
+<li><p>[Down arrow]</p></li>
+<li><p>[Page down]</p></li>
+<li><p>Click the left mouse button outside of the control area,
+Flash object, or movie</p></li>
+</ul>
+</td>
+</tr>
+<tr><td><p>Go to the previous slide</p></td>
+<td><ul class="simple">
+<li><p>[Left arrow]</p></li>
+<li><p>[Up arrow]</p></li>
+<li><p>[Page up]</p></li>
+</ul>
+</td>
+</tr>
+<tr><td><p>Go to the title (first) slide</p></td>
+<td><p>[Home]</p></td>
+</tr>
+<tr><td><p>Go to the last slide</p></td>
+<td><p>[End]</p></td>
+</tr>
+<tr><td><p>Jump directly to a slide</p></td>
+<td><p>Type the slide number, then hit [Return] or [Enter]</p></td>
+</tr>
+<tr><td><p>Skip forward <em>n</em> slides</p></td>
+<td><p>Type the number of slides to skip, then hit any &quot;go to next&quot;
+key (except [Return] or [Enter])</p></td>
+</tr>
+<tr><td><p>Skip backward <em>n</em> slides</p></td>
+<td><p>Type the number of slides to skip, then hit any &quot;go to
+previous&quot; key</p></td>
+</tr>
+<tr><td><p>Switch between slideshow and outline view</p></td>
+<td><ul class="simple">
+<li><p>[T]</p></li>
+<li><p>Click the Ø button</p></li>
+</ul>
+</td>
+</tr>
+<tr><td><p>Show/hide slide controls</p></td>
+<td><ul class="simple">
+<li><p>[C]</p></li>
+<li><p>Move the mouse pointer over the control area</p></li>
+</ul>
+</td>
+</tr>
+</tbody>
+</table>
+<p>Further details of the S5 user interface can be found at <a class="reference external" href="http://meyerweb.com/eric/tools/s5/">Eric
+Meyer's S5 page</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-3" id="footnote-reference-10" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a>.</p>
+</aside>
+</section>
+<section id="features-1">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Features (1)</a><a class="self-link" title="link to this section" href="#features-1"></a></h2>
+<div class="handout docutils container">
+<p>The S5/HTML Writer supports all the standard Docutils HTML
+features.  S5 has been released to the Public Domain.</p>
+</div>
+<p>S5-specific features:</p>
+<ul class="incremental">
+<li><p>The document title is duplicated on each slide in the S5 footer.</p></li>
+<li><p>The <span class="docutils literal">footer</span> directive may be used to define additional text in
+the S5 footer.</p>
+<div class="handout docutils container">
+<p>But it is limited to one line of text.</p>
+<p>This is useful for information such as the date of the
+presentation and/or the location.  The field in the footer is
+left blank if no <span class="docutils literal">footer</span> directive is used.</p>
+<p>Example:</p>
+<pre class="literal-block">.. footer:: Location - Date</pre>
+<p>There is also a progress indicator (slide counter) in the footer
+that can be enabled.  It's disabled by default.</p>
+</div>
+</li>
+<li><p>Incremental display.</p>
+<p class="handout">An &quot;incremental&quot; class can be assigned to lists and other elements
+to get one-item-at-a-time behavior (like this list).  Incremental
+display does not work in the Opera browser.</p>
+</li>
+<li><p>Text auto-scaling.</p>
+<p class="handout">The text size adjusts relative to the size of your browser window
+automatically.  You may need to reload the document after resizing
+the window.  The browser and platform affect the font used; be sure
+to test the slide show on the presentation system.</p>
+</li>
+</ul>
+</section>
+<section id="features-2-handouts">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Features (2): Handouts</a><a class="self-link" title="link to this section" href="#features-2-handouts"></a></h2>
+<div class="handout docutils container">
+<p>The contents of any element with a &quot;class&quot; attribute value of
+&quot;handout&quot; are hidden in the slide presentation, and are only
+visible when the presentation is printed, or viewed in outline
+mode.  &quot;Handout&quot;-class elements can appear anywhere in the text, as
+often as needed.</p>
+<p>This means that the slides and extra handout material can be
+combined in one document.  The handout can be printed directly from
+the browser, and it will contain more than just silly framed
+slides.  This can be used to provide more detailed information, or
+for speaker's notes.</p>
+</div>
+<ul class="incremental">
+<li><p>Use the &quot;class&quot; directive:</p>
+<pre class="literal-block">.. class:: handout</pre>
+<div class="handout docutils container">
+<p>The <span class="docutils literal">.. class:: handout</span> directive can be used to tag
+individual paragraphs and other elements.  The &quot;class&quot; directive
+applies to the first element immediately following:</p>
+<pre class="literal-block">.. class:: handout
+
+This paragraph will get a
+``class=&quot;handout&quot;`` attribute.
+
+This paragraph will not be affected.</pre>
+<p>It also applies to multiple elements in the directive content:</p>
+<pre class="literal-block">.. class:: handout
+
+   These paragraphs are the content
+   of the &quot;class&quot; directive.  And as such...
+
+   Both paragraphs will *individually* receive
+   ``class=&quot;handout&quot;`` attributes.</pre>
+</div>
+</li>
+<li><p>Use the &quot;container&quot; directive:</p>
+<pre class="literal-block">.. container:: handout</pre>
+<div class="handout docutils container">
+<p>Arbitrary handout blocks can be created using the <span class="docutils literal">container</span>
+directive.  The content is treated as one.</p>
+</div>
+</li>
+<li><p>Use the &quot;class&quot; option of directives that support it:</p>
+<pre class="literal-block">.. topic:: Extra Material For Handouts
+   :class: handout</pre>
+</li>
+</ul>
+<div class="handout docutils container">
+<p>The following directives support &quot;class&quot; options:</p>
+<ul class="simple">
+<li><p>all admonition directives (&quot;admonition&quot;, &quot;note&quot;, &quot;hint&quot;, etc.)</p></li>
+<li><p>&quot;image&quot; &amp; &quot;figure&quot;</p></li>
+<li><p>&quot;topic&quot;</p></li>
+<li><p>&quot;sidebar&quot;</p></li>
+<li><p>&quot;line-block&quot;</p></li>
+<li><p>&quot;parsed-literal&quot;</p></li>
+<li><p>&quot;rubric&quot;</p></li>
+<li><p>&quot;compound&quot;</p></li>
+<li><p>&quot;table&quot;, &quot;csv-table&quot;, &amp; &quot;list-table&quot;</p></li>
+<li><p>&quot;target-notes&quot; (more about that below)</p></li>
+<li><p>&quot;role&quot; (pre-defined; more below)</p></li>
+</ul>
+<p>Handout contents are also visible on the screen if the S5 view mode
+is toggled from &quot;slide show&quot; to &quot;outline&quot; mode.</p>
+</div>
+</section>
+<section id="caveats">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Caveats</a><a class="self-link" title="link to this section" href="#caveats"></a></h2>
+<ol class="arabic incremental">
+<li><p>Some Docutils features are not supported by some themes.</p>
+<div class="handout docutils container">
+<p>For example, header rendering is not supported by the themes
+supplied with Docutils.</p>
+<p>The &quot;header&quot; directive is used to set header text.  S5
+automatically inserts section/slide titles into the &quot;header&quot;
+area of a slide.  If both Docutils headers and S5 headers (slide
+titles) exist simultaneously, they interfere with each other.</p>
+</div>
+</li>
+<li><p>Care must be taken with the &quot;contents&quot; directive.</p>
+<div class="handout docutils container">
+<p>The <span class="docutils literal"><span class="pre">--no-toc-backlinks</span></span> option is the default for the S5/HTML
+writer (<span class="docutils literal">toc_backlinks=0</span> setting).  Other values for this
+setting will change the CSS class of headings such that they
+won't show up correctly in the slide show.</p>
+<p>Use the <span class="docutils literal">:class: handout</span> option on the &quot;contents&quot; directive
+to limit the table of contents to the handout/outline mode
+only:</p>
+<pre class="literal-block">.. contents::
+   :class: handout</pre>
+</div>
+</li>
+</ol>
+<section class="incremental" id="subsections">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">3. Subsections ...</a><a class="self-link" title="link to this section" href="#subsections"></a></h3>
+<p>... may be used, sparingly.</p>
+<div class="handout docutils container">
+<p>Only first-level sections become slides.  Not many levels of
+subsections can fit on a slide.</p>
+<p>Subsections (of any level) work normally in handouts though.  Add
+&quot;<span class="docutils literal">.. class:: handout</span>&quot; before a subsection (or sub-subsection, or
+...), and the entire subsection will only appear in the handout.</p>
+</div>
+</section>
+</section>
+<section id="generating-a-slide-show-1">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Generating a Slide Show (1)</a><a class="self-link" title="link to this section" href="#generating-a-slide-show-1"></a></h2>
+<ol class="arabic incremental">
+<li><p>Open a console (terminal, command shell) and go to the folder
+containing your file, <span class="docutils literal">slides.txt</span>.</p></li>
+<li><p>Run the command:</p>
+<pre class="literal-block">rst2s5.py slides.txt slides.html</pre>
+</li>
+<li><p>Specify an S5 theme with the <span class="docutils literal"><span class="pre">--theme</span></span> option.</p>
+<p class="handout">Docutils will copy the S5 theme files into a <span class="docutils literal"><span class="pre">ui/&lt;theme&gt;</span></span> folder
+beside the output HTML file.  A slide show can also link to an
+existing theme using the <span class="docutils literal"><span class="pre">--theme-url</span></span> option.</p>
+</li>
+</ol>
+</section>
+<section id="generating-a-slide-show-2">
+<h2><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Generating a Slide Show (2)</a><a class="self-link" title="link to this section" href="#generating-a-slide-show-2"></a></h2>
+<ol class="arabic incremental" start="4">
+<li><p>Include a copy of any linked stylesheet.</p>
+<p class="handout">The default Docutils stylesheet, <span class="docutils literal">html4css1.css</span>, will normally
+be embedded in the output HTML.  If you choose to link to a
+stylesheet instead of embedding, you must include a copy (suggested
+location: in the <span class="docutils literal">ui/</span> directory).</p>
+</li>
+<li><p>Open <span class="docutils literal">slides.html</span> in a web browser.</p></li>
+<li><p>Expand the browser window to full-screen mode, and speak.</p>
+<p class="handout">The <a class="reference external" href="http://chrispederick.com/work/webdeveloper/">Web Developer</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-7" id="footnote-reference-11" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a> extension for Firefox is very useful.  With
+it, you can resize your browser window to the exact dimensions of
+the projector you'll be using, so you can test beforehand.  There
+are many other useful features as well.</p>
+</li>
+<li><p>Profit!</p></li>
+</ol>
+</section>
+<section id="examples-1">
+<h2><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">Examples (1)</a><a class="self-link" title="link to this section" href="#examples-1"></a></h2>
+<aside class="sidebar">
+<p class="sidebar-title">Hint</p>
+<p>Admonitions, tables, sidebars, and other elements can be used in
+on-screen presentations in handouts.  Images too!</p>
+<img alt="sample image" src="images/happy_monkey.png" />
+</aside>
+<table>
+<colgroup>
+<col style="width: 31.2%" />
+<col style="width: 31.2%" />
+<col style="width: 37.5%" />
+</colgroup>
+<thead>
+<tr><th class="head"><p>A</p></th>
+<th class="head"><p>B</p></th>
+<th class="head"><p>A or B</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p>False</p></td>
+<td><p>False</p></td>
+<td><p>False</p></td>
+</tr>
+<tr><td><p>True</p></td>
+<td><p>False</p></td>
+<td><p>True</p></td>
+</tr>
+<tr><td><p>False</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+<tr><td><p>True</p></td>
+<td><p>True</p></td>
+<td><p>True</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="examples-2-incremental-text">
+<h2><a class="toc-backref" href="#toc-entry-9" role="doc-backlink">Examples (2): Incremental Text</a><a class="self-link" title="link to this section" href="#examples-2-incremental-text"></a></h2>
+<p class="incremental">Paragraphs can be displayed one at a time...</p>
+<div class="incremental docutils container">
+<p>... or a bunch at a time.</p>
+<p>This second paragraph is displayed together with the previous
+one by grouping them with the &quot;container&quot; directive.</p>
+</div>
+<p><span class="incremental">We can also display</span> <span class="incremental">one</span> <span class="incremental">word</span> <span class="incremental">at</span> <span class="incremental">a</span> <span class="incremental">time,</span>
+<span class="incremental">or a phrase</span> <span class="incremental">at a time,</span>
+<span class="incremental">or even</span> <span class="incremental">o</span><span class="incremental">n</span><span class="incremental">e</span> <span class="incremental">l</span><span class="incremental">e</span><span class="incremental">t</span><span class="incremental">t</span><span class="incremental">e</span><span class="incremental">r</span> <span class="incremental">at a time!</span></p>
+<p><span class="incremental">(But the markup ain't pretty.)</span></p>
+</section>
+<section id="examples-3-incr-graphics">
+<h2><a class="toc-backref" href="#toc-entry-10" role="doc-backlink">Examples (3): Incr. Graphics</a><a class="self-link" title="link to this section" href="#examples-3-incr-graphics"></a></h2>
+<p>Let's play... Rock, Scissors, Paper</p>
+<div class="animation docutils container">
+<img alt="images/rsp-empty.png" class="hidden slide-display" src="images/rsp-empty.png" />
+<img alt="images/rsp-objects.png" class="incremental hidden slide-display" src="images/rsp-objects.png" />
+<img alt="images/rsp-cuts.png" class="incremental hidden slide-display" src="images/rsp-cuts.png" />
+<img alt="images/rsp-covers.png" class="incremental hidden slide-display" src="images/rsp-covers.png" />
+<img alt="images/rsp-breaks.png" class="incremental hidden slide-display" src="images/rsp-breaks.png" />
+<img alt="images/rsp-all.png" class="incremental" src="images/rsp-all.png" />
+</div>
+</section>
+<section id="themes">
+<h2><a class="toc-backref" href="#toc-entry-11" role="doc-backlink">Themes</a><a class="self-link" title="link to this section" href="#themes"></a></h2>
+<ul class="incremental">
+<li><p>Several themes are available, and they're easy to adapt.</p>
+<div class="handout docutils container">
+<p>Sites with other S5 themes:</p>
+<ul class="simple">
+<li><p><a class="reference external" href="http://meyerweb.com/eric/tools/s5/themes/">http://meyerweb.com/eric/tools/s5/themes/</a></p></li>
+<li><p><a class="reference external" href="http://mozilla.wikicities.com/wiki/Firefox_S5:Designs">http://mozilla.wikicities.com/wiki/Firefox_S5:Designs</a></p></li>
+<li><p><a class="reference external" href="http://lachy.id.au/dev/mozilla/firefox/s5/">http://lachy.id.au/dev/mozilla/firefox/s5/</a></p></li>
+<li><p><a class="reference external" href="http://www.openlight.com/Python-S5-Theme.tar.gz">http://www.openlight.com/Python-S5-Theme.tar.gz</a></p></li>
+</ul>
+<p>Do a web search for &quot;S5
+theme&quot; and you're bound to find plenty of choices.</p>
+</div>
+</li>
+<li><p>&quot;<span class="docutils literal"><span class="pre">--theme</span></span>&quot; option.</p>
+<div class="handout docutils container">
+<p>The theme can be specified with the &quot;<span class="docutils literal"><span class="pre">--theme</span></span>&quot; command-line
+option.</p>
+<p>Example:</p>
+<pre class="literal-block">rst2s5 --theme big-black slides.txt slides.html</pre>
+<p>The default theme is &quot;default&quot;.</p>
+</div>
+</li>
+<li><p>&quot;<span class="docutils literal">theme</span>&quot; setting.</p>
+<p class="handout">You can set the theme with the &quot;<span class="docutils literal">theme</span>&quot; configuration file
+setting.</p>
+</li>
+<li><p>Copied to <span class="docutils literal"><span class="pre">./ui/&lt;theme&gt;/</span></span>.</p>
+<p class="handout">Themes are copied into a <span class="docutils literal"><span class="pre">ui/&lt;theme&gt;</span></span> folder inside the folder
+containing the presentation.</p>
+</li>
+<li><p>Link with &quot;<span class="docutils literal"><span class="pre">--theme-url</span></span>&quot; option.</p>
+<p class="handout">Link to a theme on the same or another web site, using the
+&quot;<span class="docutils literal"><span class="pre">--theme-url</span></span>&quot; option or &quot;<span class="docutils literal">theme_url</span>&quot; configuration file
+setting.</p>
+</li>
+</ul>
+</section>
+<section id="example-themes">
+<h2><a class="toc-backref" href="#toc-entry-12" role="doc-backlink">Example Themes</a><a class="self-link" title="link to this section" href="#example-themes"></a></h2>
+<p class="handout">The default theme, &quot;default&quot;, is a simplified version of S5's
+default theme.  It accommodates up to 13 lines of text.</p>
+<p class="center">&quot;default&quot;</p>
+<img alt="images/default.png" class="center align-center" src="images/default.png" />
+</section>
+<section id="example-themes-small-text">
+<h2><a class="toc-backref" href="#toc-entry-13" role="doc-backlink">Example Themes: Small Text</a><a class="self-link" title="link to this section" href="#example-themes-small-text"></a></h2>
+<p class="handout">The &quot;small-white&quot; and &quot;small-black&quot; themes are simplifications of
+the default theme (<strong>small</strong> black text on a <strong>white</strong> background,
+and <strong>small</strong> black text on a <strong>white</strong> background, respectively).
+They each accommodate up to 15 lines of text.</p>
+<table class="borderless">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<tbody>
+<tr><td><p>&quot;small-white&quot;</p>
+<img alt="images/small-white.png" src="images/small-white.png" />
+</td>
+<td><p>&quot;small-black&quot;</p>
+<img alt="images/small-black.png" src="images/small-black.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-themes-large-text">
+<h2><a class="toc-backref" href="#toc-entry-14" role="doc-backlink">Example Themes: Large Text</a><a class="self-link" title="link to this section" href="#example-themes-large-text"></a></h2>
+<p class="handout">The &quot;big-white&quot; and &quot;big-black&quot; themes feature very large, bold
+text, with no footers.  Only five short lines fit in a slide.</p>
+<table class="borderless">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<tbody>
+<tr><td><p>&quot;big-white&quot;</p>
+<img alt="images/big-white.png" src="images/big-white.png" />
+</td>
+<td><p>&quot;big-black&quot;</p>
+<img alt="images/big-black.png" src="images/big-black.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="example-themes-medium-text">
+<h2><a class="toc-backref" href="#toc-entry-15" role="doc-backlink">Example Themes: Medium Text</a><a class="self-link" title="link to this section" href="#example-themes-medium-text"></a></h2>
+<p class="handout">The &quot;medium-white&quot; and &quot;medium-black&quot; themes feature medium-sized
+text.  Up to 8 lines of text are accommodated.</p>
+<table class="borderless">
+<colgroup>
+<col style="width: 50.0%" />
+<col style="width: 50.0%" />
+</colgroup>
+<tbody>
+<tr><td><p>&quot;medium-white&quot;</p>
+<img alt="images/medium-white.png" src="images/medium-white.png" />
+</td>
+<td><p>&quot;medium-black&quot;</p>
+<img alt="images/medium-black.png" src="images/medium-black.png" />
+</td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="s5-theme-files">
+<h2><a class="toc-backref" href="#toc-entry-16" role="doc-backlink">S5 Theme Files</a><a class="self-link" title="link to this section" href="#s5-theme-files"></a></h2>
+<p>An S5 theme consists of a directory containing several files --
+stylesheets, JavaScript, and graphics:</p>
+<img alt="images/s5-files.png" class="align-center" src="images/s5-files.png" />
+<div class="handout docutils container">
+<p>The generated HTML contains the entire slide show text.  It also
+contains links to the following files:</p>
+<ul class="simple">
+<li><p>slides.css simply contains import links to:</p>
+<ul>
+<li><p>s5-core.css: Default styles critical to the proper functioning
+of the slide show; don't touch this!</p></li>
+<li><p>framing.css: Sets the basic layout of slide components (header,
+footer, controls, etc.  This file is the often edited.</p></li>
+<li><p>pretty.css: Presentation styles that give the slide show a
+unique look and feel.  This is the file that you're most likely
+to edit for a custom theme.  You can make a whole new theme
+just by editing this file, and not touching the others.</p></li>
+</ul>
+</li>
+<li><p>outline.css: Styles for outline mode.</p></li>
+<li><p>print.css: Styles for printing; hides most layout elements, and
+may display others.</p></li>
+<li><p>opera.css: Styles necessary for the proper functioning of S5 in
+Opera Show.</p></li>
+<li><p>slides.js: the JavaScript that drives the dynamic side of the
+slide show (actions and navigation controls).  It automatically
+IDs the slides when the document loads, builds the navigation
+menu, handles the hiding and showing of slides, and so on.  The
+code also manages the fallback to Opera Show if you're using
+the Opera web browser.</p></li>
+</ul>
+</div>
+</section>
+<section id="making-a-custom-theme">
+<h2><a class="toc-backref" href="#toc-entry-17" role="doc-backlink">Making a Custom Theme</a><a class="self-link" title="link to this section" href="#making-a-custom-theme"></a></h2>
+<ol class="arabic incremental">
+<li><p>Run &quot;<span class="docutils literal">rst2s5.py <span class="pre">--theme</span> <span class="pre">&lt;base-theme&gt;</span> <span class="pre">&lt;doc&gt;.txt</span> <span class="pre">&lt;doc&gt;.html</span></span>&quot;.</p>
+<p class="handout">This initializes the <span class="docutils literal">ui</span> directory with the base theme files.</p>
+</li>
+<li><p>Copy <span class="docutils literal"><span class="pre">ui/&lt;base-theme&gt;</span></span> to <span class="docutils literal"><span class="pre">ui/&lt;new-theme&gt;</span></span>.</p></li>
+<li><p>Edit the styles (save in UTF-8 encoding).</p>
+<p class="handout">Start with <span class="docutils literal">pretty.css</span>; edit <span class="docutils literal">framing.css</span> if you need to make
+layout changes.</p>
+</li>
+<li><p>Run &quot;<span class="docutils literal">rst2s5.py <span class="pre">--theme-url</span> <span class="pre">ui/&lt;new-theme&gt;</span> <span class="pre">&lt;doc&gt;.txt</span> <span class="pre">&lt;doc&gt;.html</span></span>&quot;.</p>
+<p class="handout">We use the <span class="docutils literal"><span class="pre">--theme-url</span></span> option to refer to the new theme.  Open
+your <span class="docutils literal"><span class="pre">&lt;doc&gt;.html</span></span> in a browser to test the new theme.</p>
+</li>
+<li><p>Rinse &amp; repeat.</p>
+<p class="handout">Repeat from step 3 until you're satisfied.</p>
+</li>
+</ol>
+<!-- TODO: What to do next:
+
+ * add a ``__base__`` file
+ * create a personal reusable theme (plugin)
+ * submit the new theme to Docutils
+
+``docutils/writers/s5_html/themes/<theme>`` -->
+<div class="handout docutils container">
+<p>Resources:</p>
+<ul class="simple">
+<li><p>W3C's <a class="reference external" href="https://www.w3.org/Style/CSS/learning">Learning CSS</a></p></li>
+<li><p><a class="reference external" href="http://home.cogeco.ca/~ve3ll/s5themes.htm">Creating An S5 Theme</a></p></li>
+<li><p>A short tutorial on how to create themes (in German):
+<a class="reference external" href="http://yatil.de/s5/dokumentation/9/">Eigenes Theme erstellen</a></p></li>
+</ul>
+</div>
+</section>
+<section id="classes-incremental-1">
+<h2><a class="toc-backref" href="#toc-entry-18" role="doc-backlink">Classes: Incremental (1)</a><a class="self-link" title="link to this section" href="#classes-incremental-1"></a></h2>
+<p class="handout">Several &quot;class&quot; attribute values have built-in support in the
+themes supplied with Docutils.</p>
+<p class="incremental">As described earlier,</p>
+<ul class="incremental">
+<li><p><span class="docutils literal">.. class:: incremental</span></p></li>
+<li><p><span class="docutils literal">.. container:: incremental</span></p></li>
+<li><pre class="literal-block">.. sidebar:: title
+   :class: incremental</pre>
+</li>
+</ul>
+</section>
+<section id="classes-incremental-2">
+<h2><a class="toc-backref" href="#toc-entry-19" role="doc-backlink">Classes: Incremental (2)</a><a class="self-link" title="link to this section" href="#classes-incremental-2"></a></h2>
+<p>The &quot;incremental&quot; interpreted text role is also supported:</p>
+<pre class="incremental literal-block">:incremental:`This will appear first,` `and
+this will appear second.`:incremental:</pre>
+<p class="incremental">Requires &quot;<span class="docutils literal">.. include:: &lt;s5defs.txt&gt;</span>&quot;.</p>
+<div class="handout docutils container">
+<p>As you can see, this markup is not very convenient.</p>
+</div>
+<div class="incremental line-block">
+<div class="line">But <span class="docutils literal">s5defs.txt</span> includes this useful definition:</div>
+<div class="line">&quot;<span class="docutils literal">.. <span class="pre">default-role::</span> incremental</span>&quot;.  So:</div>
+</div>
+<pre class="incremental literal-block">`This` `is` `all` `we` `need`</pre>
+<p><span class="incremental">This</span> <span class="incremental">is</span> <span class="incremental">all</span> <span class="incremental">we</span> <span class="incremental">need</span> <span class="incremental">to mark up incremental text.</span></p>
+</section>
+<section id="classes-incremental-3">
+<h2><a class="toc-backref" href="#toc-entry-20" role="doc-backlink">Classes: Incremental (3)</a><a class="self-link" title="link to this section" href="#classes-incremental-3"></a></h2>
+<pre class="small literal-block">.. container:: animation
+
+   .. image:: images/empty.png
+      :class: hidden slide-display
+
+   .. class:: incremental hidden slide-display
+
+      .. image:: images/1.png
+      .. image:: images/2.png
+
+   .. image:: images/3.png
+      :class: incremental</pre>
+<div class="handout docutils container">
+<p>This is how the example works.</p>
+<p>The animation effects are caused by placing successive images at
+the same location, laying each image over the last.  For best
+results, all images should be the same size, and the positions of
+image elements should be consistent.  Use image transparency (alpha
+channels) to get overlay effects.</p>
+<p>Absolute positioning is used, which means that the images take up
+no space in the flow.  If you want text to follow the images, you
+have to specify the total size of the container via a style.
+Otherwise, the images and any following text will overlap.</p>
+<p>These class values do the work:</p>
+<dl class="simple">
+<dt>animation</dt>
+<dd><p>This wraps the container with styles that position the images
+absolutely, overlaying them over each other.  Only useful on a
+container.</p>
+</dd>
+<dt>hidden</dt>
+<dd><p>Unless overridden (by &quot;slide-display&quot;, for example), these
+elements will not be displayed.  Only the last image will be
+displayed in handout mode, when print, or when processed to
+ordinary HTML, because it does <em>not</em> carry a &quot;hidden&quot; class.</p>
+</dd>
+<dt>slide-display</dt>
+<dd><p>In conjunction with &quot;hidden&quot;, these elements will only appear
+on the slide, preventing clutter in the handout.</p>
+</dd>
+<dt>incremental</dt>
+<dd><p>The second and subsequent images will appear one at a time.
+The first image will already be present when the slide is
+displayed, because it does <em>not</em> carry an &quot;incremental&quot; class.</p>
+</dd>
+</dl>
+</div>
+</section>
+<section id="classes-text-size">
+<h2><a class="toc-backref" href="#toc-entry-21" role="doc-backlink">Classes: Text Size</a><a class="self-link" title="link to this section" href="#classes-text-size"></a></h2>
+<ul class="incremental simple">
+<li><p><span class="tiny">tiny</span> (class &amp; role name: &quot;tiny&quot;, e.g. &quot;<span class="docutils literal"><span class="pre">:tiny:`text`</span></span>&quot;)</p></li>
+<li><p><small>small</small> (&quot;small&quot;)</p></li>
+<li><p>normal (unstyled)</p></li>
+<li><p><span class="big">big</span> (&quot;big&quot;)</p></li>
+<li><p><span class="huge">huge</span> (&quot;huge&quot;)</p></li>
+</ul>
+<p class="incremental">Requires &quot;<span class="docutils literal">.. include:: &lt;s5defs.txt&gt;</span>&quot;.</p>
+</section>
+<section id="classes-alignment">
+<h2><a class="toc-backref" href="#toc-entry-22" role="doc-backlink">Classes: Alignment</a><a class="self-link" title="link to this section" href="#classes-alignment"></a></h2>
+<p class="incremental left">Left (class name: &quot;left&quot;)</p>
+<p class="incremental center">Center (&quot;center&quot; &amp; &quot;centre&quot;)</p>
+<p class="incremental right">Right (&quot;right&quot;)</p>
+<p class="handout">These classes apply to block-level elements only.  They cannot be
+used for inline text (i.e., they're not interpreted text roles).</p>
+<p class="incremental">Example:</p>
+<pre class="incremental literal-block">.. class:: center
+
+Text to be centered.</pre>
+</section>
+<section id="classes-text-colours">
+<h2><a class="toc-backref" href="#toc-entry-23" role="doc-backlink">Classes: Text Colours</a><a class="self-link" title="link to this section" href="#classes-text-colours"></a></h2>
+<p><span class="black">black</span> [black], <span class="gray">gray</span>, <span class="silver">silver</span>, <span class="white">white</span>
+[white], <span class="maroon">maroon</span>, <span class="red">red</span>, <span class="magenta">magenta</span>,
+<span class="fuchsia">fuchsia</span>, <span class="pink">pink</span>, <span class="orange">orange</span>, <span class="yellow">yellow</span>,
+<span class="lime">lime</span>, <span class="green">green</span>, <span class="olive">olive</span>, <span class="teal">teal</span>,
+<span class="cyan">cyan</span>, <span class="aqua">aqua</span>, <span class="blue">blue</span>, <span class="navy">navy</span>,
+<span class="purple">purple</span></p>
+<p>The class names and role names are the same as the colour names.  For
+example, &quot;<span class="docutils literal"><span class="pre">:orange:`text`</span></span>&quot; produces &quot;<span class="orange">text</span>&quot;.</p>
+<p class="incremental">Requires &quot;<span class="docutils literal">.. include:: &lt;s5defs.txt&gt;</span>&quot;.</p>
+</section>
+<section id="classes-borderless-tables">
+<h2><a class="toc-backref" href="#toc-entry-24" role="doc-backlink">Classes: Borderless Tables</a><a class="self-link" title="link to this section" href="#classes-borderless-tables"></a></h2>
+<p class="handout">Here's an ordinary, unstyled table:</p>
+<table class="incremental">
+<colgroup>
+<col style="width: 56.2%" />
+<col style="width: 43.8%" />
+</colgroup>
+<tbody>
+<tr><td><p>Sometimes</p></td>
+<td><p>borders</p></td>
+</tr>
+<tr><td><p>are</p></td>
+<td><p>useful.</p></td>
+</tr>
+</tbody>
+</table>
+<p class="incremental">And after applying &quot;<span class="docutils literal">.. class:: borderless</span>&quot;:</p>
+<table class="incremental borderless">
+<colgroup>
+<col style="width: 29.2%" />
+<col style="width: 41.7%" />
+<col style="width: 29.2%" />
+</colgroup>
+<tbody>
+<tr><td><p>But</p></td>
+<td><p>sometimes,</p></td>
+<td><p>borders</p></td>
+</tr>
+<tr><td><p>are</p></td>
+<td><p><strong>not</strong></p></td>
+<td><p>wanted.</p></td>
+</tr>
+</tbody>
+</table>
+</section>
+<section id="classes-print-only">
+<h2><a class="toc-backref" href="#toc-entry-25" role="doc-backlink">Classes: Print-Only</a><a class="self-link" title="link to this section" href="#classes-print-only"></a></h2>
+<p class="handout">Elements with <span class="docutils literal"><span class="pre">class=&quot;print&quot;</span></span> attributes display their contents
+when printed, overriding <span class="docutils literal"><span class="pre">class=&quot;hidden&quot;</span></span>.</p>
+<p class="incremental">Example: the &quot;target-notes&quot; directive:</p>
+<pre class="incremental literal-block">.. topic:: Links
+   :class: hidden print
+
+   .. target-notes::
+      :class: hidden print</pre>
+<div class="handout docutils container">
+<p>One good example, used in this document, is the &quot;target-notes&quot;
+directive.  For each external target (hyperlink) in the text, this
+directive generates a footnote containing the visible URL as
+content.  Footnote references are placed after each hyperlink
+reference.</p>
+<p>The &quot;topic&quot; directive is given a &quot;class&quot; attribute with values
+&quot;hidden&quot; and &quot;print&quot;, so the entire topic will only be displayed
+when printed.  The &quot;target-notes&quot; directive also assigns a &quot;class&quot;
+attributes with values &quot;hidden&quot; and &quot;print&quot; to each of the footnote
+references it inserts throughout the text; they will only show up
+when printed.</p>
+</div>
+<p class="incremental">Other uses may require &quot;<span class="docutils literal">.. include:: &lt;s5defs.txt&gt;</span>&quot;.</p>
+</section>
+<section id="useful-extensions-for-firefox">
+<h2><a class="toc-backref" href="#toc-entry-26" role="doc-backlink">Useful Extensions For Firefox</a><a class="self-link" title="link to this section" href="#useful-extensions-for-firefox"></a></h2>
+<ul>
+<li><p><a class="reference external" href="http://www.krickelkrackel.de/autohide/autohide.htm">Autohide</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-8" id="footnote-reference-12" role="doc-noteref"><span class="fn-bracket">[</span>8<span class="fn-bracket">]</span></a></p>
+<p class="handout">Automatically hides toolbars in full-screen mode.</p>
+</li>
+<li><p><a class="reference external" href="http://chrispederick.com/work/webdeveloper/">Web Developer</a><span class="hidden print"> </span><a class="footnote-reference brackets hidden print" href="#footnote-7" id="footnote-reference-13" role="doc-noteref"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></a></p>
+<p class="handout">Adds a context submenu and a toolbar with a lot of useful
+functionality, including the viewing and live editing of
+stylesheets, and sizing the browser window.</p>
+</li>
+</ul>
+</section>
+<section id="to-do">
+<h2><a class="toc-backref" href="#toc-entry-27" role="doc-backlink">To Do</a><a class="self-link" title="link to this section" href="#to-do"></a></h2>
+<ul class="incremental">
+<li><p>Multi-display support:</p>
+<ul class="simple">
+<li><p>speaker's notes on the laptop screen</p></li>
+<li><p>slides on the projector</p></li>
+<li><p>two views stay in sync</p></li>
+<li><p>presentation controlled from either display</p></li>
+</ul>
+</li>
+<li><p>Add timeout to incremental style.</p>
+<p class="handout">I.e., incremental-specific style should go away (revert to
+normal) after a certain interval.</p>
+</li>
+</ul>
+<p class="incremental">These will require some serious JavaScript-fu!</p>
+</section>
+<section id="that-s-all-folks">
+<h2><a class="toc-backref" href="#toc-entry-28" role="doc-backlink">That's All, Folks!</a><a class="self-link" title="link to this section" href="#that-s-all-folks"></a></h2>
+<p class="huge">Further information:
+<a class="reference external" href="https://docutils.sourceforge.io">https://docutils.sourceforge.io</a></p>
+<p class="huge">Docutils users' mailing list:
+<a class="reference external" href="mailto:docutils-users&#64;lists.sourceforge.net">docutils-users&#64;lists.sourceforge.net</a></p>
+<p class="huge"><span class="incremental">Any questions?</span></p>
+<aside class="topic hidden print">
+<p class="topic-title">Links</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-1">1</a>,<a role="doc-backlink" href="#footnote-reference-2">2</a>,<a role="doc-backlink" href="#footnote-reference-3">3</a>)</span>
+<p><a class="reference external" href="https://docutils.sourceforge.io/">https://docutils.sourceforge.io/</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-4">2</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://docutils.sourceforge.io/rst.html">https://docutils.sourceforge.io/rst.html</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-3" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-5">1</a>,<a role="doc-backlink" href="#footnote-reference-6">2</a>,<a role="doc-backlink" href="#footnote-reference-10">3</a>)</span>
+<p><a class="reference external" href="http://meyerweb.com/eric/tools/s5/">http://meyerweb.com/eric/tools/s5/</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-4" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-7">4</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="http://www.mozilla.com/firefox/">http://www.mozilla.com/firefox/</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-5" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-8">5</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="http://www.opera.com/support/tutorials/operashow/">http://www.opera.com/support/tutorials/operashow/</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-6" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-9">6</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="https://docutils.sourceforge.io/README.html">https://docutils.sourceforge.io/README.html</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-7" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>7<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-11">1</a>,<a role="doc-backlink" href="#footnote-reference-13">2</a>)</span>
+<p><a class="reference external" href="http://chrispederick.com/work/webdeveloper/">http://chrispederick.com/work/webdeveloper/</a></p>
+</aside>
+<aside class="footnote brackets" id="footnote-8" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-12">8</a><span class="fn-bracket">]</span></span>
+<p><a class="reference external" href="http://www.krickelkrackel.de/autohide/autohide.htm">http://www.krickelkrackel.de/autohide/autohide.htm</a></p>
+</aside>
+</aside>
+</aside>
+</section>
+</main>
+<footer>
+<p>Location • Date</p>
+<p><a class="reference external" href="slide-shows.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

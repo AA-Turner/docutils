@@ -1,0 +1,150 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="author" content="Lea Wiemann" />
+<meta name="author" content="open to all Docutils developers" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Release Procedure</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body>
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-release-procedure">
+<h1 class="title"><a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Release Procedure</h1>
+<dl class="docinfo">
+<dt class="authors">Authors<span class="colon">:</span></dt>
+<dd class="authors"><p>David Goodger</p>
+<p>Lea Wiemann</p>
+<p>open to all Docutils developers</p>
+</dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<section id="releasing-post-2020">
+<h2>Releasing (post 2020)<a class="self-link" title="link to this section" href="#releasing-post-2020"></a></h2>
+<ul>
+<li><p>Announce the upcoming release on docutils-develop list.</p>
+<p>Consider <strong>feature freeze</strong> or/and <strong>check-in freeze</strong> .</p>
+</li>
+<li><p>Update RELEASE-NOTES.txt add section <span class="docutils literal">Release &lt;version&gt;</span>.</p>
+<p>Consult HISTORY.txt for important changes.</p>
+</li>
+<li><p>Change HISTORY.txt title <span class="docutils literal">Changes Since &lt;previous release&gt;</span> to <span class="docutils literal">Release &lt;version&gt;</span>.</p></li>
+<li><p>Set new version (replace <span class="docutils literal">&lt;version&gt;</span> with the new version indentifier
+and <span class="docutils literal"><span class="pre">&lt;docutils-repository-root&gt;</span></span> with the dir containing
+<span class="docutils literal">HISTORY.txt</span> and <span class="docutils literal"><span class="pre">RELEASE-NOTES.txt</span></span>):</p>
+<pre class="literal-block">cd &lt;docutils-repository-root&gt;
+../sandbox/infrastructure/set_version.sh &lt;version&gt;</pre>
+<p>Check what was changed by <span class="docutils literal">set_version.sh</span>.</p>
+<p>Run tests</p>
+<pre class="literal-block">export PYTHONWARNINGS=default
+python3 test/alltests.py</pre>
+<p>or use tox.
+In case of errors, clearing <span class="docutils literal">docutils/__pycache__</span> may help.</p>
+<p><span class="docutils literal">export PYTHONWARNINGS=default</span> prints DeprecationWarnings in python3.</p>
+</li>
+<li><p>Generate wheel and source-distribution:</p>
+<pre class="literal-block">python3 setup.py sdist
+python3 setup.py bdist_wheel</pre>
+</li>
+<li><p>Upload wheel and source to test.pypi:</p>
+<pre class="literal-block">python3 -m twine upload --repository-url https://test.pypi.org/legacy/ dist/*</pre>
+<p>Test in venv. NOTE use --pre for prereleases:</p>
+<pre class="literal-block">python3 -m venv du3 ; cd du3
+export PYTHONPATH= ; . bin/activate
+
+python -m pip install --index-url https://test.pypi.org/simple/ --no-deps docutils
+
+cp -Lr ../docutils-code/docutils/test .
+python test/alltests.py
+
+python -m pip uninstall docutils
+deactivate ; cd .. ; rm -r du3</pre>
+</li>
+<li><p>Commit changes ... the changed version number.</p></li>
+<li><p>tag #.# (Note: only directory docutils is copied):</p>
+<pre class="literal-block">svn copy svn+ssh://grubert&#64;svn.code.sf.net/p/docutils/code/trunk/docutils \
+         svn+ssh://grubert&#64;svn.code.sf.net/p/docutils/code/tags/docutils-#.# \
+         -m &quot;tagging release #.#&quot;</pre>
+</li>
+<li><p>Update your source directory.</p></li>
+<li><p>Rebuild wheel and source-distribution</p>
+<pre class="literal-block">python3 setup.py sdist
+python3 setup.py bdist_wheel</pre>
+</li>
+<li><p>Now upload to pypi:</p>
+<pre class="literal-block">python3 -m twine upload  dist/docutils-#.#*</pre>
+</li>
+<li><p>Remove previous package from local cache:</p>
+<pre class="literal-block">find .cache/pip/wheels -name docutils\*whl -exec rm -v -i {} \;</pre>
+</li>
+<li><p>and test:</p>
+<pre class="literal-block">python3 -m venv du3 ; cd du3
+export PYTHONPATH= ; . bin/activate
+
+pip install --no-deps docutils
+cp -Lr ../docutils-code/docutils/test .
+python test/alltests.py
+
+deactivate ; cd .. ; rm -r du3</pre>
+</li>
+<li><p>Notify to docutils-developer and user.</p></li>
+<li><p>upload source and generated html to sf-htdocs/#.#</p>
+<pre class="literal-block">mkdir tmp1
+cd tmp1
+tar xzvf ../dist/docutils-#.#.tar.gz
+cd docutils-#.#/
+tools/buildhtml.py .
+find . -name \*.pyc -exec rm -v {} \;
+find . -name __pycache__ -exec rmdir -v {} \;
+rm -r docutils.egg-info
+rsync -e ssh -r -t ./ web.sourceforge.net:/home/project-web/docutils/htdocs/#.#</pre>
+</li>
+<li><p>Check web/index.txt for necessary corrections.</p></li>
+<li><p>Run sandbox/infrastructure/docutils-update.local to update web-content.</p></li>
+<li><p>Release to sourceforge.</p>
+<ul class="simple">
+<li><p>Upload docutils-#.#.tar.gz and release notes to sourceforge.</p></li>
+<li><p>Select docutils-#.#.tar.gz as default for all OS.</p></li>
+</ul>
+</li>
+<li><p>set_version #.{#+1}b.dev</p></li>
+<li><p>test with py3</p></li>
+<li><p>docutils/HISTORY.txt: add title &quot;Changes Since #.#&quot;</p></li>
+<li><p>run sandbox/infrastructure/docutils-update.local</p></li>
+</ul>
+<!-- Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+sentence-end-double-space: t
+fill-column: 70
+End: -->
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="release.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

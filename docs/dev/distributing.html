@@ -1,0 +1,155 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Lea Wiemann" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Distributor's Guide</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-distributor-s-guide">
+<h1 class="title"><a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Distributor's Guide</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>Lea Wiemann</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#dependencies" id="toc-entry-1">Dependencies</a></p></li>
+<li><p><a class="reference internal" href="#python-files" id="toc-entry-2">Python Files</a></p></li>
+<li><p><a class="reference internal" href="#executables" id="toc-entry-3">Executables</a></p></li>
+<li><p><a class="reference internal" href="#documentation" id="toc-entry-4">Documentation</a></p>
+<ul>
+<li><p><a class="reference internal" href="#removing-the-txt-files" id="toc-entry-5">Removing the <span class="docutils literal">.txt</span> Files</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#other-files" id="toc-entry-6">Other Files</a></p></li>
+<li><p><a class="reference internal" href="#configuration-file" id="toc-entry-7">Configuration File</a></p></li>
+<li><p><a class="reference internal" href="#tests" id="toc-entry-8">Tests</a></p></li>
+</ul>
+</nav>
+<p>This document describes how to create packages of Docutils (e.g. for
+shipping with a Linux distribution).  If you have any questions,
+please direct them to the <a class="reference external" href="../user/mailing-lists.html#docutils-develop">Docutils-develop</a> mailing list.</p>
+<p>First, please download the most current <a class="reference external" href="https://docutils.sourceforge.io/#download">release tarball</a> and unpack
+it.</p>
+<section id="dependencies">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Dependencies</a><a class="self-link" title="link to this section" href="#dependencies"></a></h2>
+<p>Docutils has the following dependencies:</p>
+<ul class="simple">
+<li><p>Python 3.7 or later is required.
+Use &quot;&gt;= Python 3.7&quot; in the dependencies.</p></li>
+<li><p>Docutils may optionally make use of the PIL (<a class="reference external" href="https://en.wikipedia.org/wiki/Python_Imaging_Library">Python Imaging
+Library</a> or <a class="reference external" href="https://pypi.org/project/Pillow/">Pillow</a>).  If PIL is present, it is automatically
+detected by Docutils.</p></li>
+<li><p>Docutils recommends the <a class="reference external" href="https://pygments.org/">Pygments</a> syntax hightlighter. If available, it
+is used for highlighting the content of <a class="reference external" href="../ref/rst/directives.html#code">code directives</a> and roles as
+well as included source code files (with the &quot;code&quot; option to the <a class="reference external" href="../ref/rst/directives.html#include">include</a>
+directive).</p></li>
+<li><p>Docutils can use the <a class="reference external" href="https://pypi.org/project/recommonmark/">recommonmark</a> parser to parse input in
+the Markdown format (new in 0.17).</p></li>
+</ul>
+</section>
+<section id="python-files">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Python Files</a><a class="self-link" title="link to this section" href="#python-files"></a></h2>
+<p>The Docutils Python files must be installed into the
+<span class="docutils literal"><span class="pre">site-packages/</span></span> directory of Python.  Running <span class="docutils literal">python setup.py install</span> should do the trick, but if you want to place the files
+yourself, you can just install the <span class="docutils literal">docutils/</span> directory of the
+Docutils tarball to <span class="docutils literal"><span class="pre">/usr/lib/python/site-packages/docutils/</span></span>.  In
+this case you should also compile the Python files to <span class="docutils literal">.pyc</span> and/or
+<span class="docutils literal">.pyo</span> files so that Docutils doesn't need to be recompiled every
+time it's executed.</p>
+</section>
+<section id="executables">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Executables</a><a class="self-link" title="link to this section" href="#executables"></a></h2>
+<p>The executable front-end tools are located in the <span class="docutils literal">tools/</span> directory
+of the Docutils tarball.</p>
+<p>The <span class="docutils literal"><span class="pre">rst2*.py</span></span> tools are intended for end-users. You should install them
+to <span class="docutils literal">/usr/bin/</span>.  You do not need to change the names (e.g. to
+<span class="docutils literal"><span class="pre">docutils-rst2html.py</span></span>) because the <span class="docutils literal">rst2</span> prefix is unique.</p>
+</section>
+<section id="documentation">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Documentation</a><a class="self-link" title="link to this section" href="#documentation"></a></h2>
+<p>The documentation should be generated using <span class="docutils literal">buildhtml.py</span>.  To
+generate HTML for all documentation files, go to the <span class="docutils literal">tools/</span>
+directory and run:</p>
+<pre class="literal-block"># Place html4css1.css in base directory.
+cp ../docutils/writers/html4css1/html4css1.css ..
+./buildhtml.py --stylesheet-path=../html4css1.css ..</pre>
+<p>Then install the following files to <span class="docutils literal">/usr/share/doc/docutils/</span> (or
+wherever you install documentation):</p>
+<ul>
+<li><p>All <span class="docutils literal">.html</span> and <span class="docutils literal">.txt</span> files in the base directory.</p></li>
+<li><p>The <span class="docutils literal">docs/</span> directory.</p>
+<p>Do not install the contents of the <span class="docutils literal">docs/</span> directory directly to
+<span class="docutils literal">/usr/share/doc/docutils/</span>; it's incomplete and would contain
+invalid references!</p>
+</li>
+<li><p>The <span class="docutils literal">licenses/</span> directory.</p></li>
+<li><p><span class="docutils literal">html4css1.css</span> in the base directory.</p></li>
+</ul>
+<section id="removing-the-txt-files">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Removing the <span class="docutils literal">.txt</span> Files</a><a class="self-link" title="link to this section" href="#removing-the-txt-files"></a></h3>
+<p>If you are tight with disk space, you can remove all <span class="docutils literal">.txt</span> files in
+the tree except for:</p>
+<ul class="simple">
+<li><p>those in the <span class="docutils literal">licenses/</span> directory because they have not been
+processed to HTML and</p></li>
+<li><p><span class="docutils literal">user/rst/cheatsheet.txt</span> and <span class="docutils literal">user/rst/demo.txt</span>, which should
+be readable in source form.</p></li>
+</ul>
+<p>Before you remove the <span class="docutils literal">.txt</span> files you should rerun <span class="docutils literal">buildhtml.py</span>
+with the <span class="docutils literal"><span class="pre">--no-source-link</span></span> switch to avoid broken references to the
+source files.</p>
+</section>
+</section>
+<section id="other-files">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Other Files</a><a class="self-link" title="link to this section" href="#other-files"></a></h2>
+<p>You may want to install the Emacs-Lisp files
+<span class="docutils literal"><span class="pre">tools/editors/emacs/*.el</span></span> into the appropriate directory.</p>
+</section>
+<section id="configuration-file">
+<h2><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Configuration File</a><a class="self-link" title="link to this section" href="#configuration-file"></a></h2>
+<p>It is possible to have a system-wide configuration file at
+<span class="docutils literal">/etc/docutils.conf</span>.  However, this is usually not necessary.  You
+should <em>not</em> install <span class="docutils literal">tools/docutils.conf</span> into <span class="docutils literal">/etc/</span>.</p>
+</section>
+<section id="tests">
+<h2><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">Tests</a><a class="self-link" title="link to this section" href="#tests"></a></h2>
+<p>While you probably do not need to ship the tests with your
+distribution, you can test your package by installing it and then
+running <span class="docutils literal">alltests.py</span> from the <span class="docutils literal">tests/</span> directory of the Docutils
+tarball.</p>
+<p>For more information on testing, view the <a class="reference external" href="https://docutils.sourceforge.io/docs/dev/testing.html">Docutils Testing</a> page.</p>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="distributing.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

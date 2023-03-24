@@ -1,0 +1,302 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<title>Docutils HTML writers</title>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-html-writers">
+<h1 class="title">Docutils HTML writers</h1>
+
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#html" id="toc-entry-1">html</a></p></li>
+<li><p><a class="reference internal" href="#html4css1" id="toc-entry-2">html4css1</a></p>
+<ul>
+<li><p><a class="reference internal" href="#pep-html" id="toc-entry-3">pep_html</a></p></li>
+<li><p><a class="reference internal" href="#s5-html" id="toc-entry-4">s5_html</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#html5" id="toc-entry-5">html5</a></p></li>
+<li><p><a class="reference internal" href="#overview" id="toc-entry-6">Overview</a></p></li>
+<li><p><a class="reference internal" href="#references" id="toc-entry-7">References</a></p></li>
+</ul>
+</nav>
+<section id="html">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">html</a><a class="self-link" title="link to this section" href="#html"></a></h2>
+<dl class="field-list simple">
+<dt>front-end<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="tools.html#rst2html-py">rst2html.py</a></p>
+</dd>
+</dl>
+<p><cite>html</cite> is an alias for the default Docutils HTML writer.</p>
+<p>The default may change with the development of HTML, browsers, Docutils,
+and the web.
+Currently, <cite>html</cite> is mapped to <a class="reference internal" href="#html4css1">html4css1</a>, it will become an alias for
+<a class="reference internal" href="#html5-1">html5</a> in Docutils 2.0.</p>
+<ul class="simple">
+<li><p>Use <span class="docutils literal"><span class="pre">get_writer_by_name('html')</span></span> or the <a class="reference external" href="tools.html#rst2html-py">rst2html.py</a> front end, if you
+want the output to be up-to-date automatically.</p></li>
+<li><p>Use a specific writer name or front end, if you depend on stability of the
+generated HTML code, e.g. because you use a custom style sheet or
+post-processing that may break otherwise.</p></li>
+</ul>
+</section>
+<section id="html4css1">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">html4css1</a><a class="self-link" title="link to this section" href="#html4css1"></a></h2>
+<dl class="field-list simple">
+<dt>aliases<span class="colon">:</span></dt>
+<dd><p>html4, <a class="reference internal" href="#html">html</a></p>
+</dd>
+<dt>front-ends<span class="colon">:</span></dt>
+<dd><p>rst2html4.py, <a class="reference external" href="tools.html#rst2html-py">rst2html.py</a></p>
+</dd>
+<dt>config<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="config.html#html4css1-writer">[html4css1 writer]</a></p>
+</dd>
+</dl>
+<p>The HTML Writer module, <span class="docutils literal">docutils/writers/html4css1.py</span>, was the first
+Docutils writer and up to release 0.13 the only official HTML writer.</p>
+<p>The output conforms to the <a class="reference internal" href="#xhtml-1-transitional">XHTML 1 Transitional</a> specification. It does
+not validate as <a class="reference internal" href="#html-4-01-transitional">HTML 4.01 Transitional</a> due to the closing of empty tags
+required in XML but not allowed in HTML 4. However, the output follows the
+<a class="reference external" href="https://www.w3.org/TR/xhtml1/#guidelines">HTML Compatibility Guidelines</a> for proper rendering on most HTML user
+agents.</p>
+<p>Correct rendering depends on a <a class="reference external" href="https://www.w3.org/TR/CSS/">CSS</a> style sheet. A reference style sheet,
+<a class="reference external" href="../../docutils/writers/html4css1/html4css1.css">html4css1.css</a>, is provided and used by default.</p>
+<p>To support the <cite>Internet Explorer</cite> (with a market share of about 90% around
+2002, the time this writer was written), documents contain some hard-coded
+formatting hints and are tagged as &quot;text/html&quot; (instead of
+&quot;application/xhtml+xml&quot;). <a class="footnote-reference brackets" href="#ie" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="ie" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-1">1</a><span class="fn-bracket">]</span></span>
+<p>Conformance to <a class="reference internal" href="#css-2-1">CSS 2.1</a> has been added in IE 8 (2009), support
+for XHTML in IE 9 (2011).</p>
+</aside>
+</aside>
+<section id="pep-html">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">pep_html</a><a class="self-link" title="link to this section" href="#pep-html"></a></h3>
+<dl class="field-list simple">
+<dt>front-end<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="tools.html#rstpep2html-py">rstpep2html.py</a></p>
+</dd>
+<dt>config<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="config.html#pep-html-writer">[pep_html writer]</a></p>
+</dd>
+</dl>
+<p>This is a special writer for the generation of <a class="reference external" href="https://peps.python.org/">Python Enhancement
+Proposals</a> (PEPs). It inherits from <a class="reference internal" href="#html4css1">html4css1</a> and adds some <a class="reference external" href="config.html#pep-html-writer">PEP-specific
+options</a>, a style sheet and template. The front-end uses also a specialised
+reader.</p>
+</section>
+<section id="s5-html">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">s5_html</a><a class="self-link" title="link to this section" href="#s5-html"></a></h3>
+<dl class="field-list simple">
+<dt>alias<span class="colon">:</span></dt>
+<dd><p>s5</p>
+</dd>
+<dt>front-end<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="tools.html#rst2s5-py">rst2s5.py</a></p>
+</dd>
+<dt>config<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="config.html#s5-html-writer">[s5_html writer]</a></p>
+</dd>
+</dl>
+<p>The <cite>s5</cite> writer inherits from <a class="reference internal" href="#html4css1">html4css1</a>. It produces XHTML for use with
+<a class="reference external" href="http://meyerweb.com/eric/tools/s5/">S5</a>, the “Simple Standards-based Slide Show System” by Eric Meyer.  See
+<a class="reference external" href="slide-shows.html">Easy Slide Shows With reST &amp; S5</a> for details.</p>
+</section>
+</section>
+<section id="html5">
+<h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">html5</a><a class="self-link" title="link to this section" href="#html5"></a></h2>
+<dl class="field-list simple">
+<dt>aliases<span class="colon">:</span></dt>
+<dd><p><span class="target" id="html5-polyglot">html5_polyglot</span></p>
+</dd>
+<dt>front-end<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="tools.html#rst2html5-py">rst2html5.py</a></p>
+</dd>
+<dt>config<span class="colon">:</span></dt>
+<dd><p><a class="reference external" href="config.html#html5-writer">[html5 writer]</a></p>
+</dd>
+</dl>
+<p>The <span class="docutils literal">html5_polyglot</span> writer generates <a class="reference external" href="https://www.w3.org/TR/html-polyglot/">polyglot HTML</a> <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> output, valid
+XML <a class="footnote-reference brackets" href="#safetext" id="footnote-reference-3" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a> that is compatible with <a class="reference internal" href="#html5-1">HTML5</a>. New features and elements
+are used if they are widely supported.</p>
+<p>There is no hard-coded formatting information in the HTML document.
+Correct rendering of elements not directly supported by HTML depends on a
+<a class="reference external" href="https://www.w3.org/TR/CSS/">CSS</a> style sheet. The provided style sheet <a class="reference external" href="../../docutils/writers/html5_polyglot/minimal.css">minimal.css</a> defines required
+styling rules; <a class="reference external" href="../../docutils/writers/html5_polyglot/plain.css">plain.css</a> and <a class="reference external" href="../../docutils/writers/html5_polyglot/responsive.css">responsive.css</a> add optional rules for
+better legibility. Adaption of the layout is possible with <a class="reference external" href="../howto/html-stylesheets.html">custom style
+sheets</a>. <a class="footnote-reference brackets" href="#safetext" id="footnote-reference-4" role="doc-noteref"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></a></p>
+<p>New in Docutils 0.13</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-2">2</a><span class="fn-bracket">]</span></span>
+<p>see also <a class="reference external" href="http://xmlplease.com/xhtml/xhtml5polyglot/">Benefits of polyglot XHTML5</a></p>
+</aside>
+<aside class="footnote brackets" id="safetext" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>3<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-3">1</a>,<a role="doc-backlink" href="#footnote-reference-4">2</a>)</span>
+<p>The validity of raw HTML and custom stylesheets must be
+ensured by the author.</p>
+</aside>
+</aside>
+</section>
+<section id="overview">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Overview</a><a class="self-link" title="link to this section" href="#overview"></a></h2>
+<table>
+<colgroup>
+<col style="width: 23.2%" />
+<col style="width: 15.9%" />
+<col style="width: 20.3%" />
+<col style="width: 24.6%" />
+<col style="width: 15.9%" />
+</colgroup>
+<thead>
+<tr><th class="head"><p>name</p></th>
+<th class="head"><p>aliases</p></th>
+<th class="head"><p><a class="reference external" href="tools.html">front-end</a></p></th>
+<th class="head"><p>HTML version</p></th>
+<th class="head"><p>CSS version</p></th>
+</tr>
+</thead>
+<tbody>
+<tr><td><p><a class="reference internal" href="#html4css1">html4css1</a></p></td>
+<td><p>html4,
+<a class="reference internal" href="#html">html</a></p></td>
+<td><p>rst2html4.py,
+rst2html.py</p></td>
+<td><p><a class="reference internal" href="#xhtml-1-transitional">XHTML 1
+Transitional</a></p></td>
+<td><p><a class="reference internal" href="#css-1">CSS 1</a></p></td>
+</tr>
+<tr><td><p><a class="reference internal" href="#pep-html">pep_html</a></p></td>
+<td><!--  -->
+</td>
+<td><p>rstpep2html.py</p></td>
+<td><p><a class="reference internal" href="#xhtml-1-transitional">XHTML 1
+Transitional</a></p></td>
+<td><p><a class="reference internal" href="#css-1">CSS 1</a></p></td>
+</tr>
+<tr><td><p><a class="reference internal" href="#s5-html">s5_html</a></p></td>
+<td><p>s5</p></td>
+<td><p>rst2s5.py</p></td>
+<td><p><a class="reference internal" href="#xhtml-1-transitional">XHTML 1
+Transitional</a></p></td>
+<td><p><a class="reference internal" href="#css-1">CSS 1</a></p></td>
+</tr>
+<tr><td><p><a class="reference internal" href="#html5-polyglot">html5_polyglot</a></p></td>
+<td><p>html5</p></td>
+<td><p>rst2html5.py</p></td>
+<td><p><a class="reference internal" href="#html5-1">HTML5</a></p></td>
+<td><p><a class="reference internal" href="#css-3">CSS 3</a></p></td>
+</tr>
+</tbody>
+</table>
+<p>For additional alternatives, see the <a class="reference external" href="https://docutils.sourceforge.io/docs/user/links.html#website-generators-and-html-variants">Docutils link list</a> and the
+<a class="reference external" href="../dev/policies.html#the-sandbox">sandbox</a>.</p>
+</section>
+<section id="references">
+<h2><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">References</a><a class="self-link" title="link to this section" href="#references"></a></h2>
+<dl class="simple">
+<dt><span class="target" id="html5-1">HTML5</span></dt>
+<dd><p><cite>HTML5, A vocabulary and associated APIs for HTML and XHTML</cite>,
+W3C Recommendation, 28 October 2014.
+<a class="reference external" href="https://www.w3.org/TR/2014/REC-html5-20141028/">https://www.w3.org/TR/2014/REC-html5-20141028/</a></p>
+</dd>
+<dt><span class="target" id="xhtml-1-1">XHTML 1.1</span></dt>
+<dd><p><cite>XHTML™ 1.1 - Module-based XHTML - Second Edition</cite>,
+W3C Recommendation, 23 November 2010.
+<a class="reference external" href="https://www.w3.org/TR/xhtml11/">https://www.w3.org/TR/xhtml11/</a></p>
+</dd>
+<dt><span class="target" id="xhtml-1-transitional">XHTML 1 Transitional</span></dt>
+<dd><p><a class="reference external" href="https://www.w3.org/TR/xhtml1/#a_dtd_XHTML-1.0-Transitional">Transitional version</a> of:
+<cite>XHTML™ 1.0 The Extensible HyperText Markup Language (Second
+Edition)</cite>, <cite>A Reformulation of HTML 4 in XML 1.0</cite>,
+W3C Recommendation, 26 January 2000, revised 1 August 2002.
+<a class="reference external" href="https://www.w3.org/TR/xhtml1/">https://www.w3.org/TR/xhtml1/</a></p>
+</dd>
+<dt><span class="target" id="xhtml-basic">XHTML Basic</span></dt>
+<dd><p><cite>XHTML™ Basic 1.1 - Second Edition</cite>,
+W3C Recommendation, 23 November 2010.
+<a class="reference external" href="https://www.w3.org/TR/xhtml-basic/">https://www.w3.org/TR/xhtml-basic/</a></p>
+</dd>
+</dl>
+<dl class="simple">
+<dt><span class="target" id="html-4-01-transitional">HTML 4.01 Transitional</span></dt>
+<dd><p>Transitional version of:
+<cite>HTML 4.01 Specification</cite>, W3C Recommendation 24 December 1999.
+<a class="reference external" href="https://www.w3.org/TR/html4/">https://www.w3.org/TR/html4/</a></p>
+</dd>
+</dl>
+<dl id="css-1">
+<dt><span class="target" id="css-level-1">CSS Level 1</span>:</dt>
+<dd><p>The features defined in the <a class="reference external" href="https://www.w3.org/TR/2008/REC-CSS1-20080411/">CSS1 specification</a>, but using the syntax
+and definitions in the <a class="reference internal" href="#css-2-1">CSS 2.1</a> specification.</p>
+</dd>
+<dt><span class="target" id="css-2-1">CSS 2.1</span> <cite>Cascading Style Sheets Level 2 Revision 1 (CSS 2.1) Specification</cite>,</dt>
+<dd><p>W3C Recommendation 07 June 2011.
+<a class="reference external" href="https://www.w3.org/TR/CSS21/">https://www.w3.org/TR/CSS21/</a></p>
+</dd>
+<dt><span class="target" id="css-3">CSS 3</span>:</dt>
+<dd><p>CSS Level 3 builds on CSS Level 2 module by module, using the CSS2.1
+specification as its core.</p>
+<p>Specifications: <a class="reference external" href="https://www.w3.org/Style/CSS/specs.en.html">https://www.w3.org/Style/CSS/specs.en.html</a></p>
+<p>Validator: <a class="reference external" href="http://jigsaw.w3.org/css-validator/">http://jigsaw.w3.org/css-validator/</a></p>
+</dd>
+</dl>
+<!-- other references
+- - - - - - - - - - - - - - - - -->
+<blockquote>
+<!-- Beware. This specification is no longer in active maintenance and the
+HTML Working Group does not intend to maintain it further. -->
+</blockquote>
+<!-- Appendix
+
+
+    On the question of Polyglot markup, there seems to be little
+    consensus. One line of argument suggests that, to the extent that it
+    is practical to obey the Robustness principle, it makes sense to do
+    so. That is, if you're generating HTML markup for the web, and you can
+    generate Polyglot markup that is also directly consumable as XML, you
+    should do so. Another line of argument suggests that even under the
+    most optimistic of projections, so tiny a fraction of the web will
+    ever be written in Polyglot that there's no practical benefit to
+    pursuing it as a general strategy for consuming documents from the
+    web. If you want to consume HTML content, use an HTML parser that
+    produces an XML-compatible DOM or event stream.
+
+    - - https://www.w3.org/TR/html-xml-tf-report/#conclusions
+
+Further development
+
+On 2016-05-25, David Goodger wrote:
+
+> In addition, I'd actually like to see the HTML writer(s) with
+> fully-parameterized classes, i.e. removing hard-coded *classes* as well as
+> formatting. This way, any user who wants to (e.g.) write reST for use with
+> Bootstrap can easily work around any naming conflicts. -->
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="html.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

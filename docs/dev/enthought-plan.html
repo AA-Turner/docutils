@@ -1,0 +1,452 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="2004 by Enthought, Inc." />
+<title>Plan for Enthought API Documentation Tool</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<main id="plan-for-enthought-api-documentation-tool">
+<h1 class="title">Plan for Enthought API Documentation Tool</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">2004 by <a class="reference external" href="http://www.enthought.com">Enthought, Inc.</a></dd>
+<dt class="license">License<span class="colon">:</span></dt>
+<dd class="license"><p><a class="reference external" href="https://docutils.sourceforge.io/licenses/enthought.txt">Enthought License</a> (BSD-style)</p>
+</dd>
+</dl>
+<p>This document should be read in conjunction with the <a class="reference external" href="enthought-rfp.html">Enthought API
+Documentation Tool RFP</a> prepared by Janet Swisher.</p>
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="auto-toc simple">
+<li><p><a class="reference internal" href="#introduction" id="toc-entry-1"><span class="sectnum">1 </span>Introduction</a></p></li>
+<li><p><a class="reference internal" href="#development-plan" id="toc-entry-2"><span class="sectnum">2 </span>Development Plan</a></p></li>
+<li><p><a class="reference internal" href="#repository" id="toc-entry-3"><span class="sectnum">3 </span>Repository</a></p></li>
+<li><p><a class="reference internal" href="#copyright-license" id="toc-entry-4"><span class="sectnum">4 </span>Copyright &amp; License</a></p></li>
+<li><p><a class="reference internal" href="#proposed-changes-to-restructuredtext" id="toc-entry-5"><span class="sectnum">5 </span>Proposed Changes to reStructuredText</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#doc-comment-syntax" id="toc-entry-6"><span class="sectnum">5.1 </span>Doc Comment Syntax</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#recommendation" id="toc-entry-7"><span class="sectnum">5.1.1 </span>Recommendation</a></p></li>
+<li><p><a class="reference internal" href="#update" id="toc-entry-8"><span class="sectnum">5.1.2 </span>Update</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#docstring-density-whitespace-minimization" id="toc-entry-9"><span class="sectnum">5.2 </span>Docstring Density &amp; Whitespace Minimization</a></p>
+<ul class="auto-toc">
+<li><p><a class="reference internal" href="#recommendation-1" id="toc-entry-10"><span class="sectnum">5.2.1 </span>Recommendation</a></p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink"><span class="sectnum">1 </span>Introduction</a><a class="self-link" title="link to this section" href="#introduction"></a></h2>
+<p>In March 2004 at I met Eric Jones, president and CTO of <a class="reference external" href="http://www.enthought.com">Enthought,
+Inc.</a>, at <a class="reference external" href="http://pycon.org/dc2004/">PyCon 2004</a> in Washington DC.  He told me that Enthought
+was using <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> for source code documentation, but they
+had some issues.  He asked if I'd be interested in doing some work on
+a customized API documentation tool.  Shortly after PyCon, Janet
+Swisher, Enthought's senior technical writer, contacted me to work out
+details.  Some email, a trip to Austin in May, and plenty of Texas
+hospitality later, we had a project.  This document will record the
+details, milestones, and evolution of the project.</p>
+<p>In a nutshell, Enthought is sponsoring the implementation of an open
+source API documentation tool that meets their needs.  Fortuitously,
+their needs coincide well with the &quot;Python Source Reader&quot; description
+in <a class="reference external" href="https://docutils.sourceforge.io/docs/peps/pep-0258.html#python-source-reader">PEP 258</a>.  In other words, Enthought is funding some significant
+improvements to Docutils, improvements that were planned but never
+implemented due to time and other constraints.  The implementation
+will take place gradually over several months, on a part-time basis.</p>
+<p>This is an ideal example of cooperation between a corporation and an
+open-source project.  The corporation, the project, I personally, and
+the community all benefit.  Enthought, whose commitment to open source
+is also evidenced by their sponsorship of <a class="reference external" href="http://www.scipy.org/">SciPy</a>, benefits by
+obtaining a useful piece of software, much more quickly than would
+have been possible without their support.  Docutils benefits directly
+from the implementation of one of its core subsystems.  I benefit from
+the funding, which allows me to justify the long hours to my wife and
+family.  All the corporations, projects, and individuals that make up
+the community will benefit from the end result, which will be great.</p>
+<p>All that's left now is to actually do the work!</p>
+</section>
+<section id="development-plan">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink"><span class="sectnum">2 </span>Development Plan</a><a class="self-link" title="link to this section" href="#development-plan"></a></h2>
+<ol class="arabic simple">
+<li><p>Analyze prior art, most notably <a class="reference external" href="http://epydoc.sourceforge.net/">Epydoc</a> and <a class="reference external" href="http://happydoc.sourceforge.net/">HappyDoc</a>, to see how
+they do what they do.  I have no desire to reinvent wheels
+unnecessarily.  I want to take the best ideas from each tool,
+combined with the outline in <a class="reference external" href="https://docutils.sourceforge.io/docs/peps/pep-0258.html#python-source-reader">PEP 258</a> (which will evolve), and
+build at least the foundation of the definitive Python
+auto-documentation tool.</p>
+</li>
+<li><p>Decide on a base platform.  The best way to achieve Enthought's
+goals in a reasonable time frame may be to extend Epydoc or
+HappyDoc.  Or it may be necessary to start fresh.</p></li>
+<li><p>Extend the reStructuredText parser.  See <a class="reference internal" href="#proposed-changes-to-restructuredtext">Proposed Changes to
+reStructuredText</a> below.</p></li>
+<li><p>Depending on the base platform chosen, build or extend the
+docstring &amp; doc comment extraction tool.  This may be the biggest
+part of the project, but I won't be able to break it down into
+details until more is known.</p></li>
+</ol>
+</section>
+<section id="repository">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink"><span class="sectnum">3 </span>Repository</a><a class="self-link" title="link to this section" href="#repository"></a></h2>
+<p>If possible, all software and documentation files will be stored in
+the Subversion repository of Docutils and/or the base project, which
+are all publicly-available via anonymous pserver access.</p>
+<p>The Docutils project is very open about granting Subversion write
+access; so far, everyone who asked has been given access.  Any
+Enthought staff member who would like Subversion write access will get
+it.</p>
+<p>If either Epydoc or HappyDoc is chosen as the base platform, I will
+ask the project's administrator for CVS access for myself and any
+Enthought staff member who wants it.  If sufficient access is not
+granted -- although I doubt that there would be any problem -- we may
+have to begin a fork, which could be hosted on SourceForge, on
+Enthought's Subversion server, or anywhere else deemed appropriate.</p>
+</section>
+<section id="copyright-license">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink"><span class="sectnum">4 </span>Copyright &amp; License</a><a class="self-link" title="link to this section" href="#copyright-license"></a></h2>
+<p>Most existing Docutils files have been placed in the public domain, as
+follows:</p>
+<pre class="literal-block">:Copyright: This document has been placed in the public domain.</pre>
+<p>This is in conjunction with the &quot;Public Domain Dedication&quot; section of
+<a class="reference external" href="https://docutils.sourceforge.io/COPYING.html">COPYING.txt</a>.</p>
+<p>The code and documentation originating from Enthought funding will
+have Enthought's copyright and license declaration.  While I will try
+to keep Enthought-specific code and documentation separate from the
+existing files, there will inevitably be cases where it makes the most
+sense to extend existing files.</p>
+<p>I propose the following:</p>
+<ol class="arabic">
+<li><p>New files related to this Enthought-funded work will be identified
+with the following field-list headers:</p>
+<pre class="literal-block">:Copyright: 2004 by Enthought, Inc.
+:License: Enthought License (BSD Style)</pre>
+<p>The license field text will be linked to the license file itself.</p>
+</li>
+<li><p>For significant or major changes to an existing file (more than 10%
+change), the headers shall change as follows (for example):</p>
+<pre class="literal-block">:Copyright: 2001-2004 by David Goodger
+:Copyright: 2004 by Enthought, Inc.
+:License: BSD-style</pre>
+<p>If the Enthought-funded portion becomes greater than the previously
+existing portion, Enthought's copyright line will be shown first.</p>
+</li>
+<li><p>In cases of insignificant or minor changes to an existing file
+(less than 10% change), the public domain status shall remain
+unchanged.</p></li>
+</ol>
+<p>A section describing all of this will be added to the Docutils
+<a class="reference external" href="https://docutils.sourceforge.io/COPYING.html">COPYING</a> instructions file.</p>
+<p>If another project is chosen as the base project, similar changes
+would be made to their files, subject to negotiation.</p>
+</section>
+<section id="proposed-changes-to-restructuredtext">
+<h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink"><span class="sectnum">5 </span>Proposed Changes to reStructuredText</a><a class="self-link" title="link to this section" href="#proposed-changes-to-restructuredtext"></a></h2>
+<section id="doc-comment-syntax">
+<h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink"><span class="sectnum">5.1 </span>Doc Comment Syntax</a><a class="self-link" title="link to this section" href="#doc-comment-syntax"></a></h3>
+<p>The &quot;traits&quot; construct is implemented as dictionaries, where
+standalone strings would be Python syntax errors.  Therefore traits
+require documentation in comments.  We also need a way to
+differentiate between ordinary &quot;internal&quot; comments and documentation
+comments (doc comments).</p>
+<p>Javadoc uses the following syntax for doc comments:</p>
+<pre class="literal-block">/**
+ * The first line of a multi-line doc comment begins with a slash
+ * and *two* asterisks.  The doc comment ends normally.
+ */</pre>
+<p>Python doesn't have multi-line comments; only single-line.  A similar
+convention in Python might look like this:</p>
+<pre class="literal-block">##
+# The first line of a doc comment begins with *two* hash marks.
+# The doc comment ends with the first non-comment line.
+'data' : AnyValue,
+
+## The double-hash-marks could occur on the first line of text,
+#  saving a line in the source.
+'data' : AnyValue,</pre>
+<p>How to indicate the end of the doc comment?</p>
+<pre class="literal-block">##
+# The first line of a doc comment begins with *two* hash marks.
+# The doc comment ends with the first non-comment line, or another
+# double-hash-mark.
+##
+# This is an ordinary, internal, non-doc comment.
+'data' : AnyValue,
+
+## First line of a doc comment, terse syntax.
+#  Second (and last) line.  Ends here: ##
+# This is an ordinary, internal, non-doc comment.
+'data' : AnyValue,</pre>
+<p>Or do we even need to worry about this case?  A simple blank line
+could be used:</p>
+<pre class="literal-block">## First line of a doc comment, terse syntax.
+#  Second (and last) line.  Ends with a blank line.
+
+# This is an ordinary, internal, non-doc comment.
+'data' : AnyValue,</pre>
+<p>Other possibilities:</p>
+<pre class="literal-block">#&quot; Instead of double-hash-marks, we could use a hash mark and a
+#  quotation mark to begin the doc comment.
+'data' : AnyValue,
+
+## We could require double-hash-marks on every line.  This has the
+## added benefit of delimiting the *end* of the doc comment, as
+## well as working well with line wrapping in Emacs
+## (&quot;fill-paragraph&quot; command).
+# Ordinary non-doc comment.
+'data' : AnyValue,
+
+#&quot; A hash mark and a quotation mark on each line looks funny, and
+#&quot; it doesn't work well with line wrapping in Emacs.
+'data' : AnyValue,</pre>
+<p>These styles (repeated on each line) work well with line wrapping in
+Emacs:</p>
+<pre class="literal-block">##  #&gt;  #|  #-  #%  #!  #*</pre>
+<p>These styles do <em>not</em> work well with line wrapping in Emacs:</p>
+<pre class="literal-block">#&quot;  #'  #:  #)  #.  #/  #&#64;  #$  #^  #=  #+  #_  #~</pre>
+<p>The style of doc comment indicator used could be a runtime, global
+and/or per-module setting.  That may add more complexity than it's
+worth though.</p>
+<section id="recommendation">
+<h4><a class="toc-backref" href="#toc-entry-7" role="doc-backlink"><span class="sectnum">5.1.1 </span>Recommendation</a><a class="self-link" title="link to this section" href="#recommendation"></a></h4>
+<p>I recommend adopting &quot;#*&quot; on every line:</p>
+<pre class="literal-block"># This is an ordinary non-doc comment.
+
+#* This is a documentation comment, with an asterisk after the
+#* hash marks on every line.
+'data' : AnyValue,</pre>
+<p>I initially recommended adopting double-hash-marks:</p>
+<pre class="literal-block"># This is an ordinary non-doc comment.
+
+## This is a documentation comment, with double-hash-marks on
+## every line.
+'data' : AnyValue,</pre>
+<p>But Janet Swisher rightly pointed out that this could collide with
+ordinary comments that are then block-commented.  This applies to
+double-hash-marks on the first line only as well.  So they're out.</p>
+<p>On the other hand, the JavaDoc-comment style (&quot;##&quot; on the first line
+only, &quot;#&quot; after that) is used in Fredrik Lundh's <a class="reference external" href="http://effbot.org/zone/pythondoc.htm">PythonDoc</a>.  It may
+be worthwhile to conform to this syntax, reinforcing it as a standard.
+PythonDoc does not support terse doc comments (text after &quot;##&quot; on the
+first line).</p>
+</section>
+<section id="update">
+<h4><a class="toc-backref" href="#toc-entry-8" role="doc-backlink"><span class="sectnum">5.1.2 </span>Update</a><a class="self-link" title="link to this section" href="#update"></a></h4>
+<p>Enthought's Traits system has switched to a metaclass base, and traits
+are now defined via ordinary attributes.  Therefore doc comments are
+no longer absolutely necessary; attribute docstrings will suffice.
+Doc comments may still be desirable though, since they allow
+documentation to precede the thing being documented.</p>
+</section>
+</section>
+<section id="docstring-density-whitespace-minimization">
+<h3><a class="toc-backref" href="#toc-entry-9" role="doc-backlink"><span class="sectnum">5.2 </span>Docstring Density &amp; Whitespace Minimization</a><a class="self-link" title="link to this section" href="#docstring-density-whitespace-minimization"></a></h3>
+<p>One problem with extensively documented classes &amp; functions, is that
+there is a lot of screen space wasted on whitespace.  Here's some
+current Enthought code (from lib/cp/fluids/gassmann.py):</p>
+<pre class="literal-block">def max_gas(temperature, pressure, api, specific_gravity=.56):
+    &quot;&quot;&quot;
+    Computes the maximum dissolved gas in oil using Batzle and
+    Wang (1992).
+
+    Parameters
+    ----------
+    temperature : sequence
+        Temperature in degrees Celsius
+    pressure : sequence
+        Pressure in MPa
+    api : sequence
+        Stock tank oil API
+    specific_gravity : sequence
+        Specific gravity of gas at STP, default is .56
+
+    Returns
+    -------
+    max_gor : sequence
+        Maximum dissolved gas in liters/liter
+
+    Description
+    -----------
+    This estimate is based on equations given by Mavko, Mukerji,
+    and Dvorkin, (1998, pp. 218-219, or 2003, p. 236) obtained
+    originally from Batzle and Wang (1992).
+    &quot;&quot;&quot;
+    code...</pre>
+<p>The docstring is 24 lines long.</p>
+<p>Rather than using subsections, field lists (which exist now) can save
+6 lines:</p>
+<pre class="literal-block">def max_gas(temperature, pressure, api, specific_gravity=.56):
+    &quot;&quot;&quot;
+    Computes the maximum dissolved gas in oil using Batzle and
+    Wang (1992).
+
+    :Parameters:
+        temperature : sequence
+            Temperature in degrees Celsius
+        pressure : sequence
+            Pressure in MPa
+        api : sequence
+            Stock tank oil API
+        specific_gravity : sequence
+            Specific gravity of gas at STP, default is .56
+    :Returns:
+        max_gor : sequence
+            Maximum dissolved gas in liters/liter
+    :Description: This estimate is based on equations given by
+        Mavko, Mukerji, and Dvorkin, (1998, pp. 218-219, or 2003,
+        p. 236) obtained originally from Batzle and Wang (1992).
+    &quot;&quot;&quot;
+    code...</pre>
+<p>As with the &quot;Description&quot; field above, field bodies may begin on the
+same line as the field name, which also saves space.</p>
+<p>The output for field lists is typically a table structure.  For
+example:</p>
+<blockquote>
+<dl class="field-list simple">
+<dt>Parameters<span class="colon">:</span></dt>
+<dd><dl class="simple">
+<dt>temperature<span class="classifier">sequence</span></dt>
+<dd><p>Temperature in degrees Celsius</p>
+</dd>
+<dt>pressure<span class="classifier">sequence</span></dt>
+<dd><p>Pressure in MPa</p>
+</dd>
+<dt>api<span class="classifier">sequence</span></dt>
+<dd><p>Stock tank oil API</p>
+</dd>
+<dt>specific_gravity<span class="classifier">sequence</span></dt>
+<dd><p>Specific gravity of gas at STP, default is .56</p>
+</dd>
+</dl>
+</dd>
+<dt>Returns<span class="colon">:</span></dt>
+<dd><dl class="simple">
+<dt>max_gor<span class="classifier">sequence</span></dt>
+<dd><p>Maximum dissolved gas in liters/liter</p>
+</dd>
+</dl>
+</dd>
+<dt>Description<span class="colon">:</span></dt>
+<dd><p>This estimate is based on equations given by Mavko,
+Mukerji, and Dvorkin, (1998, pp. 218-219, or 2003, p. 236)
+obtained originally from Batzle and Wang (1992).</p>
+</dd>
+</dl>
+</blockquote>
+<p>But the definition lists describing the parameters and return values
+are still wasteful of space.  There are a lot of half-filled lines.</p>
+<p>Definition lists are currently defined as:</p>
+<pre class="literal-block">term : classifier
+    definition</pre>
+<p>Where the classifier part is optional.  Ideas for improvements:</p>
+<ol class="arabic">
+<li><p>We could allow multiple classifiers:</p>
+<pre class="literal-block">term : classifier one : two : three ...
+    definition</pre>
+</li>
+<li><p>We could allow the definition on the same line as the term, using
+some embedded/inline markup:</p>
+<ul>
+<li><p>&quot;--&quot; could be used, but only in limited and well-known contexts:</p>
+<pre class="literal-block">term -- definition</pre>
+<p>This is the syntax used by StructuredText (one of
+reStructuredText's predecessors).  It was not adopted for
+reStructuredText because it is ambiguous -- people often use &quot;--&quot;
+in their text, as I just did.  But given a constrained context,
+the ambiguity would be acceptable (or would it?).  That context
+would be: in docstrings, within a field list, perhaps only with
+certain well-defined field names (parameters, returns).</p>
+</li>
+<li><p>The &quot;constrained context&quot; above isn't really enough to make the
+ambiguity acceptable.  Instead, a slightly more verbose but far
+less ambiguous syntax is possible:</p>
+<pre class="literal-block">term === definition</pre>
+<p>This syntax has advantages.  Equals signs lend themselves to the
+connotation of &quot;definition&quot;.  And whereas one or two equals signs
+are commonly used in program code, three equals signs in a row
+have no conflicting meanings that I know of.  (Update: there
+<em>are</em> uses out there.)</p>
+</li>
+</ul>
+<p>The problem with this approach is that using inline markup for
+structure is inherently ambiguous in reStructuredText.  For
+example, writing <em>about</em> definition lists would be difficult:</p>
+<pre class="literal-block">``term === definition`` is an example of a compact definition list item</pre>
+<p>The parser checks for structural markup before it does inline
+markup processing.  But the &quot;===&quot; should be protected by its inline
+literal context.</p>
+</li>
+<li><p>We could allow the definition on the same line as the term, using
+structural markup.  A variation on bullet lists would work well:</p>
+<pre class="literal-block">: term :: definition
+: another term :: and a definition that
+  wraps across lines</pre>
+<p>Some ambiguity remains:</p>
+<pre class="literal-block">: term ``containing :: double colons`` :: definition</pre>
+<p>But the likelihood of such cases is negligible, and they can be
+covered in the documentation.</p>
+<p>Other possibilities for the definition delimiter include:</p>
+<pre class="literal-block">: term : classifier -- definition
+: term : classifier --- definition
+: term : classifier : : definition
+: term : classifier === definition</pre>
+</li>
+</ol>
+<p>The third idea currently has the best chance of being adopted and
+implemented.</p>
+<section id="recommendation-1">
+<h4><a class="toc-backref" href="#toc-entry-10" role="doc-backlink"><span class="sectnum">5.2.1 </span>Recommendation</a><a class="self-link" title="link to this section" href="#recommendation-1"></a></h4>
+<p>Combining these ideas, the function definition becomes:</p>
+<pre class="literal-block">def max_gas(temperature, pressure, api, specific_gravity=.56):
+    &quot;&quot;&quot;
+    Computes the maximum dissolved gas in oil using Batzle and
+    Wang (1992).
+
+    :Parameters:
+        : temperature : sequence :: Temperature in degrees Celsius
+        : pressure : sequence :: Pressure in MPa
+        : api : sequence :: Stock tank oil API
+        : specific_gravity : sequence :: Specific gravity of gas at
+          STP, default is .56
+    :Returns:
+        : max_gor : sequence :: Maximum dissolved gas in liters/liter
+    :Description: This estimate is based on equations given by
+        Mavko, Mukerji, and Dvorkin, (1998, pp. 218-219, or 2003,
+        p. 236) obtained originally from Batzle and Wang (1992).
+    &quot;&quot;&quot;
+    code...</pre>
+<p>The docstring is reduced to 14 lines, from the original 24.  For
+longer docstrings with many parameters and return values, the
+difference would be more significant.</p>
+</section>
+</section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="enthought-plan.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

@@ -1,0 +1,134 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docstring Semantics</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body>
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docstring-semantics">
+<h1 class="title">Docstring Semantics</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<p>These are notes for a possible future PEP providing the final piece of
+the Python docstring puzzle: docstring semantics or documentation
+methodology.  <a class="reference external" href="https://peps.python.org/pep-0257">PEP 257</a>, Docstring Conventions, sketches out some
+guidelines, but does not get into methodology details.</p>
+<p>I haven't explored documentation methodology more because, in my
+opinion, it is a completely separate issue from syntax, and it's even
+more controversial than syntax.  Nobody wants to be told how to lay
+out their documentation, a la <a class="reference external" href="http://java.sun.com/j2se/javadoc/">JavaDoc</a>.  I think the JavaDoc way is
+butt-ugly, but it <em>is</em> an established standard for the Java world.
+Any standard documentation methodology has to be formal enough to be
+useful but remain light enough to be usable.  If the methodology is
+too strict, too heavy, or too ugly, many/most will not want to use it.</p>
+<p>I think a standard methodology could benefit the Python community, but
+it would be a hard sell.  A PEP would be the place to start.  For most
+human-readable documentation needs, the free-form text approach is
+adequate.  We'd only need a formal methodology if we want to extract
+the parameters into a data dictionary, index, or summary of some kind.</p>
+<section id="pythondoc">
+<h2>PythonDoc<a class="self-link" title="link to this section" href="#pythondoc"></a></h2>
+<p>(Not to be confused with Daniel Larsson's <a class="reference external" href="http://starship.python.net/crew/danilo/pythondoc/">pythondoc</a> project.)</p>
+<p>A Python version of the <a class="reference external" href="http://java.sun.com/j2se/javadoc/">JavaDoc</a> semantics (not syntax).  A set of
+conventions which are understood by the Docutils.  What JavaDoc has
+done is to establish a syntax that enables a certain documentation
+methodology, or standard <em>semantics</em>.  JavaDoc is not just syntax; it
+prescribes a methodology.</p>
+<ul>
+<li><p>Use field lists or definition lists for &quot;tagged blocks&quot;.  By this I
+mean that field lists can be used similarly to JavaDoc's <span class="docutils literal">&#64;tag</span>
+syntax.  That's actually one of the motivators behind field lists.
+For example, we could have:</p>
+<pre class="literal-block">&quot;&quot;&quot;
+:Parameters:
+    - `lines`: a list of one-line strings without newlines.
+    - `until_blank`: Stop collecting at the first blank line if
+      true (1).
+    - `strip_indent`: Strip common leading indent if true (1,
+      default).
+
+:Return:
+    - a list of indented lines with minimum indent removed;
+    - the amount of the indent;
+    - whether or not the block finished with a blank line or at
+      the end of `lines`.
+&quot;&quot;&quot;</pre>
+<p>This is taken straight out of docutils/statemachine.py, in which I
+experimented with a simple documentation methodology.  Another
+variation I've thought of exploits the <a class="reference external" href="http://www.mems-exchange.org/software/grouch/">Grouch</a>-compatible
+&quot;classifier&quot; element of definition lists.  For example:</p>
+<pre class="literal-block">:Parameters:
+    `lines` : [string]
+        List of one-line strings without newlines.
+    `until_blank` : boolean
+        Stop collecting at the first blank line if true (1).
+    `strip_indent` : boolean
+        Strip common leading indent if true (1, default).</pre>
+</li>
+<li><p>Field lists could even be used in a one-to-one correspondence with
+JavaDoc <span class="docutils literal">&#64;tags</span>, although I doubt if I'd recommend it.  Several
+ports of JavaDoc's <span class="docutils literal">&#64;tag</span> methodology exist in Python, most
+recently Ed Loper's &quot;<a class="reference external" href="http://epydoc.sourceforge.net/">epydoc</a>&quot;.</p></li>
+</ul>
+</section>
+<section id="other-ideas">
+<h2>Other Ideas<a class="self-link" title="link to this section" href="#other-ideas"></a></h2>
+<ul>
+<li><p>Can we extract comments from parsed modules?  Could be handy for
+documenting function/method parameters:</p>
+<pre class="literal-block">def method(self,
+           source,        # path of input file
+           dest           # path of output file
+          ):</pre>
+<p>This would save having to repeat parameter names in the docstring.</p>
+<p>Idea from Mark Hammond's 1998-06-23 Doc-SIG post, &quot;Re: [Doc-SIG]
+Documentation tool&quot;:</p>
+<blockquote>
+<p>it would be quite hard to add a new param to this method without
+realising you should document it</p>
+</blockquote>
+</li>
+<li><p>Frederic Giacometti's <a class="reference external" href="https://mail.python.org/pipermail/doc-sig/2001-May/001840.html">iPhrase Python documentation conventions</a> is
+an attachment to his Doc-SIG post of 2001-05-30.</p></li>
+</ul>
+<!-- Local Variables:
+mode: indented-text
+indent-tabs-mode: nil
+sentence-end-double-space: t
+fill-column: 70
+End: -->
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="semantics.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

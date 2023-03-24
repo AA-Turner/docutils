@@ -1,0 +1,301 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Lea Wiemann &lt;LeWiemann&#64;gmail.com&gt;" />
+<meta name="author" content="David Goodger &lt;goodger&#64;python.org&gt;" />
+<meta name="author" content="Docutils developers &lt;docutils-developers&#64;lists.sourceforge.net&gt;" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Testing</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-testing">
+<h1 class="title"><a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Testing</h1>
+<dl class="docinfo">
+<dt class="authors">Authors<span class="colon">:</span></dt>
+<dd class="authors"><p>Lea Wiemann &lt;LeWiemann&#64;gmail.com&gt;</p>
+<p>David Goodger &lt;goodger&#64;python.org&gt;</p>
+<p>Docutils developers &lt;docutils-developers&#64;lists.sourceforge.net&gt;</p>
+</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<div class="topic abstract" role="doc-abstract">
+<p class="topic-title">Abstract</p>
+<p>This document describes how to run the Docutils test suite,
+how the tests are organized and how to add new tests or modify
+existing tests.</p>
+</div>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#running-the-test-suite" id="toc-entry-1">Running the Test Suite</a></p>
+<ul>
+<li><p><a class="reference internal" href="#testing-across-multiple-python-versions" id="toc-entry-2">Testing across multiple Python versions</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#unit-tests" id="toc-entry-3">Unit Tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#writing-new-tests" id="toc-entry-4">Writing New Tests</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#functional-tests" id="toc-entry-5">Functional Tests</a></p>
+<ul>
+<li><p><a class="reference internal" href="#directory-structure" id="toc-entry-6">Directory Structure</a></p></li>
+<li><p><a class="reference internal" href="#the-testing-process" id="toc-entry-7">The Testing Process</a></p></li>
+<li><p><a class="reference internal" href="#creating-new-tests" id="toc-entry-8">Creating New Tests</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<p>When adding new functionality (or fixing bugs), be sure to add test
+cases to the test suite.  Practise test-first programming; it's fun,
+it's addictive, and it works!</p>
+<section id="running-the-test-suite">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Running the Test Suite</a><a class="self-link" title="link to this section" href="#running-the-test-suite"></a></h2>
+<p>Before checking in any changes, run the entire Docutils test suite to
+be sure that you haven't broken anything.  From a shell do:</p>
+<pre class="literal-block">cd docutils/test
+python -u alltests.py</pre>
+<p>Before <a class="reference external" href="policies.html#check-ins">checking in</a> changes to the Docutils core, run the tests on
+all <a class="reference external" href="../../README.html#requirements">supported Python versions</a> (see below for details).
+In a pinch, the edge cases should cover most of it.</p>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>The <span class="docutils literal">alltests.py</span> test runner is based on the standard library's <a class="reference external" href="https://docs.python.org/3/library/unittest.html">unittest</a>
+framework.
+Since Docutils 0.19, running <span class="docutils literal">python <span class="pre">-m</span> unittest</span> and the <a class="reference external" href="https://pypi.org/project/pytest">pytest</a>
+framework no longer result in spurious failures (cf. <a class="reference external" href="https://sourceforge.net/p/docutils/bugs/270/">bug #270</a>).
+However, there are differences in the reported number of tests
+(<span class="docutils literal">alltests.py</span> also counts sub-tests).
+In future, running the test suite may require <a class="reference external" href="https://pypi.org/project/pytest">pytest</a>.</p>
+</aside>
+<section id="testing-across-multiple-python-versions">
+<span id="python-versions"></span><h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Testing across multiple Python versions</a><a class="self-link" title="link to this section" href="#testing-across-multiple-python-versions"></a></h3>
+<p>A Docutils release has a commitment to support a minimum Python version
+and beyond (see <a class="reference external" href="../../README.html#dependencies">dependencies</a> in README.txt). Before a release is cut,
+tests must pass in all <a class="reference external" href="../../README.html#requirements">supported versions</a>. <a class="footnote-reference brackets" href="#footnote-1" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<p>You can use <a class="reference external" href="https://pypi.org/project/tox/">tox</a> to test with all supported versions in one go.
+From the shell:</p>
+<pre class="literal-block">cd docutils
+tox</pre>
+<p>To test a specific version, use the <span class="docutils literal">pyNN</span> environment. For example:</p>
+<pre class="literal-block">tox -e py37</pre>
+<p><a class="reference external" href="https://github.com/yyuu/pyenv">pyenv</a> can be installed and configured (see <a class="reference external" href="https://github.com/yyuu/pyenv#installation">installing pyenv</a>) to
+get multiple Python versions:</p>
+<pre class="literal-block"># assuming your system runs 3.9.x
+pyenv install 3.7.12
+pyenv install 3.8.12
+pyenv install 3.10.1
+pyenv global system 3.7.12 3.8.12 3.10.1 3.11.0
+
+# reset your shims
+rm -rf ~/.pyenv/shims &amp;&amp; pyenv rehash</pre>
+<p>This will give you <span class="docutils literal">python3.7</span> through <span class="docutils literal">python3.11</span>.
+Then run:</p>
+<pre class="literal-block">python3.7 -u alltests.py
+[...]
+python3.11 -u alltests.py</pre>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>When using the <a class="reference external" href="https://docs.python.org/3/using/windows.html#python-launcher-for-windows">Python launcher for Windows</a>, specify the Python version
+as option, e.g., <span class="docutils literal">py <span class="pre">-3.9</span> <span class="pre">-u</span> alltests.py</span> for Python 3.9.</p>
+<!-- cf. https://sourceforge.net/p/docutils/bugs/434/ -->
+</aside>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-1" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-1">1</a><span class="fn-bracket">]</span></span>
+<p>Good resources covering the differences between Python versions
+are the <cite>What's New</cite> documents (<a class="reference external" href="https://docs.python.org/3/whatsnew/3.11.html">What's New in Python 3.11</a> and
+similar).</p>
+</aside>
+</aside>
+</section>
+</section>
+<section id="unit-tests">
+<h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Unit Tests</a><a class="self-link" title="link to this section" href="#unit-tests"></a></h2>
+<p>Unit tests test single functions or modules (i.e. whitebox testing).</p>
+<p>If you are implementing a new feature, be sure to write a test case
+covering its functionality.  It happens very frequently that your
+implementation (or even only a part of it) doesn't work with an older
+(or even newer) Python version, and the only reliable way to detect
+those cases is using tests.</p>
+<p>Often, it's easier to write the test first and then implement the
+functionality required to make the test pass.</p>
+<section id="writing-new-tests">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Writing New Tests</a><a class="self-link" title="link to this section" href="#writing-new-tests"></a></h3>
+<p>When writing new tests, it very often helps to see how a similar test
+is implemented.  For example, the files in the
+<span class="docutils literal">test_parsers/test_rst/</span> directory all look very similar.  So when
+adding a test, you don't have to reinvent the wheel.</p>
+<p>If there is no similar test, you can write a new test from scratch
+using Python's <span class="docutils literal">unittest</span> module.  For an example, please have a
+look at the following imaginary <span class="docutils literal">test_square.py</span>:</p>
+<pre class="literal-block">#! /usr/bin/env python3
+
+# $Id$
+# Author: Your Name &lt;your_email_address&#64;example.org&gt;
+# Copyright: This module has been placed in the public domain.
+
+&quot;&quot;&quot;
+Test module for docutils.square.
+&quot;&quot;&quot;
+
+import unittest
+if __name__ == '__main__':
+    # prepend the &quot;docutils root&quot; to the Python library path
+    # so we import the local `docutils` package.
+    sys.path.insert(0, str(Path(__file__).resolve().parents[1]))
+
+import docutils.square
+
+
+class SquareTest(unittest.TestCase):
+
+    def test_square(self):
+        self.assertEqual(docutils.square.square(0), 0)
+        self.assertEqual(docutils.square.square(5), 25)
+        self.assertEqual(docutils.square.square(7), 49)
+
+    def test_square_root(self):
+        self.assertEqual(docutils.square.sqrt(49), 7)
+        self.assertEqual(docutils.square.sqrt(0), 0)
+        self.assertRaises(docutils.square.SquareRootError,
+                          docutils.square.sqrt, 20)
+
+
+if __name__ == '__main__':
+    unittest.main()</pre>
+<p>For more details on how to write tests, please refer to the
+documentation of the <span class="docutils literal">unittest</span> module.</p>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Unit tests and functional test should generally disable configuration
+files, setting the <a class="reference external" href="../user/config.html#disable-config">_disable_config</a> setting to True</p>
+<pre class="literal-block">settings_overrides['_disable_config'] = True</pre>
+<p>in order to be independent on the users local configuration.</p>
+</aside>
+</section>
+</section>
+<section id="functional-tests">
+<span id="functional"></span><h2><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Functional Tests</a><a class="self-link" title="link to this section" href="#functional-tests"></a></h2>
+<p>The directory <span class="docutils literal">test/functional/</span> contains data for functional tests.</p>
+<p>Performing functional testing means testing the Docutils system as a
+whole (i.e. blackbox testing).</p>
+<section id="directory-structure">
+<h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Directory Structure</a><a class="self-link" title="link to this section" href="#directory-structure"></a></h3>
+<ul class="simple">
+<li><p><span class="docutils literal">functional/</span> The main data directory.</p>
+<ul>
+<li><p><span class="docutils literal">input/</span> The input files.</p>
+<ul>
+<li><p><span class="docutils literal">some_test.txt</span>, for example.</p></li>
+</ul>
+</li>
+<li><p><span class="docutils literal">output/</span> The actual output.</p>
+<ul>
+<li><p><span class="docutils literal">some_test.html</span>, for example.</p></li>
+</ul>
+</li>
+<li><p><span class="docutils literal">expected/</span> The expected output.</p>
+<ul>
+<li><p><span class="docutils literal">some_test.html</span>, for example.</p></li>
+</ul>
+</li>
+<li><p><span class="docutils literal">tests/</span> The config files for processing the input files.</p>
+<ul>
+<li><p><span class="docutils literal">some_test.py</span>, for example.</p></li>
+</ul>
+</li>
+</ul>
+</li>
+</ul>
+</section>
+<section id="the-testing-process">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">The Testing Process</a><a class="self-link" title="link to this section" href="#the-testing-process"></a></h3>
+<p>When running <span class="docutils literal">test_functional.py</span>, all config files in
+<span class="docutils literal">functional/tests/</span> are processed.  (Config files whose names begin
+with an underscore are ignored.)  The current working directory is
+always Docutils' main test directory (<span class="docutils literal">test/</span>).</p>
+<p>For example, <span class="docutils literal">functional/tests/some_test.py</span> could read like this:</p>
+<pre class="literal-block"># Source and destination file names.
+test_source = &quot;some_test.txt&quot;
+test_destination = &quot;some_test.html&quot;
+
+# Keyword parameters passed to publish_file.
+reader_name = &quot;standalone&quot;
+parser_name = &quot;rst&quot;
+writer_name = &quot;html&quot;
+settings_overrides['output-encoding'] = 'utf-8'
+# Relative to main ``test/`` directory.
+settings_overrides['stylesheet_path'] = '../docutils/writers/html4css1/html4css1.css'</pre>
+<p>The two variables <span class="docutils literal">test_source</span> and <span class="docutils literal">test_destination</span> contain the
+input file name (relative to <span class="docutils literal">functional/input/</span>) and the output
+file name (relative to <span class="docutils literal">functional/output/</span> and
+<span class="docutils literal">functional/expected/</span>).  Note that the file names can be chosen
+arbitrarily.  However, the file names in <span class="docutils literal">functional/output/</span> <em>must</em>
+match the file names in <span class="docutils literal">functional/expected/</span>.</p>
+<p><span class="docutils literal">test_source</span> and <span class="docutils literal">test_destination</span> are removed from the
+namespace, as are all variables whose names begin with an underscore
+(&quot;_&quot;).  The remaining names are passed as keyword arguments to
+<span class="docutils literal">docutils.core.publish_file</span>, so you can set reader, parser, writer
+and anything else you want to configure.  Note that
+<span class="docutils literal">settings_overrides</span> is already initialized as a dictionary <em>before</em>
+the execution of the config file.</p>
+</section>
+<section id="creating-new-tests">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">Creating New Tests</a><a class="self-link" title="link to this section" href="#creating-new-tests"></a></h3>
+<p>In order to create a new test, put the input test file into
+<span class="docutils literal">functional/input/</span>.  Then create a config file in
+<span class="docutils literal">functional/tests/</span> which sets at least input and output file names,
+reader, parser and writer.</p>
+<p>Now run <span class="docutils literal">test_functional.py</span>.  The test will fail, of course,
+because you do not have an expected output yet.  However, an output
+file will have been generated in <span class="docutils literal">functional/output/</span>.  Check this
+output file for validity <a class="footnote-reference brackets" href="#footnote-2" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>2<span class="fn-bracket">]</span></a> and correctness.  Then copy the file to
+<span class="docutils literal">functional/expected/</span>.</p>
+<p>If you rerun <span class="docutils literal">test_functional.py</span> now, it should pass.</p>
+<p>If you run <span class="docutils literal">test_functional.py</span> later and the actual output doesn't
+match the expected output anymore, the test will fail.</p>
+<p>If this is the case and you made an intentional change, check the
+actual output for validity and correctness, copy it to
+<span class="docutils literal">functional/expected/</span> (overwriting the old expected output), and
+commit the change.</p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="footnote-2" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span><a role="doc-backlink" href="#footnote-reference-2">2</a><span class="fn-bracket">]</span></span>
+<p>The validity of <cite>Docutils XML</cite> can be tested with
+<span class="docutils literal">xmllint <span class="pre">&lt;document-referencing-local-Docutils-DTD&gt;.xml</span> <span class="pre">--valid</span> <span class="pre">--noout</span></span>.</p>
+<!-- note: the ``- -dtdvalid`` and ``- -nonet`` options do not help override
+a reference to the PUBLIC "docutils.dtd" if there is a local version
+on the system (e.g. /usr/share/xml/docutils/docutils.dtd in Debian). -->
+</aside>
+</aside>
+</section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="testing.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

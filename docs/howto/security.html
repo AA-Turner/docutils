@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Deploying Docutils Securely</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="deploying-docutils-securely">
+<h1 class="title">Deploying Docutils Securely</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="toc-entry-1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#the-issues" id="toc-entry-2">The Issues</a></p>
+<ul>
+<li><p><a class="reference internal" href="#file-creation" id="toc-entry-3">File Creation</a></p></li>
+<li><p><a class="reference internal" href="#external-data-insertion" id="toc-entry-4">External Data Insertion</a></p></li>
+<li><p><a class="reference internal" href="#raw-html-insertion" id="toc-entry-5">Raw HTML Insertion</a></p></li>
+<li><p><a class="reference internal" href="#cpu-and-memory-utilization" id="toc-entry-6">CPU and memory utilization</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#securing-docutils" id="toc-entry-7">Securing Docutils</a></p>
+<ul>
+<li><p><a class="reference internal" href="#programmatically-via-application-default-settings" id="toc-entry-8">Programmatically Via Application Default Settings</a></p></li>
+<li><p><a class="reference internal" href="#via-a-configuration-file" id="toc-entry-9">Via a Configuration File</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#version-applicability" id="toc-entry-10">Version Applicability</a></p></li>
+<li><p><a class="reference internal" href="#related-documents" id="toc-entry-11">Related Documents</a></p></li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Introduction</a><a class="self-link" title="link to this section" href="#introduction"></a></h2>
+<p>Initially, Docutils was intended for command-line tools and
+single-user applications.  Through-the-web editing and processing was
+not envisaged, therefore web security was not a consideration.  Once
+Docutils/reStructuredText started being incorporated into an
+ever-increasing number of web applications (<a class="reference external" href="../../FAQ.html#are-there-any-weblog-blog-projects-that-use-restructuredtext-syntax">blogs</a>, <a class="reference external" href="../../FAQ.html#are-there-any-wikis-that-use-restructuredtext-syntax">wikis</a>, content
+management systems, and others), several security issues arose and
+have been addressed.  Still, <strong>Docutils does not come in a
+through-the-web secure state</strong>, because this would inconvenience
+ordinary users.  This document provides pointers to help you secure
+the Docutils software in your applications.</p>
+</section>
+<section id="the-issues">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">The Issues</a><a class="self-link" title="link to this section" href="#the-issues"></a></h2>
+<section id="file-creation">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">File Creation</a><a class="self-link" title="link to this section" href="#file-creation"></a></h3>
+<p>Docutils does not do any checks before writing to a file:</p>
+<ul class="simple">
+<li><p>Existing <strong>files are overwritten</strong> without asking!</p></li>
+<li><p>Files may be <strong>written to any location</strong> accessible to the process.</p></li>
+<li><p>There are <strong>no restrictions to</strong> the <strong>file names</strong>.</p></li>
+</ul>
+<p>Special care must be taken when allowing users to configure the <em>output
+destination</em> or the <a class="reference external" href="../user/config.html#warning-stream">warning_stream</a>, <a class="reference external" href="../user/config.html#record-dependencies">record_dependencies</a>, or
+<a class="reference external" href="../user/config.html#destination">_destination</a> settings.</p>
+</section>
+<section id="external-data-insertion">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">External Data Insertion</a><a class="self-link" title="link to this section" href="#external-data-insertion"></a></h3>
+<p>There are several <a class="reference external" href="../ref/rst/directives.html">reStructuredText directives</a> that can insert
+external data (files and URLs) into the output document.  These
+directives are:</p>
+<ul class="simple">
+<li><p>&quot;<a class="reference external" href="../ref/rst/directives.html#include">include</a>&quot;, by its very nature,</p></li>
+<li><p>&quot;<a class="reference external" href="../ref/rst/directives.html#raw-directive">raw</a>&quot;, through its <span class="docutils literal">:file:</span> and <span class="docutils literal">:url:</span> options,</p></li>
+<li><p>&quot;<a class="reference external" href="../ref/rst/directives.html#csv-table">csv-table</a>&quot;, through its <span class="docutils literal">:file:</span> and <span class="docutils literal">:url:</span> options,</p></li>
+<li><p>&quot;<a class="reference external" href="../ref/rst/directives.html#image">image</a>&quot;, if <a class="reference external" href="../user/config.html#embed-images">embed_images</a> is true.</p></li>
+</ul>
+<p>The &quot;<a class="reference external" href="../ref/rst/directives.html#include">include</a>&quot; directive and the other directives' file insertion
+features can be disabled by setting &quot;<a class="reference external" href="../user/config.html#file-insertion-enabled">file_insertion_enabled</a>&quot; to
+&quot;<a class="reference external" href="../user/config.html#configuration-file-syntax">false</a>&quot;.</p>
+</section>
+<section id="raw-html-insertion">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Raw HTML Insertion</a><a class="self-link" title="link to this section" href="#raw-html-insertion"></a></h3>
+<p>The &quot;<a class="reference external" href="../ref/rst/directives.html#raw-directive">raw</a>&quot; directive is intended for the insertion of
+non-reStructuredText data that is passed untouched to the Writer.
+This directive can be abused to bypass site features or insert
+malicious JavaScript code into a web page.  The &quot;<a class="reference external" href="../ref/rst/directives.html#raw-directive">raw</a>&quot; directive can
+be disabled by setting &quot;<a class="reference external" href="../user/config.html#raw-enabled">raw_enabled</a>&quot; to &quot;false&quot;.</p>
+</section>
+<section id="cpu-and-memory-utilization">
+<h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">CPU and memory utilization</a><a class="self-link" title="link to this section" href="#cpu-and-memory-utilization"></a></h3>
+<p>Parsing <strong>complex reStructuredText documents may require high
+processing resources</strong>. This enables <cite>Denial of Service</cite> attacks using
+specially crafted input.</p>
+<p>It is recommended to enforce limits for the computation time and
+resource utilization of the Docutils process when processing
+untrusted input. In addition, the &quot;<a class="reference external" href="../user/config.html#line-length-limit">line_length_limit</a>&quot; can be
+adapted.</p>
+</section>
+</section>
+<section id="securing-docutils">
+<h2><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Securing Docutils</a><a class="self-link" title="link to this section" href="#securing-docutils"></a></h2>
+<section id="programmatically-via-application-default-settings">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">Programmatically Via Application Default Settings</a><a class="self-link" title="link to this section" href="#programmatically-via-application-default-settings"></a></h3>
+<p>If your application calls Docutils via one of the <a class="reference external" href="../api/publisher.html">convenience
+functions</a>, you can pass a dictionary of default settings that
+override the component defaults:</p>
+<pre class="literal-block">defaults = {'file_insertion_enabled': False,
+            'raw_enabled': False}
+output = docutils.core.publish_string(
+    ..., settings_overrides=defaults)</pre>
+<p>Note that these defaults can be overridden by configuration files (and
+command-line options if applicable).  If this is not desired, you can
+disable configuration file processing with the <span class="docutils literal">_disable_config</span>
+setting:</p>
+<pre class="literal-block">defaults = {'file_insertion_enabled': False,
+            'raw_enabled': False,
+            '_disable_config': True}
+output = docutils.core.publish_string(
+    ..., settings_overrides=defaults)</pre>
+</section>
+<section id="via-a-configuration-file">
+<h3><a class="toc-backref" href="#toc-entry-9" role="doc-backlink">Via a Configuration File</a><a class="self-link" title="link to this section" href="#via-a-configuration-file"></a></h3>
+<p>You may secure Docutils via a configuration file:</p>
+<ul class="simple">
+<li><p>if your application executes one of the <a class="reference external" href="../user/tools.html">Docutils front-end tools</a>
+as a separate process;</p></li>
+<li><p>if you cannot or choose not to alter the source code of your
+application or the component that calls Docutils; or</p></li>
+<li><p>if you want to secure all Docutils deployments system-wide.</p></li>
+</ul>
+<p>If you call Docutils programmatically, it may be preferable to use the
+methods described in the section above.</p>
+<p>Docutils automatically looks in three places for a configuration file:</p>
+<ul class="simple">
+<li><p><span class="docutils literal">/etc/docutils.conf</span>, for system-wide configuration,</p></li>
+<li><p><span class="docutils literal">./docutils.conf</span> (in the current working directory), for
+project-specific configuration, and</p></li>
+<li><p><span class="docutils literal"><span class="pre">~/.docutils</span></span> (in the user's home directory), for user-specific
+configuration.</p></li>
+</ul>
+<p>These locations can be overridden by the <span class="docutils literal">DOCUTILSCONFIG</span>
+environment variable.  Details about configuration files, the purpose
+of the various locations, and <span class="docutils literal">DOCUTILSCONFIG</span> are available in the
+<a class="reference external" href="../user/config.html#configuration-files">&quot;Configuration Files&quot;</a> section of <a class="reference external" href="../user/config.html">Docutils Configuration</a>.</p>
+<p>To fully secure a recent Docutils installation, the configuration file
+should contain the following lines</p>
+<pre class="literal-block">[general]
+file-insertion-enabled: off
+raw-enabled: no</pre>
+<p>and untrusted users must be prevented to modify or create local
+configuration files that overwrite these settings.</p>
+</section>
+</section>
+<section id="version-applicability">
+<h2><a class="toc-backref" href="#toc-entry-10" role="doc-backlink">Version Applicability</a><a class="self-link" title="link to this section" href="#version-applicability"></a></h2>
+<p>The &quot;<a class="reference external" href="../user/config.html#file-insertion-enabled">file_insertion_enabled</a>&quot; and &quot;<a class="reference external" href="../user/config.html#raw-enabled">raw_enabled</a>&quot; settings were added
+to Docutils 0.3.9; previous versions will ignore these settings.</p>
+<p>A bug existed in the configuration file handling of these settings in
+Docutils 0.4 and earlier: the right-hand-side needed to be left blank
+(no values):</p>
+<pre class="literal-block">[general]
+file-insertion-enabled:
+raw-enabled:</pre>
+<p>The bug was fixed with the 0.4.1 release on 2006-11-12.</p>
+<p>The &quot;<a class="reference external" href="../user/config.html#line-length-limit">line_length_limit</a>&quot; is new in Docutils 0.17.</p>
+</section>
+<section id="related-documents">
+<h2><a class="toc-backref" href="#toc-entry-11" role="doc-backlink">Related Documents</a><a class="self-link" title="link to this section" href="#related-documents"></a></h2>
+<p><a class="reference external" href="../api/runtime-settings.html">Docutils Runtime Settings</a> explains the relationship between
+component settings specifications, application settings
+specifications, configuration files, and command-line options</p>
+<p><a class="reference external" href="../user/config.html">Docutils Configuration</a> describes configuration files (locations,
+structure, and syntax), and lists all settings and command-line
+options.</p>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="security.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

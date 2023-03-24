@@ -1,0 +1,292 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="Lea Wiemann, Docutils developers" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>The Docutils Version Repository</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="the-docutils-version-repository">
+<h1 class="title">The <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> Version Repository</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>Lea Wiemann, Docutils developers</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<aside class="admonition admonition-quick-instructions">
+<p class="admonition-title">Quick Instructions</p>
+<p>To get a checkout of the Docutils source tree (with the
+sandboxes) with <a class="reference external" href="https://subversion.apache.org/">SVN</a>, type</p>
+<pre class="literal-block">svn checkout https://svn.code.sf.net/p/docutils/code/trunk docutils-code</pre>
+<p>Users of <a class="reference external" href="http://git-scm.com/">Git</a> can clone a mirror of the docutils repository with</p>
+<pre class="literal-block">git clone git://repo.or.cz/docutils.git</pre>
+<p>If you are going to commit changes to the repository, please read
+the <strong>whole document</strong>, especially the section &quot;<a class="reference internal" href="#information-for-developers">Information for
+Developers</a>&quot;!</p>
+</aside>
+<p>Docutils uses a <a class="reference external" href="https://subversion.apache.org/">Subversion</a> (SVN) repository located at
+<span class="docutils literal">docutils.svn.sourceforge.net</span>.</p>
+<p>While Unix and Mac OS X users will probably prefer the standard
+Subversion command line interface, Windows user may want to try
+<a class="reference external" href="https://tortoisesvn.net/">TortoiseSVN</a>, a convenient explorer extension.  The instructions apply
+analogously.</p>
+<p>There is a <a class="reference external" href="http://git-scm.com/">Git</a> mirror at <a class="reference external" href="http://repo.or.cz/docutils.git">http://repo.or.cz/docutils.git</a> providing
+<a class="reference internal" href="#web-access">web access</a> and the base for <a class="reference internal" href="#creating-a-local-git-clone">creating a local Git clone</a>.
+<a class="footnote-reference brackets" href="#github-mirrors" id="footnote-reference-1" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<p>For the project policy on repository use (check-in requirements,
+branching, etc.), please see the <a class="reference external" href="policies.html#subversion-repository">Docutils Project Policies</a>.</p>
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#accessing-the-repository" id="toc-entry-1">Accessing the Repository</a></p>
+<ul>
+<li><p><a class="reference internal" href="#web-access" id="toc-entry-2">Web Access</a></p></li>
+<li><p><a class="reference internal" href="#repository-access-methods" id="toc-entry-3">Repository Access Methods</a></p></li>
+<li><p><a class="reference internal" href="#checking-out-the-repository" id="toc-entry-4">Checking Out the Repository</a></p></li>
+<li><p><a class="reference internal" href="#switching-the-repository-root" id="toc-entry-5">Switching the Repository Root</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#editable-installs" id="toc-entry-6">Editable installs</a></p></li>
+<li><p><a class="reference internal" href="#information-for-developers" id="toc-entry-7">Information for Developers</a></p>
+<ul>
+<li><p><a class="reference internal" href="#setting-up-your-subversion-client-for-development" id="toc-entry-8">Setting Up Your Subversion Client For Development</a></p></li>
+</ul>
+</li>
+<li><p><a class="reference internal" href="#repository-layout" id="toc-entry-9">Repository Layout</a></p></li>
+</ul>
+</nav>
+<section id="accessing-the-repository">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Accessing the Repository</a><a class="self-link" title="link to this section" href="#accessing-the-repository"></a></h2>
+<section id="web-access">
+<h3><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Web Access</a><a class="self-link" title="link to this section" href="#web-access"></a></h3>
+<p>The repository can be browsed and examined via the web at
+<a class="reference external" href="https://sourceforge.net/p/docutils/code">https://sourceforge.net/p/docutils/code</a>.</p>
+<p>Alternatively, use the web interface at <a class="reference external" href="http://repo.or.cz/docutils.git">http://repo.or.cz/docutils.git</a>.
+<a class="footnote-reference brackets" href="#github-mirrors" id="footnote-reference-2" role="doc-noteref"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></a></p>
+<aside class="footnote-list brackets">
+<aside class="footnote brackets" id="github-mirrors" role="doc-footnote">
+<span class="label"><span class="fn-bracket">[</span>1<span class="fn-bracket">]</span></span>
+<span class="backrefs">(<a role="doc-backlink" href="#footnote-reference-1">1</a>,<a role="doc-backlink" href="#footnote-reference-2">2</a>)</span>
+<p>There are also 3rd-party mirrors and forks at
+GitHub, some of them orphaned. At the time of this writing (2021-11-03),
+<a class="reference external" href="https://github.com/live-clones/docutils/tree/master/docutils">https://github.com/live-clones/docutils/tree/master/docutils</a>
+provides an hourly updated clone.</p>
+</aside>
+</aside>
+</section>
+<section id="repository-access-methods">
+<h3><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">Repository Access Methods</a><a class="self-link" title="link to this section" href="#repository-access-methods"></a></h3>
+<p>To get a checkout, first determine the root of the repository depending
+on your preferred protocol:</p>
+<dl>
+<dt>anonymous access: (read only)</dt>
+<dd><p><a class="reference external" href="https://subversion.apache.org/">Subversion</a>: <span class="docutils literal"><span class="pre">https://svn.code.sf.net/p/docutils/code</span></span></p>
+<p><a class="reference external" href="http://git-scm.com/">Git</a>: <span class="docutils literal"><span class="pre">git://repo.or.cz/docutils.git</span></span></p>
+</dd>
+<dt><a class="reference internal" href="#developer-access">developer access</a>: (read and write)</dt>
+<dd><p><span class="docutils literal"><span class="pre">svn+ssh://&lt;USERNAME&gt;&#64;svn.code.sf.net/p/docutils/code</span></span></p>
+</dd>
+</dl>
+</section>
+<section id="checking-out-the-repository">
+<h3><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Checking Out the Repository</a><a class="self-link" title="link to this section" href="#checking-out-the-repository"></a></h3>
+<p id="creating-a-local-git-clone"><a class="reference external" href="http://git-scm.com/">Git</a> users can clone a mirror of the docutils repository with</p>
+<pre class="literal-block">git clone git://repo.or.cz/docutils.git</pre>
+<p>and proceed according to the <a class="reference external" href="https://git.wiki.kernel.org/index.php/GitDocumentation">Git documentation</a>.
+Developer access (read and write) is possible with <a class="reference external" href="https://git.wiki.kernel.org/index.php/Git-svn">git svn</a>.</p>
+<p><a class="reference external" href="https://subversion.apache.org/">Subversion</a> users can use the following commands
+(substitute your preferred repository root for ROOT):</p>
+<ul>
+<li><p>To check out only the current main source tree of Docutils, type</p>
+<pre class="literal-block">svn checkout ROOT/trunk/docutils</pre>
+</li>
+<li><p>To check out everything (main tree, sandboxes, web site, and parallel
+projects), type</p>
+<pre class="literal-block">svn checkout ROOT/trunk docutils</pre>
+<p>This will create a working copy of the whole trunk in a new directory
+called <span class="docutils literal">docutils</span>.</p>
+</li>
+</ul>
+<p>Note that you probably do <em>not</em> want to check out the ROOT itself
+(without &quot;/trunk&quot;), because then you'd end up fetching the whole
+Docutils tree for every branch and tag over and over again.</p>
+<p>To update your working copy later on, <span class="docutils literal">cd</span> into the working copy and
+type</p>
+<pre class="literal-block">svn update</pre>
+</section>
+<section id="switching-the-repository-root">
+<h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">Switching the Repository Root</a><a class="self-link" title="link to this section" href="#switching-the-repository-root"></a></h3>
+<p>If you changed your mind and want to use a different repository root,
+<span class="docutils literal">cd</span> into your working copy and type:</p>
+<pre class="literal-block">svn switch --relocate OLDROOT NEWROOT</pre>
+</section>
+</section>
+<section id="editable-installs">
+<h2><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">Editable installs</a><a class="self-link" title="link to this section" href="#editable-installs"></a></h2>
+<p>There are several ways to ensure that edits to the Docutils code are
+picked up by Python.</p>
+<p>We'll assume that the Docutils &quot;trunk&quot; is checked out under the
+<span class="docutils literal">~/projects/</span> directory.</p>
+<ol class="arabic">
+<li><p>Do an <a class="reference external" href="https://pip.pypa.io/en/stable/topics/local-project-installs/#editable-installs">editable install</a> with <a class="reference external" href="https://pypi.org/project/pip/">pip</a>:</p>
+<pre class="literal-block">python3 -m pip install -e ~/projects/docutils/docutils</pre>
+</li>
+<li><p>Install &quot;manually&quot;.</p>
+<p>Ensure that the &quot;docutils&quot; package is in the module search path
+(<span class="docutils literal">sys.path</span>) by one of the following actions:</p>
+<ol class="loweralpha">
+<li><p>Set the <span class="docutils literal">PYTHONPATH</span> environment variable.</p>
+<p>For the bash shell, add this to your <span class="docutils literal"><span class="pre">~/.profile</span></span>:</p>
+<pre class="literal-block">PYTHONPATH=$HOME/projects/docutils/docutils
+export PYTHONPATH</pre>
+<p>The first line points to the directory containing the <span class="docutils literal">docutils</span>
+package, the second line exports the environment variable.</p>
+</li>
+<li><p>Create a symlink to the docutils package directory somewhere in the
+<span class="docutils literal">sys.path</span>, e.g.,</p>
+<pre class="literal-block">ln -s ~/projects/docutils/docutils \
+      /usr/local/lib/python3.9/dist-packages/</pre>
+</li>
+<li><p>Use a <a class="reference external" href="https://docs.python.org/library/site.html">path configuration file</a>.</p>
+</li>
+</ol>
+<p>Optionally, add some or all <a class="reference external" href="../user/tools.html">front-end tools</a> to the binary search
+path, e.g.:</p>
+<ol class="loweralpha">
+<li><p>add the <span class="docutils literal">tools</span> directory to the <span class="docutils literal">PATH</span> variable:</p>
+<pre class="literal-block">PATH=$PATH:$HOME/projects/docutils/docutils/tools
+export PATH</pre>
+<p>or</p>
+</li>
+<li><p>link idividual front-end tools to a suitable place in the binary
+path:</p>
+<pre class="literal-block">ln -s ~/projects/docutils/docutils/tools/docutils-cli.py \
+      /usr/local/bin/docutils</pre>
+</li>
+</ol>
+</li>
+<li><p>Do a regular install. Repeat after any change.</p>
+<pre class="literal-block">./setup.py install</pre>
+<aside class="admonition caution">
+<p class="admonition-title">Caution!</p>
+<p>This method is <strong>not</strong> recommended for day-to-day development!</p>
+<p>If you ever forget to reinstall the &quot;docutils&quot; package, Python
+won't see your latest changes. Confusion inevitably ensues.</p>
+</aside>
+</li>
+</ol>
+<dl>
+<dt>Tip:</dt>
+<dd><p>A useful addition to the <span class="docutils literal">docutils</span> top-level directory in
+<em>SVN branches</em> and <em>alternate copies</em> of the code is a <span class="docutils literal"><span class="pre">set-PATHS</span></span>
+shell script containing the following lines:</p>
+<pre class="literal-block"># source this file
+export PYTHONPATH=$PWD:$PWD
+export PATH=$PWD/tools:$PATH</pre>
+<p>Open a shell for this branch, <span class="docutils literal">cd</span> to the <span class="docutils literal">docutils</span> top-level
+directory, and &quot;source&quot; this file.  For example, using the bash
+shell:</p>
+<pre class="literal-block">$ cd some-branch/docutils
+$ . set-PATHS</pre>
+</dd>
+</dl>
+</section>
+<section id="information-for-developers">
+<span id="developer-access"></span><h2><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">Information for Developers</a><a class="self-link" title="link to this section" href="#information-for-developers"></a></h2>
+<p>If you would like to have write access to the repository, register
+with <a class="reference external" href="https://sourceforge.net/">SourceForge.net</a> and send your SourceForge.net
+user names to <a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a>.
+(Note that there may be a delay of several hours until you can commit
+changes to the repository.)</p>
+<p>Sourceforge SVN access is documented <a class="reference external" href="https://sourceforge.net/p/forge/documentation/svn/">here</a></p>
+<p>Ensure any changes comply with the <a class="reference external" href="policies.html">Docutils Project Policies</a>
+before <a class="reference external" href="policies.html#check-ins">checking in</a>,</p>
+<section id="setting-up-your-subversion-client-for-development">
+<h3><a class="toc-backref" href="#toc-entry-8" role="doc-backlink">Setting Up Your Subversion Client For Development</a><a class="self-link" title="link to this section" href="#setting-up-your-subversion-client-for-development"></a></h3>
+<p>Before committing changes to the repository, please ensure that the
+following lines are contained (and uncommented) in your local
+~/.subversion/config file, so that new files are added with the
+correct properties set:</p>
+<pre class="literal-block">[miscellany]
+# For your convenience:
+global-ignores = ... *.pyc ...
+# For correct properties:
+enable-auto-props = yes
+
+[auto-props]
+*.py = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.txt = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.html = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.xml = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.tex = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.css = svn:eol-style=native;svn:keywords=Author Date Id Revision
+*.patch = svn:eol-style=native
+*.sh = svn:eol-style=native;svn:executable;svn:keywords=Author Date Id Revision
+*.png = svn:mime-type=image/png
+*.jpg = svn:mime-type=image/jpeg
+*.gif = svn:mime-type=image/gif</pre>
+</section>
+</section>
+<section id="repository-layout">
+<h2><a class="toc-backref" href="#toc-entry-9" role="doc-backlink">Repository Layout</a><a class="self-link" title="link to this section" href="#repository-layout"></a></h2>
+<p>The following tree shows the repository layout:</p>
+<pre class="literal-block">docutils/
+|-- branches/
+|   |-- branch1/
+|   |   |-- docutils/
+|   |   |-- sandbox/
+|   |   `-- web/
+|   `-- branch2/
+|       |-- docutils/
+|       |-- sandbox/
+|       `-- web/
+|-- tags/
+|   |-- tag1/
+|   |   |-- docutils/
+|   |   |-- sandbox/
+|   |   `-- web/
+|   `-- tag2/
+|       |-- docutils/
+|       |-- sandbox/
+|       `-- web/
+`-- trunk/
+    |-- docutils/
+    |-- sandbox/
+    `-- web/</pre>
+<p>The main source tree lives at <span class="docutils literal">docutils/trunk/docutils/</span>, next to
+the sandboxes (<span class="docutils literal">docutils/trunk/sandbox/</span>) and the web site files
+(<span class="docutils literal">docutils/trunk/web/</span>).</p>
+<p><span class="docutils literal">docutils/branches/</span> and <span class="docutils literal">docutils/tags/</span> contain (shallow) copies
+of either the whole trunk or only the main source tree
+(<span class="docutils literal">docutils/trunk/docutils</span>).</p>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="repository.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>

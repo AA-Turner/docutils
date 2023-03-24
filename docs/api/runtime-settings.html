@@ -1,0 +1,204 @@
+<!DOCTYPE html>
+<html xmlns="http://www.w3.org/1999/xhtml" xml:lang="en" lang="en">
+<head>
+<meta charset="utf-8" />
+<meta name="generator" content="Docutils 0.20b.dev: https://docutils.sourceforge.io/" />
+<meta name="viewport" content="width=device-width, initial-scale=1" />
+<meta name="author" content="David Goodger, Günter Milde" />
+<meta name="dcterms.date" content="$Date$" />
+<meta name="dcterms.rights" content="This document has been placed in the public domain." />
+<title>Docutils Runtime Settings</title>
+<link rel="schema.dcterms" href="http://purl.org/dc/terms/"/>
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/minimal.css" type="text/css" />
+<link rel="stylesheet" href="../../docutils/writers/html5_polyglot/responsive.css" type="text/css" />
+</head>
+<body class="with-toc">
+<header>
+<p><a class="reference external" href="https://docutils.sourceforge.io">Docutils</a> | <a class="reference external" href="../index.html">Overview</a> | <a class="reference external" href="../index.html#project-fundamentals">About</a> | <a class="reference external" href="../index.html#user">Users</a> | <a class="reference external" href="../index.html#ref">Reference</a> | <a class="reference external" href="../index.html#howto">Developers</a></p>
+</header>
+<main id="docutils-runtime-settings">
+<h1 class="title">Docutils Runtime Settings</h1>
+<dl class="docinfo">
+<dt class="author">Author<span class="colon">:</span></dt>
+<dd class="author"><p>David Goodger, Günter Milde</p></dd>
+<dt class="contact">Contact<span class="colon">:</span></dt>
+<dd class="contact"><a class="reference external" href="mailto:docutils-develop&#64;lists.sourceforge.net">docutils-develop&#64;lists.sourceforge.net</a></dd>
+<dt class="date">Date<span class="colon">:</span></dt>
+<dd class="date">$Date$</dd>
+<dt class="revision">Revision<span class="colon">:</span></dt>
+<dd class="revision">$Revision$</dd>
+<dt class="copyright">Copyright<span class="colon">:</span></dt>
+<dd class="copyright">This document has been placed in the public domain.</dd>
+</dl>
+<!-- Minimal menu bar for inclusion in documentation sources
+in ``docutils/docs/*/`` sub-diretories.
+
+Attention: this is not a standalone document. -->
+<nav class="contents" id="contents" role="doc-toc">
+<p class="topic-title">Contents</p>
+<ul class="simple">
+<li><p><a class="reference internal" href="#introduction" id="toc-entry-1">Introduction</a></p></li>
+<li><p><a class="reference internal" href="#settings-priority" id="toc-entry-2">Settings priority</a></p></li>
+<li><p><a class="reference internal" href="#settingsspec-base-class" id="toc-entry-3">SettingsSpec base class</a></p></li>
+<li><p><a class="reference internal" href="#glossary" id="toc-entry-4">Glossary</a></p>
+<ul>
+<li><p><a class="reference internal" href="#components" id="toc-entry-5">components</a></p></li>
+<li><p><a class="reference internal" href="#convenience-functions" id="toc-entry-6">convenience functions</a></p></li>
+<li><p><a class="reference internal" href="#settings-spec" id="toc-entry-7">settings_spec</a></p></li>
+</ul>
+</li>
+</ul>
+</nav>
+<section id="introduction">
+<h2><a class="toc-backref" href="#toc-entry-1" role="doc-backlink">Introduction</a><a class="self-link" title="link to this section" href="#introduction"></a></h2>
+<p>Docutils runtime settings are assembled from several sources:</p>
+<ul class="simple">
+<li><p>Settings specifications of the selected <a class="reference internal" href="#components">components</a>,</p></li>
+<li><p><a class="reference external" href="../user/config.html#configuration-files">configuration files</a> (if enabled), and</p></li>
+<li><p>command-line options (if enabled).</p></li>
+</ul>
+<p>Docutils overlays default and explicitly specified values from these
+sources such that settings behave the way we want and expect them to
+behave.</p>
+</section>
+<section id="settings-priority">
+<h2><a class="toc-backref" href="#toc-entry-2" role="doc-backlink">Settings priority</a><a class="self-link" title="link to this section" href="#settings-priority"></a></h2>
+<p>The sources are overlaid in the following order (later sources
+overwrite earlier ones):</p>
+<ol class="arabic simple">
+<li><p>Defaults specified in the <a class="reference internal" href="#settingsspec-settings-spec">settings_spec</a> and
+<a class="reference internal" href="#settingsspec-settings-defaults">settings_defaults</a> attributes for each <a class="reference internal" href="#component">component</a>.</p>
+</li>
+<li><p>Defaults specified in the <a class="reference internal" href="#settingsspec-settings-default-overrides">settings_default_overrides</a> attribute
+for each <a class="reference internal" href="#component">component</a>.</p>
+</li>
+<li><p>Settings specified in the <a class="reference internal" href="#settings-overrides-parameter">settings_overrides</a> parameter of the
+<a class="reference internal" href="#convenience-functions">convenience functions</a> resp. the <cite>settings_overrides</cite> attribute of
+a <a class="reference external" href="publisher.html">Publisher</a> instance.</p>
+</li>
+<li><p>Settings specified in <a class="reference internal" href="#active-sections">active sections</a> of the <a class="reference external" href="../user/config.html#configuration-files">configuration files</a>
+in the order described in <a class="reference external" href="../user/config.html#configuration-file-sections-entries">Configuration File Sections &amp; Entries</a>
+(if enabled).</p></li>
+<li><p>Command line options (if enabled).</p></li>
+</ol>
+<p>For details see the <span class="docutils literal">docutils/__init__.py</span>, <span class="docutils literal">docutils/core.py</span>, and
+<span class="docutils literal">docutils.frontend.py</span> modules and the implementation description in
+<a class="reference external" href="../dev/runtime-settings-processing.html">Runtime Settings Processing</a>.</p>
+</section>
+<section id="settingsspec-base-class">
+<span id="settingsspec"></span><h2><a class="toc-backref" href="#toc-entry-3" role="doc-backlink">SettingsSpec base class</a><a class="self-link" title="link to this section" href="#settingsspec-base-class"></a></h2>
+<aside class="admonition note">
+<p class="admonition-title">Note</p>
+<p>Implementation details will change with the move to replace the
+deprecated <a class="reference external" href="https://docs.python.org/dev/library/optparse.html">optparse</a> module with <a class="reference external" href="https://docs.python.org/dev/library/argparse.html">argparse</a>.</p>
+</aside>
+<p>The <cite>docutils.SettingsSpec</cite> base class is inherited by Docutils
+<a class="reference internal" href="#components">components</a> and <cite>frontend.OptionParser</cite>.
+It defines the following six <strong>attributes</strong>:</p>
+<dl id="settingsspec-settings-spec">
+<dt><cite>settings_spec</cite></dt>
+<dd><p>a sequence of</p>
+<ol class="arabic simple">
+<li><p>option group title (string or None)</p></li>
+<li><p>description (string or None)</p></li>
+<li><p>option tuples with</p>
+<ol class="loweralpha simple">
+<li><p>help text</p></li>
+<li><p>options string(s)</p></li>
+<li><p>dictionary with keyword arguments for <a class="reference external" href="https://docs.python.org/dev/library/optparse.html#optparse.OptionParser.add_option">OptionParser.add_option()</a>
+and an optional &quot;validator&quot;, a <cite>frontend.validate_*()</cite> function
+that processes the values (e.g. convert to other data types).</p></li>
+</ol>
+</li>
+</ol>
+<p>For examples, see the source of <span class="docutils literal">frontend.OptionParser.settings_spec</span>
+or the <cite>settings_spec</cite> attributes of the Docutils <a class="reference internal" href="#components">components</a>.</p>
+</dd>
+<dt id="settingsspec-settings-defaults"><cite>settings_defaults</cite></dt>
+<dd><p>for purely programmatic settings
+(not accessible from command line and configuration files).</p>
+</dd>
+<dt id="settingsspec-settings-default-overrides"><cite>settings_default_overrides</cite></dt>
+<dd><p>to override defaults for settings
+defined in other components' <cite>setting_specs</cite>.</p>
+</dd>
+<dt><cite>relative_path_settings</cite></dt>
+<dd><p>listing settings containing filesystem paths.</p>
+</dd>
+<dt id="active-sections"><cite>config_section</cite></dt>
+<dd><p>the configuration file section specific to this
+component.</p>
+</dd>
+<dt><cite>config_section_dependencies</cite></dt>
+<dd><p>lists configuration files sections
+that should also be read (before the <cite>config_section</cite>).</p>
+</dd>
+</dl>
+<p>The last two attributes define which configuration file sections are
+&quot;active&quot;. See also <a class="reference external" href="../user/config.html#configuration-file-sections-entries">Configuration File Sections &amp; Entries</a>.</p>
+</section>
+<section id="glossary">
+<h2><a class="toc-backref" href="#toc-entry-4" role="doc-backlink">Glossary</a><a class="self-link" title="link to this section" href="#glossary"></a></h2>
+<section id="components">
+<span id="component"></span><h3><a class="toc-backref" href="#toc-entry-5" role="doc-backlink">components</a><a class="self-link" title="link to this section" href="#components"></a></h3>
+<p>Docutils front-ends and applications combine a selection of
+<em>components</em> of the <a class="reference external" href="../peps/pep-0258.html#docutils-project-model">Docutils Project Model</a>.</p>
+<p>All components inherit the <a class="reference internal" href="#settingsspec">SettingsSpec</a> base class.
+This means that all instances of <span class="docutils literal">readers.Reader</span>, <span class="docutils literal">parsers.Parser</span>, and
+<span class="docutils literal">writers.Writer</span> are also instances of <span class="docutils literal">docutils.SettingsSpec</span>.</p>
+<p>For the determination of runtime settings, <span class="docutils literal">frontend.OptionParser</span> and
+the <a class="reference internal" href="#settings-spec-parameter">settings_spec parameter</a> in application settings specifications
+are treated as components as well.</p>
+</section>
+<section id="convenience-functions">
+<span id="convenience-function"></span><h3><a class="toc-backref" href="#toc-entry-6" role="doc-backlink">convenience functions</a><a class="self-link" title="link to this section" href="#convenience-functions"></a></h3>
+<p>Applications usually deploy Docutils by one of the
+<a class="reference external" href="publisher.html#publisher-convenience-functions">Publisher convenience functions</a>.</p>
+<p>All convenience functions accept the following optional parameters:</p>
+<dl id="settings-parameter">
+<dt><cite>settings</cite></dt>
+<dd><p>a <span class="docutils literal">frontend.Values</span> instance.
+If present, it must be complete.</p>
+<p>No further runtime settings processing is done and the
+following parameters have no effect.</p>
+</dd>
+<dt id="settings-spec-parameter"><cite>settings_spec</cite></dt>
+<dd><p>a <a class="reference internal" href="#settingsspec">SettingsSpec</a> subclass or instance containing the settings
+specification for the &quot;Application&quot; itself.
+The instance is added to the <a class="reference internal" href="#components">components</a> (after the generic
+settings, parser, reader, and writer).</p>
+</dd>
+<dt id="settings-overrides-parameter"><cite>settings_overrides</cite></dt>
+<dd><p>a dictionary which is used to update the
+defaults of the components' settings specifications.</p>
+</dd>
+<dt id="config-section-parameter"><cite>config_section</cite></dt>
+<dd><p>the name of an application-specific
+<a class="reference external" href="../user/config.html#configuration-file-sections-entries">configuration file section</a> for this application.</p>
+<p>Can be specified instead of a <cite>settings_spec</cite> (a new <a class="reference internal" href="#settingsspec">SettingsSpec</a>
+instance that just defines a configuration section will be created)
+or in addition to a <cite>settings_spec</cite>
+(overriding its <cite>config_section</cite> attribute).</p>
+</dd>
+</dl>
+</section>
+<section id="settings-spec">
+<h3><a class="toc-backref" href="#toc-entry-7" role="doc-backlink">settings_spec</a><a class="self-link" title="link to this section" href="#settings-spec"></a></h3>
+<p>The name <span class="docutils literal">settings_spec</span> may refer to</p>
+<ol class="loweralpha simple">
+<li><p>an instance of the <a class="reference internal" href="#settingsspec">SettingsSpec</a> class, or</p></li>
+<li><p>the data structure <a class="reference internal" href="#settingsspec-settings-spec">SettingsSpec.settings_spec</a> which is used to
+store settings details.</p></li>
+</ol>
+<!-- References: -->
+</section>
+</section>
+</main>
+<footer>
+<p><a class="reference external" href="runtime-settings.txt">View document source</a>.
+Generated on: 2023-03-24 15:56 UTC.
+Generated by <a class="reference external" href="https://docutils.sourceforge.io/">Docutils</a> from <a class="reference external" href="https://docutils.sourceforge.io/rst.html">reStructuredText</a> source.
+</p>
+</footer>
+</body>
+</html>
