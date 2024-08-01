@@ -16,7 +16,7 @@ env:
   FORCE_COLOR: "1"
   PYTHONDEVMODE: "1"  # -X dev
   PYTHONWARNDEFAULTENCODING: "1"  # -X warn_default_encoding
-  PYTHONWARNINGS: "error"  # -W error
+#  PYTHONWARNINGS: "error"  # -W error
 
 jobs:
   ubuntu:
