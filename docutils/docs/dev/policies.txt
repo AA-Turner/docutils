@@ -479,43 +479,6 @@ Policy History
   __ https://sourceforge.net/p/docutils/mailman/message/35903816/
 
 
-Backwards Compatibility Policy
-==============================
-
-.. note:: The backwards compatibility policy outlined below is a stub.
-
-Docutils' backwards compatibility policy follows the rules for Python in
-:PEP:`387`.
-
-* The scope of the public API is laid out at the start of the `backwards
-  compatibility rules`_.
-
-* The rules for `making incompatible changes`_ apply.
-
-A majority of projects depends on Docutils indirectly, via the Sphinx_
-document processor.
-
-* Sphinx developers should be given the chance to fix or work around a
-  DeprecationWarning_ in the Sphinx development version before a new
-  Docutils version is released. Otherwise, use a PendingDeprecationWarning_.
-
-Changes that may affect end-users (e.g. by requiring changes to the
-configuration file or potentially breaking custom style sheets) should be
-announced with a FutureWarning_.
-
-.. _backwards compatibility rules:
-   https://peps.python.org/pep-0387/#backwards-compatibility-rules
-.. _making incompatible changes:
-   https://peps.python.org/pep-0387/#making-incompatible-changes
-.. _Sphinx: https://www.sphinx-doc.org/
-.. _DeprecationWarning:
-   https://docs.python.org/3/library/exceptions.html#DeprecationWarning
-.. _PendingDeprecationWarning:
-   https://docs.python.org/3/library/exceptions.html#PendingDeprecationWarning
-.. _FutureWarning:
-   https://docs.python.org/3/library/exceptions.html#FutureWarning
-
-
 Snapshots
 =========
 
@@ -541,6 +504,63 @@ snapshot" button in the head of the code listing table).
    https://sourceforge.net/p/docutils/code/HEAD/tree/trunk/docutils
 .. _development branches:
    https://sourceforge.net/p/docutils/code/HEAD/tree/branches/
+
+
+Public API and Backwards Compatibility
+======================================
+
+The Docutils project is made up of the `reStructuredText specification`_,
+a suite of `front-end tools`_, and the ``docutils`` Python library itself.
+This document defines the backwards compatability policy and "public API" for
+the Docutils project.
+
+Docutils has a large user base and a wide range of use cases. Clearly defining
+how we will balance evolution with stability is important to both users and
+project developers.
+
+.. _reStructuredText specification: https://docutils.sourceforge.io/docs/ref/rst/restructuredtext.html
+.. _front-end tools: https://docutils.sourceforge.io/docs/user/tools.html
+
+Extent of the public API
+------------------------
+
+Docutils public APIs are:
+
+* the `reStructuredText specification`_
+
+* the `front-end tools`_, including the arguments to the tools
+
+* the XML Document Type Definition (DTD)
+
+* the Docutils output templates [#templates]_ and style sheets [#stylesheets]_
+
+* behaviour and names of all items included in the ``__public__`` attribute of
+  their parent objects. Such items can be modules, classes, module level
+  functions, module level variables, etc.
+
+Any of the above can explicitly "opt-out" of the public API with a
+docstring or introductory comment noting that the item is provisional,
+and subject to change in any future release of Docutils.
+
+Where a name is not listed in the ``__public__`` variable, the following rule
+applies:
+
+    Documented interfaces are considered public, unless the documentation
+    explicitly declares them to be provisional or internal interfaces exempt
+    from the usual backwards compatibility guarantees. All undocumented
+    interfaces should be assumed to be internal.
+
+.. [#templates] template.txt, default.tex, titlepage.tex, xelatex.tex
+.. [#stylesheets] html4css1.css, minimal.css, docutils.sty (LaTeX), styles.odt
+
+
+Deprecation periods
+-------------------
+
+Before any element of the public API changes or is removed, the current
+behaviour must have been deprecated for two non-bug-fix releases. In exceptional
+circumstances, a shorter period may be used, as long as no Docutils project
+developer disagrees.
 
 
 Setting Up For Docutils Development
