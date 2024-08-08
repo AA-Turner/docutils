@@ -87,14 +87,14 @@ class BuildHtmlTests(unittest.TestCase):
         opts = ["--dry-run", str(self.root)]
         stderr = run_buildhtml(opts)
         _dirs, files = process_filelist(stderr)
-        self.assertEqual(files.count("one.txt"), 4, stderr)
+        self.assertEqual(files.count("one.txt"), 4, msg=stderr)
 
     def test_local(self) -> None:
         opts = ["--dry-run", "--local", str(self.root)]
         stderr = run_buildhtml(opts)
         dirs, files = process_filelist(stderr)
-        self.assertEqual(len(dirs), 1, stderr)
-        self.assertEqual(files, [], stderr)
+        self.assertEqual(len(dirs), 1, msg=stderr)
+        self.assertEqual(files, [], msg=stderr)
 
 
 if __name__ == '__main__':
