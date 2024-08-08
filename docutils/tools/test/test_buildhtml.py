@@ -36,20 +36,21 @@ TOOLS_ROOT = Path(__file__).resolve().parent.parent
 BUILDHTML_PATH = TOOLS_ROOT / 'buildhtml.py'
 
 
-def process_and_return_filelist(
-    options: list[str],
-) -> tuple[list[str], list[str]]:
-    dirs = []
-    files = []
+def run_buildhtml(options: list[str]) -> str:
     ret = subprocess.run(
         [sys.executable, BUILDHTML_PATH] + options,
-        stdout=subprocess.PIPE,
-        stderr=subprocess.STDOUT,
+        capture_output=True,
         text=True,
         encoding='utf-8',
         errors='replace',
     )
-    for line in ret.stdout.splitlines():
+    return ret.stderr
+
+
+def process_filelist(stderr: str) -> tuple[list[str], list[str]]:
+    dirs = []
+    files = []
+    for line in stderr.splitlines():
         # BUG no colon in filename/path allowed
         item = line.split(": ")[-1].strip()
         if line.startswith(" "):
@@ -84,14 +85,16 @@ class BuildHtmlTests(unittest.TestCase):
 
     def test_1(self) -> None:
         opts = ["--dry-run", str(self.root)]
-        _dirs, files = process_and_return_filelist(opts)
-        self.assertEqual(files.count("one.txt"), 4)
+        stderr = run_buildhtml(opts)
+        _dirs, files = process_filelist(stderr)
+        self.assertEqual(files.count("one.txt"), 4, stderr)
 
     def test_local(self) -> None:
         opts = ["--dry-run", "--local", str(self.root)]
-        dirs, files = process_and_return_filelist(opts)
-        self.assertEqual(len(dirs), 1)
-        self.assertEqual(files, [])
+        stderr = run_buildhtml(opts)
+        dirs, files = process_filelist(stderr)
+        self.assertEqual(len(dirs), 1, stderr)
+        self.assertEqual(files, [], stderr)
 
 
 if __name__ == '__main__':
