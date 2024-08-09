@@ -6,10 +6,10 @@
 # Date: $Date$
 # Copyright: This script has been placed in the public domain.
 
-# USAGE see: docutils/docs/dev/release.txt
+# USAGE see: docutils/docs/dev/release.rst
 
 # must be run from docutils trunk/docutils, 
-# because HISTORY and RELEASE_NOTES.txt are modified.
+# because HISTORY and RELEASE_NOTES.rst are modified.
 
 set -e
 
@@ -128,10 +128,10 @@ function initialize()
     export PYTHONPATH=
     echo 'done'
     echo -n 'Checking whether we are in a working copy... '
-    if [ -f HISTORY.txt ]; then
+    if [ -f HISTORY.rst ]; then
         echo yes
     else
-        echo "no (HISTORY.txt doesn't exist)"
+        echo "no (HISTORY.rst doesn't exist)"
         echo 'Aborting.'
         echo 'Please cd to a working copy before running this script.'
         exit 1
@@ -233,8 +233,8 @@ function upload_tarball()
     run cd "$working_area"
     mkdir $new_ver
     cp docutils-$new_ver.tar.gz $new_ver
-    cp docutils/RELEASE-NOTES.txt $new_ver
-    # README.txt would be displayed automatically on sf.
+    cp docutils/RELEASE-NOTES.rst $new_ver
+    # README.rst would be displayed automatically on sf.
     # BUG user grubert hardcoded
     # short path  "/home/frs/project/docutils/docutils/" also exists
     scp -r $new_ver grubert,docutils@frs.sourceforge.net:/home/frs/project/d/do/docutils/docutils/
@@ -256,10 +256,10 @@ function upload_htdocs()
     confirm ./buildhtml.py ../docs
     run cd ..
     echo '$ find . -name test -type d -prune -o -name \*.css -print0 \
-        -o -name \*.html -print0 -o -name \*.txt -print0 \
+        -o -name \*.html -print0 -o -name \*.rst -print0 \
         | tar -cjvf docutils-docs.tar.bz2 -T - --null'
     find . -name test -type d -prune -o -name \*.css -print0 \
-        -o -name \*.html -print0 -o -name \*.txt -print0 \
+        -o -name \*.html -print0 -o -name \*.rst -print0 \
         | tar -cjvf docutils-docs.tar.bz2 -T - --null
     echo 'Upload docs to SF.net...'
     echo 'Press enter (or enter anything to skip).'
@@ -330,7 +330,7 @@ function stage_1()
         echo wq) | ed docutils/__init__.py 2> /dev/null
     set_ver "$old_ver" "$new_ver"
     echo
-    history_files='HISTORY.txt RELEASE-NOTES.txt'
+    history_files='HISTORY.rst RELEASE-NOTES.rst'
     echo "Now updating the following files: $history_files"
     old_string="Changes Since [0-9.]+"
     new_string="Release $new_ver (`date --utc --iso-8601`)"
@@ -420,7 +420,7 @@ function stage_3()
         echo wq) | ed docutils/__init__.py 2> /dev/null
     checkin 'set __version_details__ to "repository"'
     echo
-    history_files='HISTORY.txt RELEASE-NOTES.txt'
+    history_files='HISTORY.rst RELEASE-NOTES.rst'
     echo "Now updating the following files: $history_files"
     add_string="Changes Since $new_ver"
     before="Release "
@@ -440,9 +440,9 @@ function stage_3()
         cd "$working_copy"
     fi
     set_ver "$new_ver" "$svn_ver"
-    echo 'Please change version number in README.txt'
+    echo 'Please change version number in README.rst'
     echo
-    echo 'Please update the web page now (web/index.txt).'
+    echo 'Please update the web page now (web/index.rst).'
     echo 'cd into sandbox/infrastructure'
     echo 'and call docutils-update.local (requires linux, macosx cp misses something)'
     echo "Press enter when you're done."

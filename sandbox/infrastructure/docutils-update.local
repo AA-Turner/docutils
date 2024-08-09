@@ -14,10 +14,10 @@
 #
 # ATTENTION
 #
-# Any .html document with a corresponding .txt file is regenerated 
-# if the .txt has changed, but no new .html files will be generated.
+# Any .html document with a corresponding .rst file is regenerated 
+# if the .rst has changed, but no new .html files will be generated.
 #
-# * Funny thing: sf hides README.txt files.
+# * Funny thing: sf hides README.rst files.
 #
 # ATTENTION
 #
@@ -189,10 +189,10 @@ cd $htdocsdest
 
 # 2. generate empty and old html files to force generation
 #    for any txt under docs ?
-find docs -type f -and -name \*.txt -print | ( \
+find docs -type f -and -name \*.rst -print | ( \
 while read -r txtfile ; do
     dir=`dirname $txtfile`
-    base=`basename $txtfile .txt`
+    base=`basename $txtfile .rst`
     htmlfile=$dir/$base.html
     if [ ! -e $htmlfile ] ; then
         print_feedback "touch $htmlfile"
@@ -201,11 +201,11 @@ while read -r txtfile ; do
 done
 )
 
-#   for any README.txt under sandbox
-find sandbox -type f -and \( -name README.txt -o -name README \) -print | ( \
+#   for any README.rst under sandbox
+find sandbox -type f -and \( -name README.rst -o -name README \) -print | ( \
 while read -r txtfile ; do
     dir=`dirname $txtfile`
-    base=`basename $txtfile .txt`
+    base=`basename $txtfile .rst`
     htmlfile=$dir/$base.html
     if [ ! -e $htmlfile ] ; then
         print_feedback "touch $htmlfile"
@@ -236,7 +236,7 @@ for htmlfile in `find . -name '*.html'` ; do
     if [ "$base" == "standalone_rst_html4strict" ] ; then
         print_feedback "skipped: $dir $base"
     else
-        txtfile=$dir/$base.txt
+        txtfile=$dir/$base.rst
         if [ ! -e $txtfile  ] ; then
             txtfile=$dir/$base.rst
         fi
@@ -300,7 +300,7 @@ if test -n "$haschanges"; then
                 if test "${i: -5}" == .html; then
                     # HTML files (including the home page) have highest priority.
                     priority=1.0
-                elif test "${i: -4}" == .txt; then
+                elif test "${i: -4}" == .rst; then
                     # Text files have medium priority.
                     priority=0.5
                 else
