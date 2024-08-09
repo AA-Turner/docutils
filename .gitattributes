@@ -52,3 +52,6 @@ sandbox/mly/restblog/Makefile      encoding=latin1
 sandbox/mly/restblog/restblog.py   encoding=latin1
 sandbox/wilk/french/quickstart-fr.txt encoding=latin1
 sandbox/xml2rst/tests/real/original/Technik.rst encoding=latin1
+
+# Classify ``.txt`` as reStructuredText for syntax highlighting
+*.txt linguist-language=reStructuredText
