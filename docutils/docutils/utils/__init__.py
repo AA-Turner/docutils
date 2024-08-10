@@ -917,7 +917,7 @@ def _uri_reference_to_image_path(uri: str,
             return path
         msg = f'File URIs must be absolute: {uri!r}'
         raise ValueError(msg)
-    # This is a 'relative reference'
+    # This is a 'relative reference', which must not be an absolute path
     # (https://www.rfc-editor.org/rfc/rfc3986.html#section-4.2)
     if uri_parts.scheme == '':
         path = unquote(uri_parts.path)
@@ -926,6 +926,10 @@ def _uri_reference_to_image_path(uri: str,
 
         if dest_dir is None:
             return Path(path)
+
+        if os.path.isabs(path):
+            msg = f'Relative reference paths must not be absolute: {uri!r}'
+            raise ValueError(msg)
 
         # Return a path relative to the working directory
         dest = Path(dest_dir).parent.resolve() / path
