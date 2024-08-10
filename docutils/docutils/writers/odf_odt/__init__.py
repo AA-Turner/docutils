@@ -24,7 +24,9 @@ import re
 import subprocess
 import tempfile
 import time
-import urllib
+import urllib.error
+import urllib.request
+import urllib.parse
 import weakref
 from xml.etree import ElementTree as etree
 from xml.dom import minidom
@@ -2111,29 +2113,18 @@ class ODFTranslator(nodes.GenericNodeVisitor):
     def depart_generated(self, node) -> None:
         pass
 
-    def check_file_exists(self, path) -> int:
-        if os.path.exists(path):
-            return 1
-        else:
-            return 0
+    def check_file_exists(self, path) -> bool:
+        return os.path.exists(path)
 
     def visit_image(self, node) -> None:
         # Capture the image file.
         source = node['uri']
-        uri_parts = urllib.parse.urlparse(source)
+        uri_parts = urllib.parse.urlsplit(source)
         if uri_parts.scheme in ('', 'file'):
-            source = urllib.parse.unquote(uri_parts.path)
-            if source.startswith('/'):
-                root_prefix = Path(self.settings.root_prefix)
-                source = (root_prefix/source[1:]).as_posix()
-            else:
-                # adapt relative paths
-                docsource, line = utils.get_source_line(node)
-                if docsource:
-                    dirname = os.path.dirname(docsource)
-                    if dirname:
-                        source = os.path.join(dirname, source)
-            if not self.check_file_exists(source):
+            docsource, line = utils.get_source_line(node)
+            source = utils._uri_reference_to_image_path(
+                source, self.settings.root_prefix, docsource).as_posix()
+            if not os.path.exists(source):
                 self.document.reporter.warning(
                     f'Cannot find image file "{source}".')
                 return

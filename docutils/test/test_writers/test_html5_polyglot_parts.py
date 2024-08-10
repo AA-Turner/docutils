@@ -38,6 +38,7 @@ if with_pygments:
 TEST_ROOT = Path(__file__).parents[1]
 DATA_ROOT = (TEST_ROOT / 'data').as_posix()
 ROOT_PREFIX = (TEST_ROOT / 'functional/input').as_posix()
+DATA_URI = (TEST_ROOT / 'data').as_uri()
 
 # Pillow/PIL is optional:
 if PIL:
@@ -721,7 +722,7 @@ totest['system_messages'] = ({'stylesheet_path': '',
 """,
 ],
 [f"""\
-.. image:: file://{DATA_ROOT}/circle-broken.svg
+.. image:: {DATA_URI}/circle-broken.svg
    :loading: embed
 """,
 f"""\
@@ -732,7 +733,7 @@ f"""\
 
 <aside class="system-message">
 <p class="system-message-title">System Message: ERROR/3 (<span class="docutils literal">&lt;string&gt;</span>, line 1)</p>
-<p>Cannot parse SVG image &quot;file://{DATA_ROOT}/circle-broken.svg&quot;:
+<p>Cannot parse SVG image &quot;{DATA_URI}/circle-broken.svg&quot;:
   not well-formed (invalid token): line 3, column 48</p>
 </aside>
 """
@@ -838,7 +839,7 @@ totest['no_system_messages'] = ({'stylesheet_path': '',
 """,
 ],
 [f"""\
-.. image:: file://{DATA_ROOT}/circle-broken.svg
+.. image:: {DATA_URI}/circle-broken.svg
    :loading: embed
 """,
 """\
