@@ -22,8 +22,6 @@ import os
 import os.path
 from pathlib import Path
 import re
-import urllib.parse
-import urllib.request
 import warnings
 import xml.etree.ElementTree as ET  # TODO: lazy import in prepare_svg()?
 
@@ -622,19 +620,8 @@ class HTMLTranslator(nodes.NodeVisitor):
         Provisional: the function's location, interface and behaviour
         may change without advance warning.
         """
-        destination = self.settings._destination or ''
-        uri_parts = urllib.parse.urlparse(uri)
-        if uri_parts.scheme not in ('', 'file'):
-            raise ValueError('Can only read local images.')
-        imagepath = urllib.parse.unquote(uri_parts.path)
-        if imagepath.startswith('/'):  # cf. config.html#root-prefix
-            root_prefix = Path(self.settings.root_prefix)
-            imagepath = (root_prefix/imagepath[1:]).as_posix()
-        elif not os.path.isabs(imagepath):  # exclude absolute Windows paths
-            destdir = os.path.abspath(os.path.dirname(destination))
-            imagepath = utils.relative_path(None,
-                                            os.path.join(destdir, imagepath))
-        return imagepath
+        return utils._uri_reference_to_image_path(
+            uri, self.settings.root_prefix, self.settings._destination or '')
 
     def visit_Text(self, node) -> None:
         text = node.astext()

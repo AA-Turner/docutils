@@ -14,9 +14,9 @@ __docformat__ = 'reStructuredText'
 
 import re
 import string
-import urllib.parse
 import warnings
 from pathlib import Path
+from urllib.parse import urlsplit
 
 from docutils import frontend, nodes, languages, writers, utils
 from docutils.transforms import writer_aux
@@ -2401,7 +2401,12 @@ class LaTeXTranslator(nodes.NodeVisitor):
         self.requirements['graphicx'] = self.graphicx_package
         attrs = node.attributes
         # image URI may use %-encoding
-        imagepath = urllib.parse.unquote(attrs['uri'])
+        uri = node['uri']
+        if urlsplit(uri).scheme in {'', 'file'}:
+            imagepath = utils._uri_reference_to_image_path(
+                uri, self.settings.root_prefix).as_posix()
+        else:
+            imagepath = uri
         # alignment defaults:
         if 'align' not in attrs:
             # Set default align of image in a figure to 'center'

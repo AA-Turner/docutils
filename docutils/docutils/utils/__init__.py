@@ -19,6 +19,7 @@ import unicodedata
 import warnings
 from pathlib import PurePath, Path
 from typing import TYPE_CHECKING
+from urllib.parse import unquote, urlsplit
 
 from docutils import ApplicationError, DataError
 from docutils import io, nodes
@@ -870,3 +871,64 @@ class DependencyList:
         except AttributeError:
             output_file = None
         return '%s(%r, %s)' % (self.__class__.__name__, output_file, self.list)
+
+
+def _uri_reference_to_image_path(uri: str,
+                                 root_prefix: str,
+                                 dest_dir: str | None = None,
+                                 ) -> Path:
+    """Get the filesystem path corresponding to a URI reference.
+
+    The image directive expects an image URI. Some writers require the
+    corresponding image path to read the image size from the file or to
+    embed the image in the output.
+
+    Absolute URIs consider the "root_prefix" setting.
+
+    In order to work in the output document, relative image URIs relate
+    to the output directory. For access by the writer, the corresponding
+    image path must be relative to the current working directory.
+
+    Provisional: the function's location, interface and behaviour
+    may change without advance warning.
+
+    config.html#root-prefix
+    https://www.rfc-editor.org/rfc/rfc3986.html#section-4.2
+    https://en.wikipedia.org/wiki/Uniform_Resource_Identifier#URI_references
+    """
+    uri_parts = urlsplit(uri)
+    # This is a file URI, which must be absolute
+    if uri_parts.scheme == 'file':
+        if sys.version_info[:2] >= (3, 13):
+            return Path.from_uri(uri)
+        path = uri.removeprefix('file:')
+        # Remove empty or 'localhost' authority
+        if path.startswith('///'):
+            path = path.removeprefix('//')
+        elif path.startswith('//localhost/'):
+            path = path.removeprefix('//localhost')
+        # Remove forward slash before UNC path or drive letter
+        if (path.startswith('///')
+                or (path[:1] == '/' and path[2:3] == ':')):
+            path = path.removeprefix('/')
+        # Decode URI-encoded characters
+        path = Path(unquote(path))
+        if path.is_absolute():
+            return path
+        msg = f'File URIs must be absolute: {uri!r}'
+        raise ValueError(msg)
+    # This is a 'relative reference'
+    # (https://www.rfc-editor.org/rfc/rfc3986.html#section-4.2)
+    if uri_parts.scheme == '':
+        path = unquote(uri_parts.path)
+        if root_prefix and path.startswith('/'):
+            return Path(root_prefix, path.removeprefix('/'))
+
+        if dest_dir is None:
+            return Path(path)
+
+        # Return a path relative to the working directory
+        dest = Path(dest_dir).parent.resolve() / path
+        return Path(relative_path(None, str(dest)))
+
+    raise ValueError('Can only read local images.')
